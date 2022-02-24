@@ -7,23 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E3F0396D75807726DEE01A /* Font+extension.swift */; };
 		A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E61FE11E9F3672F3851C898 /* Color+extension.swift */; };
+		B51B3C4B27C77BE6001CD692 /* OnboardingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4A27C77BE6001CD692 /* OnboardingCard.swift */; };
+		B51B3C4D27C78EAC001CD692 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4C27C78EAC001CD692 /* Onboarding.swift */; };
+		B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */; };
 		B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B551BD8327C685F1006FCB58 /* TimeboxApp.swift */; };
 		B551BD8627C685F1006FCB58 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B551BD8527C685F1006FCB58 /* ContentView.swift */; };
 		B551BD8827C685F2006FCB58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8727C685F2006FCB58 /* Assets.xcassets */; };
 		B551BD8B27C685F2006FCB58 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */; };
 		B551BD9827C69157006FCB58 /* figma-export.yaml in Resources */ = {isa = PBXBuildFile; fileRef = B551BD9727C69157006FCB58 /* figma-export.yaml */; };
+		B5A323AF27C750D500D9767C /* OnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A323AE27C750D500D9767C /* OnboardingScreen.swift */; };
+		B5A323B227C75CB300D9767C /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */; };
+		B5A323B327C75CB300D9767C /* Montserrat.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B127C75CB300D9767C /* Montserrat.ttf */; };
 		E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E9F2C409FF0EF09FFE6374 /* UIColor+extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1E61FE11E9F3672F3851C898 /* Color+extension.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = "Color+extension.swift"; sourceTree = "<group>"; };
+		39E3F0396D75807726DEE01A /* Font+extension.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = "Font+extension.swift"; sourceTree = "<group>"; };
+		B51B3C4A27C77BE6001CD692 /* OnboardingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCard.swift; sourceTree = "<group>"; };
+		B51B3C4C27C78EAC001CD692 /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
+		B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		B551BD8027C685F1006FCB58 /* Timebox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timebox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B551BD8327C685F1006FCB58 /* TimeboxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeboxApp.swift; sourceTree = "<group>"; };
 		B551BD8527C685F1006FCB58 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B551BD8727C685F2006FCB58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B551BD9727C69157006FCB58 /* figma-export.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "figma-export.yaml"; sourceTree = "<group>"; };
+		B5A323AE27C750D500D9767C /* OnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingScreen.swift; sourceTree = "<group>"; };
+		B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Italic.ttf"; sourceTree = "<group>"; };
+		B5A323B127C75CB300D9767C /* Montserrat.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Montserrat.ttf; sourceTree = "<group>"; };
+		B5A323B427C7639F00D9767C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E7E9F2C409FF0EF09FFE6374 /* UIColor+extension.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = "UIColor+extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -38,6 +53,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B51B3C4927C7761F001CD692 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B51B3C4A27C77BE6001CD692 /* OnboardingCard.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		B551BD7727C685F1006FCB58 = {
 			isa = PBXGroup;
 			children = (
@@ -58,6 +81,7 @@
 		B551BD8227C685F1006FCB58 /* Timebox */ = {
 			isa = PBXGroup;
 			children = (
+				B5A323B427C7639F00D9767C /* Info.plist */,
 				B551BD9527C68647006FCB58 /* Resources */,
 				B551BD9227C68609006FCB58 /* Model */,
 				B551BD9427C6862C006FCB58 /* View */,
@@ -80,6 +104,7 @@
 		B551BD9227C68609006FCB58 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B51B3C4C27C78EAC001CD692 /* Onboarding.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -94,7 +119,10 @@
 		B551BD9427C6862C006FCB58 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				B51B3C4927C7761F001CD692 /* Components */,
 				B551BD9627C68886006FCB58 /* Extension */,
+				B5A323AE27C750D500D9767C /* OnboardingScreen.swift */,
+				B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -102,6 +130,8 @@
 		B551BD9527C68647006FCB58 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */,
+				B5A323B127C75CB300D9767C /* Montserrat.ttf */,
 				B551BD8727C685F2006FCB58 /* Assets.xcassets */,
 			);
 			path = Resources;
@@ -112,6 +142,7 @@
 			children = (
 				E7E9F2C409FF0EF09FFE6374 /* UIColor+extension.swift */,
 				1E61FE11E9F3672F3851C898 /* Color+extension.swift */,
+				39E3F0396D75807726DEE01A /* Font+extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -175,8 +206,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				B551BD9827C69157006FCB58 /* figma-export.yaml in Resources */,
+				B5A323B327C75CB300D9767C /* Montserrat.ttf in Resources */,
 				B551BD8B27C685F2006FCB58 /* Preview Assets.xcassets in Resources */,
 				B551BD8827C685F2006FCB58 /* Assets.xcassets in Resources */,
+				B5A323B227C75CB300D9767C /* Montserrat-Italic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,10 +220,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5A323AF27C750D500D9767C /* OnboardingScreen.swift in Sources */,
 				B551BD8627C685F1006FCB58 /* ContentView.swift in Sources */,
+				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
+				B51B3C4D27C78EAC001CD692 /* Onboarding.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
+				4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */,
+				B51B3C4B27C77BE6001CD692 /* OnboardingCard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,6 +362,7 @@
 				DEVELOPMENT_TEAM = 429D46KH79;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Timebox/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -353,6 +392,7 @@
 				DEVELOPMENT_TEAM = 429D46KH79;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Timebox/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
