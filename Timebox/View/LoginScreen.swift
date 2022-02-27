@@ -8,13 +8,27 @@
 import SwiftUI
 
 struct LoginScreen: View {
-    // Special environment variable that stores the previous view used for navigation...
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    
     var body: some View {
         VStack(spacing: 32) {
-            
-            OnboardingCard(carousel: loginBanner)
+            // Hero banner...
+            VStack(spacing: 24) {
+                Image("loginBanner")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                VStack(spacing: 24) {
+                    Text("Get started on Timebox.")
+                        .foregroundColor(.textPrimary)
+                        .font(.headingH2())
+                        .fontWeight(.heavy)
+                    Text("Sign in to start getting hands on Timeboxing appproaches.")
+                        .foregroundColor(.textSecondary)
+                        .font(.paragraphP1())
+                        .fontWeight(.medium)
+                        .lineSpacing(6)
+                }
+                .multilineTextAlignment(.center)
+            }
+            // Login button...
             VStack(spacing: 24) {
                 Button {} label: {
                     HStack(alignment: .top, spacing: 8) {

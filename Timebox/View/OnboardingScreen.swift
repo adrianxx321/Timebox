@@ -17,8 +17,8 @@ struct OnboardingScreen: View {
             Spacer()
             VStack(spacing: 32) {
                 TabView(selection: $offset) {
-                    ForEach((0..<carousels.count), id: \.self) { index in
-                        OnboardingCard(carousel: carousels[index])
+                    ForEach((0..<onboardingTabs.count), id: \.self) { index in
+                        OnboardingTabView(onboardingTabs[index])
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -58,6 +58,26 @@ struct OnboardingScreen: View {
                 }
             }
         )
+    }
+    
+    private func OnboardingTabView(_ tab: OnboardTab) -> some View {
+        VStack(spacing: 24) {
+            Image("\(tab.carouselImg)")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+            VStack(spacing: 24) {
+                Text("\(tab.title)")
+                    .foregroundColor(.textPrimary)
+                    .font(.headingH2())
+                    .fontWeight(.heavy)
+                Text("\(tab.description)")
+                    .foregroundColor(.textSecondary)
+                    .font(.paragraphP1())
+                    .fontWeight(.medium)
+                    .lineSpacing(6)
+            }
+            .multilineTextAlignment(.center)
+        }
     }
 }
 

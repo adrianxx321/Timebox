@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E3F0396D75807726DEE01A /* Font+extension.swift */; };
 		A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E61FE11E9F3672F3851C898 /* Color+extension.swift */; };
-		B51B3C4B27C77BE6001CD692 /* OnboardingTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4A27C77BE6001CD692 /* OnboardingTabView.swift */; };
-		B51B3C4D27C78EAC001CD692 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4C27C78EAC001CD692 /* Onboarding.swift */; };
+		B51B3C4D27C78EAC001CD692 /* OnboardTabModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4C27C78EAC001CD692 /* OnboardTabModel.swift */; };
 		B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */; };
 		B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B551BD8327C685F1006FCB58 /* TimeboxApp.swift */; };
 		B551BD8627C685F1006FCB58 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B551BD8527C685F1006FCB58 /* ContentView.swift */; };
@@ -26,8 +25,7 @@
 /* Begin PBXFileReference section */
 		1E61FE11E9F3672F3851C898 /* Color+extension.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = "Color+extension.swift"; sourceTree = "<group>"; };
 		39E3F0396D75807726DEE01A /* Font+extension.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = "Font+extension.swift"; sourceTree = "<group>"; };
-		B51B3C4A27C77BE6001CD692 /* OnboardingTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTabView.swift; sourceTree = "<group>"; };
-		B51B3C4C27C78EAC001CD692 /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
+		B51B3C4C27C78EAC001CD692 /* OnboardTabModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardTabModel.swift; sourceTree = "<group>"; };
 		B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		B551BD8027C685F1006FCB58 /* Timebox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timebox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B551BD8327C685F1006FCB58 /* TimeboxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeboxApp.swift; sourceTree = "<group>"; };
@@ -53,14 +51,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B51B3C4927C7761F001CD692 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				B51B3C4A27C77BE6001CD692 /* OnboardingTabView.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
 		B551BD7727C685F1006FCB58 = {
 			isa = PBXGroup;
 			children = (
@@ -104,7 +94,7 @@
 		B551BD9227C68609006FCB58 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B51B3C4C27C78EAC001CD692 /* Onboarding.swift */,
+				B51B3C4C27C78EAC001CD692 /* OnboardTabModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -119,7 +109,6 @@
 		B551BD9427C6862C006FCB58 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				B51B3C4927C7761F001CD692 /* Components */,
 				B551BD9627C68886006FCB58 /* Extension */,
 				B5A323AE27C750D500D9767C /* OnboardingScreen.swift */,
 				B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */,
@@ -225,10 +214,9 @@
 				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
-				B51B3C4D27C78EAC001CD692 /* Onboarding.swift in Sources */,
+				B51B3C4D27C78EAC001CD692 /* OnboardTabModel.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
 				4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */,
-				B51B3C4B27C77BE6001CD692 /* OnboardingTabView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
