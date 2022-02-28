@@ -6,54 +6,68 @@
 //
 
 import SwiftUI
+import AuthenticationServices
+import CloudKit
 
 struct LoginScreen: View {
+    @StateObject private var loginData = AuthViewModel()
+    
     var body: some View {
         VStack(spacing: 32) {
+            Spacer()
+            
             // Hero banner...
             VStack(spacing: 24) {
                 Image("loginBanner")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
+                
                 VStack(spacing: 24) {
-                    Text("Get started on Timebox.")
+                    Text("Get Started with Timebox")
                         .foregroundColor(.textPrimary)
-                        .font(.headingH2())
+                        .font(.headingH1())
                         .fontWeight(.heavy)
-                    Text("Sign in to start getting hands on Timeboxing appproaches.")
+                        .lineSpacing(6)
+                    Text("Start managing your time with Timeboxing approaches.")
                         .foregroundColor(.textSecondary)
-                        .font(.paragraphP1())
+                        .font(.subheading1())
                         .fontWeight(.medium)
                         .lineSpacing(6)
                 }
                 .multilineTextAlignment(.center)
             }
+            .padding(.horizontal, 32)
+            
             // Login button...
-            VStack(spacing: 24) {
-                Button {} label: {
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "applelogo")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 18, height: 18)
-                        Text("Continue with Apple")
-                            .font(.paragraphP2())
-                            .bold()
+            SignInWithAppleButton(
+                // Use "Continue with" instead of "Sign in with"
+                .continue,
+                onRequest: { request in
+                    // Request Apple ID credentials...
+                    request.requestedScopes = [.fullName, .email]
+                },
+                onCompletion: { result in
+                    switch result {
+                    // If Apple ID validated...
+                    case .success(let authUser):
+                        print("success")
+                        // Proceed to login with iCloud...
+                        guard let credential = authUser.credential as? ASAuthorizationAppleIDCredential else {
+                            print("error with cloudkit")
+                            return
+                        }
+                        loginData.authenticate(authUser: credential)
+                    case .failure(let error):
+                        print(error.localizedDescription)
                     }
-                    .foregroundColor(.backgroundPrimary)
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 24)
-                    .background(Capsule()
-                                .foregroundColor(.uiBlack))
                 }
-                Button {} label: {
-                    Text("Other Sign Up Options")
-                        .font(.paragraphP2())
-                        .fontWeight(.medium)
-                        .foregroundColor(.textPrimary)
-                }
-            }
-            .frame(maxWidth: .infinity)
+            )
+            .signInWithAppleButtonStyle(.black) // Button Style
+            .frame(height: 50) // Set button size according to Apple Human Guidelines
+            .clipShape(Capsule())
+            .padding(.horizontal, 32)
+            
+            Spacer()
             Spacer()
         }
         .background(Color.backgroundPrimary)
