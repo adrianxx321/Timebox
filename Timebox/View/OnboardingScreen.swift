@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct OnboardingScreen: View {
+    @State private var viewDismissed = false
+    
     // Current pagination level of carousel, default to 0...
     @State private var offset = 0
-    @State var goToLogin = false
 
     var body: some View {
+        
         VStack(spacing: 32) {
             Spacer()
+            
             VStack(spacing: 32) {
+                
                 TabView(selection: $offset) {
                     ForEach((0..<onboardingTabs.count), id: \.self) { index in
                         OnboardingTabView(onboardingTabs[index])
@@ -31,9 +35,10 @@ struct OnboardingScreen: View {
                     }
                 }
             }
+            
             Button {
                 withAnimation {
-                    goToLogin = true
+                    viewDismissed = true
                 }
             } label: {
                 Text("Get Started")
@@ -46,13 +51,14 @@ struct OnboardingScreen: View {
                                     .foregroundColor(.accent)
                                     .shadow(radius: 12, x: 0, y: 3))
             }
+            
             Spacer()
             Spacer()
         }
         .background(Color.backgroundPrimary)
         .overlay(
             Group {
-                if goToLogin {
+                if viewDismissed {
                     LoginScreen()
                         .transition(.move(edge: .trailing))
                 }
@@ -65,6 +71,7 @@ struct OnboardingScreen: View {
             Image("\(tab.carouselImg)")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
+                .padding(.horizontal, 16)
             VStack(spacing: 24) {
                 Text("\(tab.title)")
                     .foregroundColor(.textPrimary)
@@ -72,9 +79,10 @@ struct OnboardingScreen: View {
                     .fontWeight(.heavy)
                 Text("\(tab.description)")
                     .foregroundColor(.textSecondary)
-                    .font(.paragraphP1())
+                    .font(.subheading1())
                     .fontWeight(.medium)
                     .lineSpacing(6)
+                    .padding(.horizontal, 16)
             }
             .multilineTextAlignment(.center)
         }

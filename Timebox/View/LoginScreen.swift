@@ -22,7 +22,7 @@ struct LoginScreen: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 
-                VStack(spacing: 24) {
+                VStack(alignment: .leading, spacing: 24) {
                     Text("Get Started with Timebox")
                         .foregroundColor(.textPrimary)
                         .font(.headingH1())
@@ -34,7 +34,7 @@ struct LoginScreen: View {
                         .fontWeight(.medium)
                         .lineSpacing(6)
                 }
-                .multilineTextAlignment(.center)
+                .multilineTextAlignment(.leading)
             }
             .padding(.horizontal, 32)
             
