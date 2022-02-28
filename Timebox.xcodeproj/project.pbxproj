@@ -19,6 +19,9 @@
 		B5A323AF27C750D500D9767C /* OnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A323AE27C750D500D9767C /* OnboardingScreen.swift */; };
 		B5A323B227C75CB300D9767C /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */; };
 		B5A323B327C75CB300D9767C /* Montserrat.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B127C75CB300D9767C /* Montserrat.ttf */; };
+		B5F645DB27CB6E9900AF1716 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F645DA27CB6E9900AF1716 /* CloudKit.framework */; };
+		B5F645DD27CB837700AF1716 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F645DC27CB837700AF1716 /* AuthViewModel.swift */; };
+		B5F645DF27CB8D9000AF1716 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F645DE27CB8D9000AF1716 /* HomeScreen.swift */; };
 		E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E9F2C409FF0EF09FFE6374 /* UIColor+extension.swift */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +40,10 @@
 		B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Italic.ttf"; sourceTree = "<group>"; };
 		B5A323B127C75CB300D9767C /* Montserrat.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Montserrat.ttf; sourceTree = "<group>"; };
 		B5A323B427C7639F00D9767C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B5F645D827CB6E9400AF1716 /* Timebox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Timebox.entitlements; sourceTree = "<group>"; };
+		B5F645DA27CB6E9900AF1716 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		B5F645DC27CB837700AF1716 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		B5F645DE27CB8D9000AF1716 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
 		E7E9F2C409FF0EF09FFE6374 /* UIColor+extension.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = "UIColor+extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -45,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5F645DB27CB6E9900AF1716 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,6 +65,7 @@
 				B551BD9727C69157006FCB58 /* figma-export.yaml */,
 				B551BD8227C685F1006FCB58 /* Timebox */,
 				B551BD8127C685F1006FCB58 /* Products */,
+				B5F645D927CB6E9900AF1716 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,6 +80,7 @@
 		B551BD8227C685F1006FCB58 /* Timebox */ = {
 			isa = PBXGroup;
 			children = (
+				B5F645D827CB6E9400AF1716 /* Timebox.entitlements */,
 				B5A323B427C7639F00D9767C /* Info.plist */,
 				B551BD9527C68647006FCB58 /* Resources */,
 				B551BD9227C68609006FCB58 /* Model */,
@@ -102,6 +112,7 @@
 		B551BD9327C6860D006FCB58 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				B5F645DC27CB837700AF1716 /* AuthViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -112,6 +123,7 @@
 				B551BD9627C68886006FCB58 /* Extension */,
 				B5A323AE27C750D500D9767C /* OnboardingScreen.swift */,
 				B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */,
+				B5F645DE27CB8D9000AF1716 /* HomeScreen.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -134,6 +146,14 @@
 				39E3F0396D75807726DEE01A /* Font+extension.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		B5F645D927CB6E9900AF1716 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B5F645DA27CB6E9900AF1716 /* CloudKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,8 +235,10 @@
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
 				B51B3C4D27C78EAC001CD692 /* OnboardTabModel.swift in Sources */,
+				B5F645DF27CB8D9000AF1716 /* HomeScreen.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
 				4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */,
+				B5F645DD27CB837700AF1716 /* AuthViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,6 +366,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Timebox/Timebox.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Timebox/Preview Content\"";
@@ -363,6 +387,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lianghan321.Timebox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -374,6 +399,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Timebox/Timebox.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Timebox/Preview Content\"";
@@ -393,6 +420,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lianghan321.Timebox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
