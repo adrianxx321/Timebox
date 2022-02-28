@@ -11,10 +11,6 @@
 import SwiftUI
 
 public extension Font {
-
-    static func captionC1() -> Font {
-        Font.custom("Montserrat", size: 12.0)
-    }
     static func headingH0() -> Font {
         Font.custom("Montserrat", size: 48.0)
     }
@@ -24,13 +20,13 @@ public extension Font {
     static func headingH2() -> Font {
         Font.custom("Montserrat", size: 24.0)
     }
-    static func paragraphP1() -> Font {
-        Font.custom("Montserrat", size: 20.0)
-    }
-    static func paragraphP2() -> Font {
-        Font.custom("Montserrat", size: 16.0)
-    }
     static func subheading1() -> Font {
         Font.custom("Montserrat", size: 20.0)
+    }
+    static func paragraphP1() -> Font {
+        Font.custom("Montserrat", size: 16.0)
+    }
+    static func caption() -> Font {
+        Font.custom("Montserrat", size: 12.0)
     }
 }

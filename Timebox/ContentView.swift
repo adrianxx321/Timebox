@@ -8,8 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    // If UID presents, set is logged in...
+    @AppStorage("isLoggedIn") private var isLoggedIn = (UserDefaults.standard.string(forKey: "loggedInUID") != nil) ? true : false
+    
     var body: some View {
-        OnboardingScreen()
+        if isLoggedIn {
+            HomeScreen()
+        } else {
+            OnboardingScreen()
+                .transition(.move(edge: .trailing))
+        }
+
     }
 }
 
