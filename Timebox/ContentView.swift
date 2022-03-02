@@ -12,13 +12,13 @@ struct ContentView: View {
     @AppStorage("isLoggedIn") private var isLoggedIn = (UserDefaults.standard.string(forKey: "loggedInUID") != nil) ? true : false
     
     var body: some View {
-        if isLoggedIn {
-            HomeScreen()
-        } else {
-            OnboardingScreen()
-                .transition(.move(edge: .trailing))
-        }
-
+//        if isLoggedIn {
+//            HomeScreen()
+//        } else {
+//            OnboardingScreen()
+//                .transition(.move(edge: .trailing))
+//        }
+        ScheduledTasks()
     }
 }
 

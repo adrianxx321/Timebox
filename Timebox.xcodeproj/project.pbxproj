@@ -16,6 +16,9 @@
 		B551BD8827C685F2006FCB58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8727C685F2006FCB58 /* Assets.xcassets */; };
 		B551BD8B27C685F2006FCB58 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */; };
 		B551BD9827C69157006FCB58 /* figma-export.yaml in Resources */ = {isa = PBXBuildFile; fileRef = B551BD9727C69157006FCB58 /* figma-export.yaml */; };
+		B592B9FB27CE0A97009F079C /* ScheduledTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */; };
+		B592B9FD27CE0B77009F079C /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FC27CE0B77009F079C /* Task.swift */; };
+		B592B9FF27CE2079009F079C /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FE27CE2079009F079C /* TaskViewModel.swift */; };
 		B5A323AF27C750D500D9767C /* OnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A323AE27C750D500D9767C /* OnboardingScreen.swift */; };
 		B5A323B227C75CB300D9767C /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */; };
 		B5A323B327C75CB300D9767C /* Montserrat.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B127C75CB300D9767C /* Montserrat.ttf */; };
@@ -36,6 +39,9 @@
 		B551BD8727C685F2006FCB58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B551BD9727C69157006FCB58 /* figma-export.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "figma-export.yaml"; sourceTree = "<group>"; };
+		B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledTasks.swift; sourceTree = "<group>"; };
+		B592B9FC27CE0B77009F079C /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		B592B9FE27CE2079009F079C /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
 		B5A323AE27C750D500D9767C /* OnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingScreen.swift; sourceTree = "<group>"; };
 		B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Italic.ttf"; sourceTree = "<group>"; };
 		B5A323B127C75CB300D9767C /* Montserrat.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Montserrat.ttf; sourceTree = "<group>"; };
@@ -105,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				B51B3C4C27C78EAC001CD692 /* OnboardTabModel.swift */,
+				B592B9FC27CE0B77009F079C /* Task.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -113,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				B5F645DC27CB837700AF1716 /* AuthViewModel.swift */,
+				B592B9FE27CE2079009F079C /* TaskViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -124,6 +132,7 @@
 				B5A323AE27C750D500D9767C /* OnboardingScreen.swift */,
 				B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */,
 				B5F645DE27CB8D9000AF1716 /* HomeScreen.swift */,
+				B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -233,11 +242,14 @@
 				B551BD8627C685F1006FCB58 /* ContentView.swift in Sources */,
 				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
+				B592B9FD27CE0B77009F079C /* Task.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
+				B592B9FF27CE2079009F079C /* TaskViewModel.swift in Sources */,
 				B51B3C4D27C78EAC001CD692 /* OnboardTabModel.swift in Sources */,
 				B5F645DF27CB8D9000AF1716 /* HomeScreen.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
 				4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */,
+				B592B9FB27CE0A97009F079C /* ScheduledTasks.swift in Sources */,
 				B5F645DD27CB837700AF1716 /* AuthViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
