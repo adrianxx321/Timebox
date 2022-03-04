@@ -34,7 +34,7 @@ struct TaskCardView: View {
                 Text("\(task.taskTitle)")
                     .font(.paragraphP1())
                     .fontWeight(.semibold)
-                    .foregroundColor((task.isCompleted || (task.taskDate != nil && Date() > task.taskEndTime!)) ? .textTertiary : .textPrimary)
+                    .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task) && Date() > task.taskEndTime!)) ? .textTertiary : .textPrimary)
                     .if(task.isCompleted) { text in
                         text.strikethrough()
                     }
@@ -52,17 +52,17 @@ struct TaskCardView: View {
                             .font(.caption())
                             .fontWeight(.semibold)
                     }
-                    .foregroundColor((task.isCompleted || (task.taskDate != nil && Date() > task.taskEndTime!)) ? .textTertiary : .textSecondary)
+                    .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task) && Date() > task.taskEndTime!)) ? .textTertiary : .textSecondary)
                 }
                 
                 // Show the task duration if
                 //      1. It has time constaint
                 //      2. It is not all-day long
-                if (task.taskStartTime != nil && task.taskEndTime != nil && !taskModel.isAllDayTask(task)) {
+                if taskModel.isScheduledTask(task) && !taskModel.isAllDayTask(task) {
                     Text("\(taskModel.formatDate(date: task.taskStartTime!, format: "h:mm a")) - \(taskModel.formatDate(date: task.taskEndTime!, format: "h:mm a"))")
                         .font(.caption())
                         .fontWeight(.semibold)
-                        .foregroundColor((task.isCompleted || Date() > task.taskEndTime!) ? .textTertiary : .textSecondary)
+                        .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task) && Date() > task.taskEndTime!)) ? .textTertiary : .textSecondary)
                 }
             }
             

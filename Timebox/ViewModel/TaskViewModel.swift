@@ -11,20 +11,40 @@ class TaskViewModel: ObservableObject {
     // Dummy tasks
     @Published var storedTasks: [Task] = [
         // Timeboxed
-        Task(isImported: false, taskTitle: "Lorem ipsum dolor sit amet", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646092800), taskStartTime: .init(timeIntervalSince1970: 1646128800), taskEndTime: .init(timeIntervalSince1970: 1646131500), isCompleted: true, color: Color.blue, subtasks: []),
-        Task(isImported: false, taskTitle: "Get started on learning WordPress development", isImportant: true, taskDate: .init(timeIntervalSince1970: 1646092800), taskStartTime: .init(timeIntervalSince1970: 1646131500), taskEndTime: .init(timeIntervalSince1970: 1646136900), isCompleted: false, color: Color.orange, subtasks: [
+        // Today
+        Task(isImported: false, taskTitle: "Discuss about the project ideation", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646409600), taskStartTime: .init(timeIntervalSince1970: 1646445600), taskEndTime: .init(timeIntervalSince1970: 1646448300), isCompleted: true, color: Color.blue, subtasks: []),
+        Task(isImported: false, taskTitle: "Get started on learning WordPress development", isImportant: true, taskDate: .init(timeIntervalSince1970: 1646409600), taskStartTime: .init(timeIntervalSince1970: 1646450100), taskEndTime: .init(timeIntervalSince1970: 1646453700), isCompleted: false, color: Color.orange, subtasks: [
             Subtask(subtaskTitle: "Understanding WordPress anatomy", isSubtaskComplete: true),
             Subtask(subtaskTitle: "Posts and pages", isSubtaskComplete: false)
         ]),
-        Task(isImported: false, taskTitle: "Research how to migrate from Wix to WordPress", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646132600), taskStartTime: .init(timeIntervalSince1970: 1646226000), taskEndTime: .init(timeIntervalSince1970: 1646231400), isCompleted: false, color: Color.blue, subtasks: [
+        Task(isImported: false, taskTitle: "Research how to migrate from Wix to WordPress", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646409600), taskStartTime: .init(timeIntervalSince1970: 1646456400), taskEndTime: .init(timeIntervalSince1970: 1646461800), isCompleted: false, color: Color.blue, subtasks: [
             Subtask(subtaskTitle: "Go through the documentation", isSubtaskComplete: true),
             Subtask(subtaskTitle: "Try it out", isSubtaskComplete: false)
         ]),
+        // Yesterday
+        Task(isImported: false, taskTitle: "Reproduce React Native design to SwiftUI", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646323200), taskStartTime: .init(timeIntervalSince1970: 1646359200), taskEndTime: .init(timeIntervalSince1970: 1646366400), isCompleted: false, color: Color.orange, subtasks: [
+            Subtask(subtaskTitle: "Reverse engineer the whole thing", isSubtaskComplete: false),
+            Subtask(subtaskTitle: "Good luck boi", isSubtaskComplete: false)
+        ]),
+        Task(isImported: false, taskTitle: "App ideation for dog hair cutter", isImportant: true, taskDate: .init(timeIntervalSince1970: 1646323200), taskStartTime: .init(timeIntervalSince1970: 1646330400), taskEndTime: .init(timeIntervalSince1970: 1646375400), isCompleted: false, color: Color.blue, subtasks: []),
         
-
         // Anytime
-        Task(isImported: false, taskTitle: "Cut hair for my dog", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646092800), taskStartTime: .init(timeIntervalSince1970: 1646092800), taskEndTime: .init(timeIntervalSince1970: 1646179199), isCompleted: true, color: Color.orange, subtasks: []),
-        Task(isImported: false, taskTitle: "Cut hair for my cat", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646179200), taskStartTime: .init(timeIntervalSince1970: 1646179200), taskEndTime: .init(timeIntervalSince1970: 1646265599), isCompleted: true, color: Color.blue, subtasks: []),
+        // Today
+        Task(isImported: false, taskTitle: "Cut and groom hair for my dog", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646409600), taskStartTime: .init(timeIntervalSince1970: 1646409600), taskEndTime: .init(timeIntervalSince1970: 1646495999), isCompleted: true, color: Color.orange, subtasks: []),
+        Task(isImported: false, taskTitle: "Create COVID-19 vaccination card using PKPASS", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646409600), taskStartTime: .init(timeIntervalSince1970: 1646409600), taskEndTime: .init(timeIntervalSince1970: 1646495999), isCompleted: true, color: Color.orange, subtasks: [
+            Subtask(subtaskTitle: "Go through the documentation", isSubtaskComplete: true),
+            Subtask(subtaskTitle: "Try it out", isSubtaskComplete: false)
+        ]),
+        // Yesterday
+        Task(isImported: false, taskTitle: "Get ready for interview", isImportant: true, taskDate: .init(timeIntervalSince1970: 1646323200), taskStartTime: .init(timeIntervalSince1970: 1646352000), taskEndTime: .init(timeIntervalSince1970: 1646409599), isCompleted: false, color: Color.blue, subtasks: []),
+        Task(isImported: false, taskTitle: "Continue learning WordPress development", isImportant: true, taskDate: .init(timeIntervalSince1970: 1646323200), taskStartTime: .init(timeIntervalSince1970: 1646352000), taskEndTime: .init(timeIntervalSince1970: 1646409599), isCompleted: false, color: Color.orange, subtasks: [
+            Subtask(subtaskTitle: "Understanding WordPress anatomy", isSubtaskComplete: false),
+            Subtask(subtaskTitle: "Posts and pages", isSubtaskComplete: false)
+        ]),
+        Task(isImported: false, taskTitle: "DB migration (Firebase -> CloudKit)", isImportant: false, taskDate: .init(timeIntervalSince1970: 1646352000), taskStartTime: .init(timeIntervalSince1970: 1646352000), taskEndTime: .init(timeIntervalSince1970: 1646409599), isCompleted: false, color: Color.blue, subtasks: [
+            Subtask(subtaskTitle: "Go through the documentation", isSubtaskComplete: false),
+            Subtask(subtaskTitle: "Try it out", isSubtaskComplete: false)
+        ]),
         
         // Planned
         Task(isImported: false, taskTitle: "Finish setting up staging server", isImportant: true, taskDate: nil, taskStartTime: nil, taskEndTime: nil, isCompleted: false, color: Color.blue, subtasks: []),
@@ -87,14 +107,17 @@ class TaskViewModel: ObservableObject {
     }
     
     func hasTask(_ tasks: [Task], date: Date?) -> Bool {
-        // MARK: If no date is provided, check whether there is backlog task; otherwise, check for scheduled tasks.
+        // MARK: If no date is provided, check whether there is backlog task
         if date != nil {
             if filterTasks(tasks, date: date!, isAllDay: true, hideCompleted: false).count > 0 || filterTasks(tasks, date: date!, isAllDay: false, hideCompleted: false).count > 0 {
                 return true
             } else {
                 return false
             }
-        } else {
+        }
+        
+        // MARK: Otherwise, check for scheduled tasks.
+        else {
             return (tasks.filter { task in
                 task.taskDate == nil
             }.count > 0) ? true : false
@@ -108,7 +131,7 @@ class TaskViewModel: ObservableObject {
         // MARK: (1st pass) -> Scheduled or backlog tasks
         if date != nil {
             filteredTasks = tasks.filter { task in
-                (task.taskDate != nil) ? calendar.isDate(task.taskDate!, inSameDayAs: date!) : false
+                (isScheduledTask(task)) ? calendar.isDate(task.taskDate!, inSameDayAs: date!) : false
             }
         } else {
             filteredTasks = tasks.filter { task in
@@ -140,10 +163,15 @@ class TaskViewModel: ObservableObject {
     }
     
     func isAllDayTask(_ task: Task) -> Bool {
-        guard (task.taskStartTime != nil && task.taskEndTime != nil) else {
+        // MARK: Calculate if duration is 24hrs
+        if isScheduledTask(task) {
+            return DateInterval(start: task.taskStartTime!, end: task.taskEndTime!).duration >= 86399 ? true : false
+        } else {
             return false
         }
-        
-        return (DateInterval(start: task.taskStartTime!, end: task.taskEndTime!).duration >= 86399) ? true : false
+    }
+    
+    func isScheduledTask(_ task: Task) -> Bool {
+        return task.taskDate != nil ? true : false
     }
 }
