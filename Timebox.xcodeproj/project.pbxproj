@@ -23,6 +23,7 @@
 		B5A323AF27C750D500D9767C /* OnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A323AE27C750D500D9767C /* OnboardingScreen.swift */; };
 		B5A323B227C75CB300D9767C /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */; };
 		B5A323B327C75CB300D9767C /* Montserrat.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B127C75CB300D9767C /* Montserrat.ttf */; };
+		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
 		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
 		B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152FA27D0A5620073421B /* BacklogTasks.swift */; };
 		B5F645DB27CB6E9900AF1716 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F645DA27CB6E9900AF1716 /* CloudKit.framework */; };
@@ -50,6 +51,7 @@
 		B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Italic.ttf"; sourceTree = "<group>"; };
 		B5A323B127C75CB300D9767C /* Montserrat.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Montserrat.ttf; sourceTree = "<group>"; };
 		B5A323B427C7639F00D9767C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
 		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
 		B5D152FA27D0A5620073421B /* BacklogTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogTasks.swift; sourceTree = "<group>"; };
 		B5F645D827CB6E9400AF1716 /* Timebox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Timebox.entitlements; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 			isa = PBXGroup;
 			children = (
 				B5D152F827D082E10073421B /* TaskCardView.swift */,
+				B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -260,6 +263,7 @@
 				B5057A9827CF279D0005512F /* View+extension.swift in Sources */,
 				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
+				B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */,
 				B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */,
 				B592B9FD27CE0B77009F079C /* Task.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
