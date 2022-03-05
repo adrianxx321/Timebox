@@ -171,26 +171,29 @@ struct ScheduledTasks: View {
 
                     // MARK: Show time-constrained task if any
                     if taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: false, hideCompleted: hideCompletedTasks).count > 0 {
+                        
                         VStack(alignment: .leading, spacing: 16) {
 
-                            // MARK: Heading for time-constrained tasks
-                            HStack(spacing: 12) {
+                            Section {
+                                // MARK: Timeboxed task cards
+                                ForEach(taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: false, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
+                                    TaskCardView(task: task)
+                                }
+                            } header: {
+                                // MARK: Heading for time-constrained tasks
+                                HStack(spacing: 12) {
 
-                                Image("clock")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .foregroundColor(.textPrimary)
-                                    .frame(width: 28)
+                                    Image("clock")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .foregroundColor(.textPrimary)
+                                        .frame(width: 28)
 
-                                Text("Timeboxed")
-                                    .font(.subheading1())
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.textPrimary)
-                            }
-
-                            // MARK: Timeboxed task cards
-                            ForEach(taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: false, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
-                                TaskCardView(task: task)
+                                    Text("Timeboxed")
+                                        .font(.subheading1())
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.textPrimary)
+                                }
                             }
                         }
                     }
@@ -198,25 +201,27 @@ struct ScheduledTasks: View {
                     // MARK: Show all-day task if any
                     if taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: true, hideCompleted: hideCompletedTasks).count > 0 {
                         VStack(alignment: .leading, spacing: 16) {
-
-                            // MARK: Heading for all-day tasks
-                            HStack(spacing: 12) {
-
-                                Image("check")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .foregroundColor(.textPrimary)
-                                    .frame(width: 28)
-
-                                Text("To-do Anytime")
-                                    .font(.subheading1())
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.textPrimary)
-                            }
                             
-                            // MARK: All-day task cards
-                            ForEach(taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: true, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
-                                TaskCardView(task: task)
+                            Section {
+                                // MARK: All-day task cards
+                                ForEach(taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: true, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
+                                    TaskCardView(task: task)
+                                }
+                            } header: {
+                                // MARK: Heading for all-day tasks
+                                HStack(spacing: 12) {
+
+                                    Image("check")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .foregroundColor(.textPrimary)
+                                        .frame(width: 28)
+
+                                    Text("To-do Anytime")
+                                        .font(.subheading1())
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.textPrimary)
+                                }
                             }
                         }
                     }

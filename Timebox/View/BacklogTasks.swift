@@ -75,8 +75,10 @@ struct BacklogTasks: View {
             
             // MARK: Show if there's any backlog task
             if taskModel.hasTask(taskModel.storedTasks, date: nil) {
-                ForEach(taskModel.filterTasks(taskModel.storedTasks, date: nil, isAllDay: false, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
-                    TaskCardView(task: task)
+                VStack(spacing: 16) {
+                    ForEach(taskModel.filterTasks(taskModel.storedTasks, date: nil, isAllDay: false, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
+                        TaskCardView(task: task)
+                    }
                 }
             }
             
