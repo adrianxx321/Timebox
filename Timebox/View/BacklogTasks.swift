@@ -22,6 +22,23 @@ struct BacklogTasks: View {
                 // MARK: Scrollview showing list of backlog tasks
                 TasksView()
                     .transition(.slide)
+                
+                Spacer()
+                
+                // MARK: Create task button
+                Button {
+                    
+                } label: {
+                    Text("Create a Task")
+                        .font(.subheading1())
+                        .bold()
+                        .foregroundColor(.backgroundPrimary)
+                        .padding(.vertical, 20)
+                        .frame(maxWidth: UIScreen.main.bounds.width - 64)
+                        .background(Capsule()
+                                        .foregroundColor(.accent)
+                                        .shadow(radius: 12, x: 0, y: 3))
+                }
             }
             .padding(.top, 48)
             .edgesIgnoringSafeArea(.top)
