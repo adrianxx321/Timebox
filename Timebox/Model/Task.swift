@@ -1,26 +1,65 @@
 //
-//  Task.swift
+//  Task+CoreDataClass.swift
 //  Timebox
 //
-//  Created by Lianghan Siew on 01/03/2022.
+//  Created by Lianghan Siew on 06/03/2022.
+//
 //
 
-import SwiftUI
+import Foundation
+import CoreData
+import UIKit
 
-struct Subtask {
-    var subtaskTitle: String
-    var isSubtaskComplete: Bool
+@objc(Task)
+public class Task: NSManagedObject {
+
 }
 
-struct Task: Identifiable {
-    let id = UUID().uuidString
-    let isImported: Bool
-    var taskTitle: String
-    var isImportant: Bool
-    var taskDate: Date?
-    var taskStartTime: Date?
-    var taskEndTime: Date?
-    var isCompleted: Bool = false
-    var color: Color
-    var subtasks: [Subtask] = []
+extension Task {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Task> {
+        return NSFetchRequest<Task>(entityName: "Task")
+    }
+
+    @NSManaged public var color:  UIColor
+    @NSManaged public var id: UUID
+    @NSManaged public var isCompleted: Bool
+    @NSManaged public var isImportant: Bool
+    @NSManaged public var isImported: Bool
+    @NSManaged public var taskDate: Date?
+    @NSManaged public var taskDescription: String
+    @NSManaged public var taskEndTime: Date?
+    @NSManaged public var taskStartTime: Date?
+    @NSManaged public var taskTitle: String
+    @NSManaged public var subtask: NSSet
+    
+    public var subtasks: [Subtask] {
+        let set = subtask as? Set<Subtask> ?? []
+        
+        return set.sorted {
+            $0.order < $1.order
+        }
+    }
+
+}
+
+// MARK: Generated accessors for subtask
+extension Task {
+
+    @objc(addSubtaskObject:)
+    @NSManaged public func addToSubtask(_ value: Subtask)
+
+    @objc(removeSubtaskObject:)
+    @NSManaged public func removeFromSubtask(_ value: Subtask)
+
+    @objc(addSubtask:)
+    @NSManaged public func addToSubtask(_ values: NSSet)
+
+    @objc(removeSubtask:)
+    @NSManaged public func removeFromSubtask(_ values: NSSet)
+
+}
+
+extension Task : Identifiable {
+
 }

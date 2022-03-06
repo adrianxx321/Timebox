@@ -20,8 +20,9 @@ struct BacklogTasks: View {
                     .padding()
                 
                 // MARK: Scrollview showing list of backlog tasks
-                TasksView()
-                    .transition(.slide)
+                ScrollView(.vertical, showsIndicators: false) {
+                    DynamicTaskList(taskDate: taskModel.currentDay, showCompleted: true)
+                }
                 
                 Spacer()
                 
@@ -31,10 +32,12 @@ struct BacklogTasks: View {
             .padding(.top, 48)
             .edgesIgnoringSafeArea(.top)
             .background(Color.backgroundPrimary)
+
         } else {
             
             // MARK: Go to scheduled
             ScheduledTasks()
+                .transition(.slide)
         }
     }
     
@@ -73,46 +76,6 @@ struct BacklogTasks: View {
             }
         }
         .foregroundColor(.textPrimary)
-    }
-    
-    private func TasksView() -> some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            
-            // MARK: Show if there's any backlog task
-            if taskModel.hasTask(taskModel.storedTasks, date: nil) {
-                VStack(spacing: 16) {
-                    ForEach(taskModel.filterTasks(taskModel.storedTasks, date: nil, isAllDay: false, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
-                        TaskCardView(task: task)
-                    }
-                }
-            }
-            
-            // MARK: Fallback screen for zero backlog tasks
-            else {
-                VStack {
-                   Image("no-task")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxHeight: 320)
-                    
-                    Text("No backlog task")
-                        .font(.headingH2())
-                        .fontWeight(.heavy)
-                        .foregroundColor(.textPrimary)
-                        .padding(.vertical, 16)
-                    
-                    VStack(spacing: 8) {
-                        Text("You don’t have anything planned so far.")
-                            .fontWeight(.semibold)
-                        Text("Tap the button below to create a new task.")
-                            .fontWeight(.semibold)
-                    }
-                    .font(.paragraphP1())
-                    .foregroundColor(.textSecondary)
-                    .multilineTextAlignment(.center)
-                }
-            }
-        }
     }
 }
 

@@ -16,7 +16,7 @@ struct TaskCardView: View {
             
             // MARK: Task label color
             Capsule()
-                .fill(task.color)
+                .fill(Color(task.color))
                 .frame(width: 6)
                 .frame(minHeight: 32)
             

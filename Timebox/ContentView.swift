@@ -11,6 +11,8 @@ struct ContentView: View {
     // If UID presents, set is logged in...
     @AppStorage("isLoggedIn") private var isLoggedIn = (UserDefaults.standard.string(forKey: "loggedInUID") != nil) ? true : false
     
+    @Environment(\.managedObjectContext) var context
+    
     var body: some View {
 //        if isLoggedIn {
 //            HomeScreen()

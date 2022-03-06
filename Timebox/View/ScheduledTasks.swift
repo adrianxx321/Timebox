@@ -14,12 +14,16 @@ struct ScheduledTasks: View {
     @State private var hideCompletedTasks = false
     @State private var showBacklog = false
     
+    // MARK: Core Data environment
+    @Environment(\.managedObjectContext) var context
+    
     var body: some View {
         if showBacklog {
             
             // MARK: Go to backlog tasks
             BacklogTasks(showBacklog: $showBacklog)
                 .transition(.move(edge: .trailing))
+            
         } else {
             
             VStack(spacing: 24) {
@@ -38,7 +42,9 @@ struct ScheduledTasks: View {
                 .mask(Rectangle().padding(.bottom, -24))
                 
                 // MARK: A scrollview showing a list of tasks
-                TasksView()
+                ScrollView(.vertical, showsIndicators: false) {
+                    DynamicTaskList(taskDate: taskModel.currentDay, showCompleted: true)
+                }
             }
             .edgesIgnoringSafeArea(.top)
             .background(Color.backgroundPrimary)
@@ -158,101 +164,6 @@ struct ScheduledTasks: View {
 
             // Update the selected day also upon updating week
             taskModel.currentDay = Calendar.current.date(byAdding: .weekOfMonth, value: offset, to: taskModel.currentDay)!
-        }
-    }
-    
-    private func TasksView() -> some View {
-        ScrollView(.vertical, showsIndicators: false) {
-
-            // MARK: Show if there's any task for given date
-            if taskModel.hasTask(taskModel.storedTasks, date: taskModel.currentDay) {
-
-                VStack(spacing: 32) {
-
-                    // MARK: Show time-constrained task if any
-                    if taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: false, hideCompleted: hideCompletedTasks).count > 0 {
-                        
-                        VStack(alignment: .leading, spacing: 16) {
-
-                            Section {
-                                // MARK: Timeboxed task cards
-                                ForEach(taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: false, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
-                                    TaskCardView(task: task)
-                                }
-                            } header: {
-                                // MARK: Heading for time-constrained tasks
-                                HStack(spacing: 12) {
-
-                                    Image("clock")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .foregroundColor(.textPrimary)
-                                        .frame(width: 28)
-
-                                    Text("Timeboxed")
-                                        .font(.subheading1())
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.textPrimary)
-                                }
-                            }
-                        }
-                    }
-
-                    // MARK: Show all-day task if any
-                    if taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: true, hideCompleted: hideCompletedTasks).count > 0 {
-                        VStack(alignment: .leading, spacing: 16) {
-                            
-                            Section {
-                                // MARK: All-day task cards
-                                ForEach(taskModel.filterTasks(taskModel.storedTasks, date: taskModel.currentDay, isAllDay: true, hideCompleted: hideCompletedTasks), id: \.self.id) { task in
-                                    TaskCardView(task: task)
-                                }
-                            } header: {
-                                // MARK: Heading for all-day tasks
-                                HStack(spacing: 12) {
-
-                                    Image("check")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .foregroundColor(.textPrimary)
-                                        .frame(width: 28)
-
-                                    Text("To-do Anytime")
-                                        .font(.subheading1())
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.textPrimary)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // MARK: Fall back screen showing no task
-            else {
-                VStack {
-                   Image("no-task")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxHeight: 320)
-                    
-                    Text("No scheduled task")
-                        .font(.headingH2())
-                        .fontWeight(.heavy)
-                        .foregroundColor(.textPrimary)
-                        .padding(.vertical, 16)
-                    
-                    VStack(spacing: 8) {
-                        Text("You don't have any schedule for today.")
-                            .fontWeight(.semibold)
-                        Text("Tap the plus button to create one.")
-                            .fontWeight(.semibold)
-                    }
-                    .font(.paragraphP1())
-                    .foregroundColor(.textSecondary)
-                    .multilineTextAlignment(.center)
-                }
-            }
         }
     }
 }
