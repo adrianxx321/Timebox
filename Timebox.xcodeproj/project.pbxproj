@@ -27,10 +27,10 @@
 		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
 		B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152FA27D0A5620073421B /* BacklogTasks.swift */; };
 		B5DB8A2A27D4B2A7000D8B51 /* DynamicTaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */; };
-		B5DB8A2D27D4B2EF000D8B51 /* Timebox.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2B27D4B2EF000D8B51 /* Timebox.xcdatamodeld */; };
 		B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */; };
 		B5DB8A3927D4B3C9000D8B51 /* Subtask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A3827D4B3C9000D8B51 /* Subtask.swift */; };
 		B5DB8A3B27D4B57B000D8B51 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */; };
+		B5DB8A6C27D50167000D8B51 /* Timebox.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */; };
 		B5F645DB27CB6E9900AF1716 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F645DA27CB6E9900AF1716 /* CloudKit.framework */; };
 		B5F645DD27CB837700AF1716 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F645DC27CB837700AF1716 /* AuthViewModel.swift */; };
 		B5F645DF27CB8D9000AF1716 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F645DE27CB8D9000AF1716 /* HomeScreen.swift */; };
@@ -60,10 +60,10 @@
 		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
 		B5D152FA27D0A5620073421B /* BacklogTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogTasks.swift; sourceTree = "<group>"; };
 		B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DynamicTaskList.swift; sourceTree = "<group>"; };
-		B5DB8A2C27D4B2EF000D8B51 /* TimeboxCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TimeboxCoreData.xcdatamodel; sourceTree = "<group>"; };
 		B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorTransformer.swift; sourceTree = "<group>"; };
 		B5DB8A3827D4B3C9000D8B51 /* Subtask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subtask.swift; sourceTree = "<group>"; };
 		B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		B5DB8A6B27D50167000D8B51 /* TimeboxCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TimeboxCoreData.xcdatamodel; sourceTree = "<group>"; };
 		B5F645D827CB6E9400AF1716 /* Timebox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Timebox.entitlements; sourceTree = "<group>"; };
 		B5F645DA27CB6E9900AF1716 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B5F645DC27CB837700AF1716 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
@@ -114,7 +114,7 @@
 				B551BD8527C685F1006FCB58 /* ContentView.swift */,
 				B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */,
 				B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */,
-				B5DB8A2B27D4B2EF000D8B51 /* Timebox.xcdatamodeld */,
+				B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */,
 				B551BD8927C685F2006FCB58 /* Preview Content */,
 			);
 			path = Timebox;
@@ -279,11 +279,11 @@
 				B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */,
 				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
+				B5DB8A6C27D50167000D8B51 /* Timebox.xcdatamodeld in Sources */,
 				B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */,
 				B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */,
 				B592B9FD27CE0B77009F079C /* Task.swift in Sources */,
 				B5DB8A2A27D4B2A7000D8B51 /* DynamicTaskList.swift in Sources */,
-				B5DB8A2D27D4B2EF000D8B51 /* Timebox.xcdatamodeld in Sources */,
 				B5DB8A3B27D4B57B000D8B51 /* Persistence.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
 				B592B9FF27CE2079009F079C /* TaskViewModel.swift in Sources */,
@@ -507,12 +507,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		B5DB8A2B27D4B2EF000D8B51 /* Timebox.xcdatamodeld */ = {
+		B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				B5DB8A2C27D4B2EF000D8B51 /* TimeboxCoreData.xcdatamodel */,
+				B5DB8A6B27D50167000D8B51 /* TimeboxCoreData.xcdatamodel */,
 			);
-			currentVersion = B5DB8A2C27D4B2EF000D8B51 /* TimeboxCoreData.xcdatamodel */;
+			currentVersion = B5DB8A6B27D50167000D8B51 /* TimeboxCoreData.xcdatamodel */;
 			path = Timebox.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

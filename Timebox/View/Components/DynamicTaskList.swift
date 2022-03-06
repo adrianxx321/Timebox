@@ -9,13 +9,14 @@ import SwiftUI
 import CoreData
 
 struct DynamicTaskList: View {
+    @StateObject var taskModel = TaskViewModel()
     private var isBacklog: Bool
     
     // MARK: Core Data Request for fetching tasks
     @FetchRequest var request: FetchedResults<Task>
     
     /// Fetch  scheduled tasks
-    init(taskDate: Date, showCompleted: Bool) {
+    init(taskDate: Date, hideCompleted: Bool) {
         let calendar = Calendar.current
         
         let today = calendar.startOfDay(for: taskDate)
@@ -23,8 +24,8 @@ struct DynamicTaskList: View {
         
         // Building compound predicate based on inputs
         let p1 = NSPredicate(format: "taskDate >= %@ AND taskDate < %@", argumentArray: [today, tomorrow])
-        let p2 = NSPredicate(format: "isCompleted == %@ ", argumentArray: [showCompleted])
-        let predicate = [p1, p2]
+        let p2 = NSPredicate(format: "isCompleted == false", argumentArray: [hideCompleted])
+        let predicate = hideCompleted ? [p1, p2] : [p1]
         
         // Initializing query using NSCompoundPredicate
         _request = FetchRequest(
@@ -37,15 +38,17 @@ struct DynamicTaskList: View {
     }
     
     /// Fetch backlog tasks
-    init(taskDate: Date?, showCompleted: Bool) {
-        // Query predicate
-        let predicate = NSPredicate(format: "taskDate == nil AND isCompleted == %@", argumentArray: [showCompleted])
+    init(taskDate: Date?, hideCompleted: Bool) {
+        // Building compound predicate based on inputs
+        let p1 = NSPredicate(format: "taskDate == nil", argumentArray: [])
+        let p2 = NSPredicate(format: "isCompleted == false", argumentArray: [hideCompleted])
+        let predicate = hideCompleted ? [p1, p2] : [p1]
 
         // Initializing query using NSPredicate
         _request = FetchRequest(
             entity: Task.entity(),
-            sortDescriptors: [.init(keyPath: \Task.isImportant, ascending: true)],
-            predicate: predicate
+            sortDescriptors: [.init(keyPath: \Task.isImportant, ascending: false)],
+            predicate: NSCompoundPredicate(andPredicateWithSubpredicates: predicate)
         )
 
         self.isBacklog = true
@@ -79,67 +82,70 @@ struct DynamicTaskList: View {
                 
                 // Split fetched tasks into timeboxed and all-day
                 let timeboxed = request.filter { task in
-                    task.taskStartTime != nil && task.taskEndTime != nil
+                    !taskModel.isAllDayTask(task)
                 }
                 let allDay = request.filter { task in
-                    task.taskStartTime == nil && task.taskEndTime == nil
+                    taskModel.isAllDayTask(task)
                 }
                 
-                // MARK: Show time-constrained task if any
-                if timeboxed.count > 0 {
-                    VStack(alignment: .leading, spacing: 16) {
+                VStack(spacing: 32) {
+                    
+                    // MARK: Show time-constrained task if any
+                    if timeboxed.count > 0 {
+                        VStack(alignment: .leading, spacing: 16) {
 
-                        Section {
-                            
-                            // MARK: Timeboxed task cards
-                            ForEach(timeboxed, id: \.self.id) { task in
-                                TaskCardView(task: task)
-                            }
-                            
-                        } header: {
-                            
-                            // MARK: Heading for time-constrained tasks
-                            HStack(spacing: 12) {
-                                Image("clock")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .foregroundColor(.textPrimary)
-                                    .frame(width: 28)
+                            Section {
+                                
+                                // MARK: Timeboxed task cards
+                                ForEach(timeboxed, id: \.self.id) { task in
+                                    TaskCardView(task: task)
+                                }
+                                
+                            } header: {
+                                
+                                // MARK: Heading for time-constrained tasks
+                                HStack(spacing: 12) {
+                                    Image("clock")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .foregroundColor(.textPrimary)
+                                        .frame(width: 28)
 
-                                Text("Timeboxed")
-                                    .font(.subheading1())
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.textPrimary)
+                                    Text("Timeboxed")
+                                        .font(.subheading1())
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.textPrimary)
+                                }
                             }
                         }
                     }
-                }
-                
-                // MARK: Show all-day task if any
-                if allDay.count > 0 {
-                    VStack(alignment: .leading, spacing: 16) {
+                    
+                    // MARK: Show all-day task if any
+                    if allDay.count > 0 {
+                        VStack(alignment: .leading, spacing: 16) {
 
-                        Section {
-                            
-                            // MARK: All-day task cards
-                            ForEach(allDay, id: \.self.id) { task in
-                                TaskCardView(task: task)
-                            }
-                            
-                        } header: {
-                            
-                            // MARK: Heading for all-day tasks
-                            HStack(spacing: 12) {
-                                Image("check")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .foregroundColor(.textPrimary)
-                                    .frame(width: 28)
+                            Section {
+                                
+                                // MARK: All-day task cards
+                                ForEach(allDay, id: \.self.id) { task in
+                                    TaskCardView(task: task)
+                                }
+                                
+                            } header: {
+                                
+                                // MARK: Heading for all-day tasks
+                                HStack(spacing: 12) {
+                                    Image("check")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .foregroundColor(.textPrimary)
+                                        .frame(width: 28)
 
-                                Text("To-do Anytime")
-                                    .font(.subheading1())
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.textPrimary)
+                                    Text("To-do Anytime")
+                                        .font(.subheading1())
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.textPrimary)
+                                }
                             }
                         }
                     }

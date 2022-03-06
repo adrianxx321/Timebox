@@ -25,7 +25,7 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="Subtask" positionX="-54" positionY="63" width="128" height="103"/>
+        <element name="Subtask" positionX="-54" positionY="63" width="128" height="89"/>
         <element name="Task" positionX="-242.78125" positionY="97.515625" width="128" height="208"/>
     </elements>
 </model>

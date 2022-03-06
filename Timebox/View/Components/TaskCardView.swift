@@ -47,7 +47,7 @@ struct TaskCardView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 24)
                             .rotationEffect(.degrees(90))
-                        
+
                         Text("\(taskModel.countCompletedSubtask(task.subtasks))/\(task.subtasks.count) completed")
                             .font(.caption())
                             .fontWeight(.semibold)

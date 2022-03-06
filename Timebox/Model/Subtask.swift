@@ -26,7 +26,7 @@ extension Subtask {
 
     @NSManaged public var isCompleted: Bool
     @NSManaged public var order: Int32
-    @NSManaged public var subtaskTitle: String?
+    @NSManaged public var subtaskTitle: String
     @NSManaged public var parentTask: Task?
 
 }

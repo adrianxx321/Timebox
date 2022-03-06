@@ -31,7 +31,7 @@ extension Task {
     @NSManaged public var taskEndTime: Date?
     @NSManaged public var taskStartTime: Date?
     @NSManaged public var taskTitle: String
-    @NSManaged public var subtask: NSSet
+    @NSManaged public var subtask: NSSet?
     
     public var subtasks: [Subtask] {
         let set = subtask as? Set<Subtask> ?? []
