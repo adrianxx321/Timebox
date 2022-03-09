@@ -31,13 +31,14 @@ struct TaskCardView: View {
                         .foregroundColor(.uiOrange)
                 }
                 
-                Text("\(task.taskTitle)")
+                Text(task.taskTitle)
                     .font(.paragraphP1())
                     .fontWeight(.semibold)
                     .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task) && Date() > task.taskEndTime!)) ? .textTertiary : .textPrimary)
                     .if(task.isCompleted) { text in
                         text.strikethrough()
                     }
+                    .multilineTextAlignment(.leading)
                 
                 // Show the subtasks completed info if there's any subtask
                 if task.subtasks.count > 0 {

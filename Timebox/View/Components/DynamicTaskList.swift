@@ -64,9 +64,10 @@ struct DynamicTaskList: View {
                 fallBackView(title: "No backlog task", caption1: "You don’t have anything planned so far.", caption2: "Tap the button below to create one.")
                 
             } else {
-                
-                ForEach(request, id: \.id) { object in
-                    TaskCardView(task: object)
+                ForEach(request, id: \.id) { task in
+                    NavigationLink(destination: TaskDetails(selectedTask: task)) {
+                        TaskCardView(task: task)
+                    }
                 }
             }
         }
@@ -97,8 +98,10 @@ struct DynamicTaskList: View {
                             Section {
                                 
                                 // MARK: Timeboxed task cards
-                                ForEach(timeboxed, id: \.self.id) { task in
-                                    TaskCardView(task: task)
+                                ForEach(request, id: \.id) { task in
+                                    NavigationLink(destination: TaskDetails(selectedTask: task)) {
+                                        TaskCardView(task: task)
+                                    }
                                 }
                                 
                             } header: {
@@ -127,8 +130,10 @@ struct DynamicTaskList: View {
                             Section {
                                 
                                 // MARK: All-day task cards
-                                ForEach(allDay, id: \.self.id) { task in
-                                    TaskCardView(task: task)
+                                ForEach(request, id: \.id) { task in
+                                    NavigationLink(destination: TaskDetails(selectedTask: task)) {
+                                        TaskCardView(task: task)
+                                    }
                                 }
                                 
                             } header: {

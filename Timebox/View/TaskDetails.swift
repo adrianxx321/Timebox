@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TaskDetails: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    @Binding var selectedTask: Task
+    @ObservedObject var selectedTask: Task
     @StateObject var taskModel = TaskViewModel()
     
     var body: some View {
