@@ -13,8 +13,8 @@
         <attribute name="isImportant" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isImported" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="taskDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="taskDescription" attributeType="String" defaultValueString=""/>
         <attribute name="taskEndTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="taskLabel" optional="YES" attributeType="String" defaultValueString=""/>
         <attribute name="taskStartTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="taskTitle" attributeType="String" defaultValueString=""/>
         <relationship name="subtask" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Subtask" inverseName="parentTask" inverseEntity="Subtask"/>
@@ -26,6 +26,6 @@
     </entity>
     <elements>
         <element name="Subtask" positionX="-54" positionY="63" width="128" height="89"/>
-        <element name="Task" positionX="-242.78125" positionY="97.515625" width="128" height="208"/>
+        <element name="Task" positionX="-242.78125" positionY="97.515625" width="128" height="194"/>
     </elements>
 </model>
