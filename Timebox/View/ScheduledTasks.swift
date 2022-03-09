@@ -12,20 +12,12 @@ struct ScheduledTasks: View {
     @StateObject var taskModel = TaskViewModel()
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
-    @State private var showBacklog = false
     
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
     
     var body: some View {
-        if showBacklog {
-            
-            // MARK: Go to backlog tasks
-            BacklogTasks(showBacklog: $showBacklog)
-                .transition(.move(edge: .trailing))
-            
-        } else {
-            
+        NavigationView {
             VStack(spacing: 24) {
                 VStack {
                     HeaderView()
@@ -35,7 +27,7 @@ struct ScheduledTasks: View {
                     CalendarView()
                         .padding(.vertical)
                 }
-                .padding(.top, 48)
+                .padding(.top, 47)
                 .background(Color.uiWhite)
                 .cornerRadius(40, corners: [.bottomLeft, .bottomRight])
                 .shadow(radius: 12, x: 0, y: 3)
@@ -46,20 +38,18 @@ struct ScheduledTasks: View {
                     DynamicTaskList(taskDate: taskModel.currentDay, hideCompleted: false)
                 }
             }
-            .edgesIgnoringSafeArea(.top)
+            .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPrimary)
+            .navigationBarHidden(true)
         }
+        .navigationBarHidden(true)
     }
     
     private func HeaderView() -> some View {
         HStack {
             
             // MARK: Menu button leading to Planned Tasks
-            Button {
-                withAnimation {
-                    showBacklog.toggle()
-                }
-            } label: {
+            NavigationLink(destination: BacklogTasks()) {
                 Image("menu")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -77,6 +67,9 @@ struct ScheduledTasks: View {
             
             // MARK: Hide/Show completed tasks
             Button {
+                withAnimation {
+                    hideCompletedTasks.toggle()
+                }
                 
             } label: {
                 Image("more-horizontal-f")

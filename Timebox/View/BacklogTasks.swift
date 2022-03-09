@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct BacklogTasks: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @StateObject var taskModel = TaskViewModel()
-    @Binding var showBacklog: Bool
-    @State var hideCompletedTasks = false
+    @State private var hideCompletedTasks = false
     
     var body: some View {
-        if showBacklog {
-            
+        NavigationView {
             VStack(spacing: 16) {
                 HeaderView()
                     .padding()
@@ -29,26 +28,18 @@ struct BacklogTasks: View {
                 // MARK: Create task button
                 CTAButton(btnLabel: "Create a Task", btnAction: {}, btnFullSize: true)
             }
-            .padding(.top, 48)
-            .edgesIgnoringSafeArea(.top)
             .background(Color.backgroundPrimary)
-
-        } else {
-            
-            // MARK: Go to scheduled
-            ScheduledTasks()
-                .transition(.slide)
+            .navigationBarHidden(true)
         }
+        .navigationBarHidden(true)
     }
     
     private func HeaderView() -> some View {
         HStack() {
             
-            // MARK: Menu button leading to Planned Tasks
+            // MARK: Back button leading to previous screen
             Button {
-                withAnimation {
-                    showBacklog.toggle()
-                }
+                presentationMode.wrappedValue.dismiss()
             } label: {
                 Image("chevron-left")
                     .resizable()
@@ -81,6 +72,6 @@ struct BacklogTasks: View {
 
 struct BacklogTasks_Previews: PreviewProvider {
     static var previews: some View {
-        BacklogTasks(showBacklog: .constant(true))
+        BacklogTasks()
     }
 }
