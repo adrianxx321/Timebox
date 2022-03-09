@@ -49,6 +49,16 @@ class TaskViewModel: ObservableObject {
         return formatter.string(from: date)
     }
     
+    func formatTimeInterval(startTime: Date, endTime: Date, unitStyle: DateComponentsFormatter.UnitsStyle, units: NSCalendar.Unit) -> String {
+        let formatter = DateComponentsFormatter()
+        let interval = DateInterval(start: startTime, end: endTime).duration
+        
+        formatter.unitsStyle = unitStyle
+        formatter.allowedUnits = units
+        
+        return formatter.string(from: interval)!
+    }
+    
     func isCurrentDay(date: Date) -> Bool {
         let calendar = Calendar.current
         
