@@ -13,24 +13,19 @@ struct BacklogTasks: View {
     @State private var hideCompletedTasks = false
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 16) {
-                HeaderView()
-                    .padding()
-                
-                // MARK: Scrollview showing list of backlog tasks
-                ScrollView(.vertical, showsIndicators: false) {
-                    DynamicTaskList(taskDate: nil, hideCompleted: false)
-                }
-                
-                Spacer()
-                
-                // MARK: Create task button
-                CTAButton(btnLabel: "Create a Task", btnAction: {}, btnFullSize: true)
+        VStack(spacing: 16) {
+            HeaderView()
+                .padding()
+            
+            // MARK: Scrollview showing list of backlog tasks
+            ScrollView(.vertical, showsIndicators: false) {
+                DynamicTaskList(taskDate: nil, hideCompleted: false)
             }
-            .background(Color.backgroundPrimary)
-            .navigationBarHidden(true)
+            
+            // MARK: Create task button
+            CTAButton(btnLabel: "Create a Task", btnAction: {}, btnFullSize: true)
         }
+        .background(Color.backgroundPrimary)
         .navigationBarHidden(true)
     }
     
