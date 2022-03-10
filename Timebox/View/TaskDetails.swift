@@ -51,7 +51,6 @@ struct TaskDetails: View {
                         } : nil
                         
                         // MARK: Task date & time for scheduled task
-                        taskModel.isScheduledTask(selectedTask) ?
                         TaskSectionView(sectionTitle: "Date & Time") {
                             VStack(alignment: .leading, spacing: 16) {
                                 
@@ -66,7 +65,12 @@ struct TaskDetails: View {
                                         .background(Circle()
                                             .foregroundColor(.uiLightPurple))
                                     
+                                    taskModel.isScheduledTask(selectedTask) ?
                                     Text(taskModel.formatDate(date: selectedTask.taskDate!, format: "EEE, d MMMM yyyy"))
+                                        .font(.paragraphP1())
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.textPrimary)
+                                    : Text("None")
                                         .font(.paragraphP1())
                                         .fontWeight(.semibold)
                                         .foregroundColor(.textPrimary)
@@ -93,22 +97,47 @@ struct TaskDetails: View {
                                     let interval = taskModel.isAllDayTask(selectedTask) ?
                                     "" : taskModel.formatTimeInterval(startTime: selectedTask.taskStartTime!, endTime: selectedTask.taskEndTime!, unitStyle: .full, units: [.hour, .minute])
                                     
-                                    taskModel.isAllDayTask(selectedTask) ?
-                                    Text("All-day")
-                                        .font(.paragraphP1())
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(.textPrimary)
-                                    : Text("\(startTime) - \(endTime) (\(interval))")
+                                    selectedTask.taskStartTime != nil && selectedTask.taskEndTime != nil ?
+                                        taskModel.isAllDayTask(selectedTask) ?
+                                        Text("All-day")
+                                            .font(.paragraphP1())
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.textPrimary)
+                                        : Text("\(startTime) - \(endTime) (\(interval))")
+                                            .font(.paragraphP1())
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.textPrimary)
+                                    : Text("None")
                                         .font(.paragraphP1())
                                         .fontWeight(.semibold)
                                         .foregroundColor(.textPrimary)
                                 }
                             }
-                        } : nil
+                        }
                     }
                 }
             }
             .padding(.horizontal, 24)
+            
+            // MARK: Button for start timeboxing for ongoing task
+            if taskModel.isScheduledTask(selectedTask) {
+                
+                if selectedTask.taskStartTime! >= Date() && selectedTask.taskEndTime! < Date() {
+                    CTAButton(btnLabel: "Start Timeboxing", btnAction: {
+                        
+                    }, btnFullSize: true)
+                    .frame(maxWidth: .infinity)
+                }
+            } else {
+                
+                // MARK: Button for adding backlog task to scheduled
+                // This will bring up the edit task modal...
+                CTAButton(btnLabel: "Add to Scheduled", btnAction: {
+                    
+                }, btnFullSize: true)
+                .frame(maxWidth: .infinity)
+            }
+            
         }
         .background(Color.backgroundPrimary)
         .navigationBarHidden(true)
