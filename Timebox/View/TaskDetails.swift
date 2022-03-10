@@ -25,10 +25,9 @@ struct TaskDetails: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 40) {
                         
-                        // MARK: Subtasks breakdown, if any
-                        selectedTask.subtasks.count > 0 ?
                         TaskSectionView(sectionTitle: "Subtasks") {
                             
+                            // MARK: Subtasks breakdown, if any
                             VStack(alignment: .leading, spacing: 16) {
                                 ForEach(selectedTask.subtasks, id: \.id) { subtask in
                                     
@@ -40,15 +39,22 @@ struct TaskDetails: View {
                                         
                                         Text(subtask.subtaskTitle)
                                             .font(.paragraphP1())
-                                            .fontWeight(subtask.isCompleted ? .medium : .semibold)
+                                            .fontWeight(.semibold)
                                             .foregroundColor(subtask.isCompleted ? .textSecondary : .textPrimary)
                                             .if(subtask.isCompleted) { text in
                                                 text.strikethrough()
                                             }
                                     }
                                 }
+                                
+                                // MARK: Indicator for no subtask
+                                selectedTask.subtasks.count <= 0 ?
+                                Text("This task doesn't have any subtask.")
+                                    .font(.paragraphP1())
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.textPrimary) : nil
                             }
-                        } : nil
+                        }
                         
                         // MARK: Task date & time for scheduled task
                         TaskSectionView(sectionTitle: "Date & Time") {
@@ -66,7 +72,7 @@ struct TaskDetails: View {
                                             .foregroundColor(.uiLightPurple))
                                     
                                     taskModel.isScheduledTask(selectedTask) ?
-                                    Text(taskModel.formatDate(date: selectedTask.taskDate!, format: "EEE, d MMMM yyyy"))
+                                    Text(taskModel.formatDate(date: selectedTask.taskDate!, format: "EEEE, d MMMM yyyy"))
                                         .font(.paragraphP1())
                                         .fontWeight(.semibold)
                                         .foregroundColor(.textPrimary)
@@ -88,14 +94,11 @@ struct TaskDetails: View {
                                             .foregroundColor(.uiLightPurple))
                                     
                                     // MARK: Complicated task duration calculation
-                                    let startTime = taskModel.isAllDayTask(selectedTask) ?
-                                    "" : taskModel.formatDate(date: selectedTask.taskStartTime!, format: "hh:mm a")
+                                    let startTime = taskModel.formatDate(date: selectedTask.taskStartTime ?? Date(), format: "hh:mm a")
                                     
-                                    let endTime = taskModel.isAllDayTask(selectedTask) ?
-                                    "" : taskModel.formatDate(date: selectedTask.taskEndTime!, format: "hh:mm a")
+                                    let endTime = taskModel.formatDate(date: selectedTask.taskEndTime ?? Date(), format: "hh:mm a")
                                     
-                                    let interval = taskModel.isAllDayTask(selectedTask) ?
-                                    "" : taskModel.formatTimeInterval(startTime: selectedTask.taskStartTime!, endTime: selectedTask.taskEndTime!, unitStyle: .full, units: [.hour, .minute])
+                                    let interval = taskModel.formatTimeInterval(startTime: selectedTask.taskStartTime ?? Date(), endTime: selectedTask.taskEndTime ?? Date(), unitStyle: .full, units: [.hour, .minute])
                                     
                                     selectedTask.taskStartTime != nil && selectedTask.taskEndTime != nil ?
                                         taskModel.isAllDayTask(selectedTask) ?

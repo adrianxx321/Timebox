@@ -35,7 +35,7 @@ struct ScheduledTasks: View {
                 
                 // MARK: A scrollview showing a list of tasks
                 ScrollView(.vertical, showsIndicators: false) {
-                    DynamicTaskList(taskDate: taskModel.currentDay, hideCompleted: false)
+                    DynamicTaskList(taskDate: taskModel.currentDay, hideCompleted: hideCompletedTasks)
                 }
             }
             .ignoresSafeArea(edges: .top)

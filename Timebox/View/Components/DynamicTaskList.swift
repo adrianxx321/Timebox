@@ -98,7 +98,7 @@ struct DynamicTaskList: View {
                             Section {
                                 
                                 // MARK: Timeboxed task cards
-                                ForEach(request, id: \.id) { task in
+                                ForEach(timeboxed, id: \.id) { task in
                                     NavigationLink(destination: TaskDetails(selectedTask: task)) {
                                         TaskCardView(task: task)
                                     }
@@ -130,7 +130,7 @@ struct DynamicTaskList: View {
                             Section {
                                 
                                 // MARK: All-day task cards
-                                ForEach(request, id: \.id) { task in
+                                ForEach(allDay, id: \.id) { task in
                                     NavigationLink(destination: TaskDetails(selectedTask: task)) {
                                         TaskCardView(task: task)
                                     }
@@ -157,7 +157,6 @@ struct DynamicTaskList: View {
                 }
             }
         }
-        
     }
     
     func FallBackView(title: String, image: String, caption1: String, caption2: String) -> some View {
