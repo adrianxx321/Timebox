@@ -61,7 +61,7 @@ struct DynamicTaskList: View {
             if request.isEmpty {
                 
                 // Fallback screen...
-                fallBackView(title: "No backlog task", caption1: "You don’t have anything planned so far.", caption2: "Tap the button below to create one.")
+                FallBackView(title: "Track your undecided tasks", image: "backlog", caption1: "Task with no specific date goes here.", caption2: "Schedule them to create timeboxed tasks.")
                 
             } else {
                 ForEach(request, id: \.id) { task in
@@ -77,7 +77,7 @@ struct DynamicTaskList: View {
             if request.isEmpty {
                 
                 // Fallback screen...
-                fallBackView(title: "No scheduled task", caption1: "You don't have any schedule for today.", caption2: "Tap the plus button to create a new task.")
+                FallBackView(title: "No task today", image: "no-task", caption1: "You don't have any schedule for today.", caption2: "Tap the plus button to create a new task.")
                 
             } else {
                 
@@ -160,12 +160,13 @@ struct DynamicTaskList: View {
         
     }
     
-    func fallBackView(title: String, caption1: String, caption2: String) -> some View {
+    func FallBackView(title: String, image: String, caption1: String, caption2: String) -> some View {
         VStack {
-           Image("no-task")
+           Image("\(image)")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(maxHeight: 320)
+                .frame(maxWidth: UIScreen.main.bounds.width - 64)
+                .padding(.bottom, 16)
 
             Text("\(title)")
                 .font(.headingH2())
