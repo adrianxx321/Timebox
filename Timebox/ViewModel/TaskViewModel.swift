@@ -65,52 +65,6 @@ class TaskViewModel: ObservableObject {
         return calendar.isDate(currentDay, inSameDayAs: date)
     }
     
-    func hasTask(_ tasks: [Task], date: Date?) -> Bool {
-        // MARK: If no date is provided, check whether there is backlog task
-        if date != nil {
-            if filterTasks(tasks, date: date!, isAllDay: true, hideCompleted: false).count > 0 || filterTasks(tasks, date: date!, isAllDay: false, hideCompleted: false).count > 0 {
-                return true
-            } else {
-                return false
-            }
-        }
-        
-        // MARK: Otherwise, check for scheduled tasks.
-        else {
-            return (tasks.filter { task in
-                task.taskDate == nil
-            }.count > 0) ? true : false
-        }
-    }
-    
-    func filterTasks(_ tasks: [Task], date: Date?, isAllDay: Bool, hideCompleted: Bool) -> [Task] {
-        let calendar = Calendar.current
-        var filteredTasks: [Task]
-        
-        // MARK: (1st pass) -> Scheduled or backlog tasks
-        if date != nil {
-            filteredTasks = tasks.filter { task in
-                (isScheduledTask(task)) ? calendar.isDate(task.taskDate!, inSameDayAs: date!) : false
-            }
-        } else {
-            filteredTasks = tasks.filter { task in
-                task.taskDate == nil
-            }
-        }
-        
-        // MARK: (2nd pass) -> Tasks with all-day long (or not)
-        filteredTasks = isAllDay ? filteredTasks.filter { task in
-            isAllDayTask(task)
-        } : filteredTasks.filter { task in
-            !isAllDayTask(task)
-        }
-        
-        // MARK: (Last pass) -> Exclude completed tasks (or not)
-        return hideCompleted ? filteredTasks.filter { task in
-            !task.isCompleted
-        } : filteredTasks
-    }
-    
     func countCompletedSubtask(_ subtasks: [Subtask]) -> Int {
         var completedCount = 0
         
