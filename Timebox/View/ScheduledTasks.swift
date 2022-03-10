@@ -72,7 +72,7 @@ struct ScheduledTasks: View {
                 }
                 
             } label: {
-                Image("more-horizontal-f")
+                Image(hideCompletedTasks ? "eye" : "eye-close")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 32)

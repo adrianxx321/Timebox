@@ -53,9 +53,12 @@ struct BacklogTasks: View {
             
             // MARK: Hide/Show completed tasks
             Button {
+                withAnimation {
+                    hideCompletedTasks.toggle()
+                }
                 
             } label: {
-                Image("more-horizontal-f")
+                Image(hideCompletedTasks ? "eye" : "eye-close")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 32)
