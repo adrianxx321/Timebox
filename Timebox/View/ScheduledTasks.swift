@@ -23,7 +23,7 @@ struct ScheduledTasks: View {
                     HeaderView()
                         .padding()
                     
-                    // MARK: Calendar view
+                    // Calendar view...
                     CalendarView()
                         .padding(.vertical)
                 }
@@ -33,7 +33,7 @@ struct ScheduledTasks: View {
                 .shadow(radius: 12, x: 0, y: 3)
                 .mask(Rectangle().padding(.bottom, -24))
                 
-                // MARK: A scrollview showing a list of tasks
+                // A scrollview showing a list of tasks...
                 ScrollView(.vertical, showsIndicators: false) {
                     DynamicTaskList(taskDate: taskModel.currentDay, hideCompleted: hideCompletedTasks)
                 }
@@ -47,8 +47,7 @@ struct ScheduledTasks: View {
     
     private func HeaderView() -> some View {
         HStack {
-            
-            // MARK: Menu button leading to Planned Tasks
+            // Menu button leading to Planned Tasks...
             NavigationLink(destination: BacklogTasks()) {
                 Image("menu")
                     .resizable()
@@ -58,14 +57,14 @@ struct ScheduledTasks: View {
             
             Spacer()
             
-            // MARK: Header title
+            // Screen title...
             Text("Scheduled")
                 .font(.headingH2())
                 .fontWeight(.heavy)
             
             Spacer()
             
-            // MARK: Hide/Show completed tasks
+            // Hide/Show completed tasks...
             Button {
                 withAnimation {
                     hideCompletedTasks.toggle()
@@ -84,9 +83,8 @@ struct ScheduledTasks: View {
     private func CalendarView() -> some View {
         VStack(spacing: 32) {
             
-            // MARK: Month selector
+            // Month selector...
             HStack {
-
                 Button { currentWeek -= 1 } label: {
                     Image("chevron-left")
                         .resizable()
@@ -109,9 +107,8 @@ struct ScheduledTasks: View {
             .padding(.horizontal)
             .foregroundColor(.textPrimary)
             
-            // MARK: Calendar cells
+            // Calendar cells...
             HStack(spacing: 4) {
-                
                 ForEach(taskModel.currentWeek, id: \.self) { day in
                     VStack(spacing: 8) {
                         
@@ -131,7 +128,7 @@ struct ScheduledTasks: View {
                             .textCase(.uppercase)
                             .foregroundColor(taskModel.isCurrentDay(date: day) ? .uiWhite : Calendar.current.isDateInToday(day) ? .accent : .textPrimary)
                     }
-                    // MARK: Capsule shape for cell
+                    // Capsule shape for cell...
                     .frame(maxWidth: 56)
                     .padding(.vertical, 12)
                     .background(
@@ -144,13 +141,13 @@ struct ScheduledTasks: View {
                         }
                     )
                     .animation(.easeInOut, value: taskModel.currentDay)
-                    // MARK: Update the view when select another day
+                    // Update the view when select another day...
                     .onTapGesture { taskModel.currentDay = day }
                 }
             }
             .padding(.horizontal)
         }
-        // MARK: Update the view when selecting another week
+        // Update the view when selecting another week...
         .onChange(of: currentWeek) { [currentWeek] newVal in
             let offset = newVal - currentWeek
             taskModel.updateWeek(offset: offset)

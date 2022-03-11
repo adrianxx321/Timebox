@@ -17,12 +17,12 @@ struct BacklogTasks: View {
             HeaderView()
                 .padding()
             
-            // MARK: Scrollview showing list of backlog tasks
+            // Scrollview showing list of backlog tasks...
             ScrollView(.vertical, showsIndicators: false) {
                 DynamicTaskList(taskDate: nil, hideCompleted: hideCompletedTasks)
             }
             
-            // MARK: Create task button
+            // Create task button...
             CTAButton(btnLabel: "Create a Task", btnAction: {}, btnFullSize: true)
         }
         .background(Color.backgroundPrimary)
@@ -31,8 +31,7 @@ struct BacklogTasks: View {
     
     private func HeaderView() -> some View {
         HStack() {
-            
-            // MARK: Back button leading to previous screen
+            // Back button leading to previous screen...
             Button {
                 presentationMode.wrappedValue.dismiss()
             } label: {
@@ -44,19 +43,18 @@ struct BacklogTasks: View {
             
             Spacer()
             
-            // MARK: Header title
+            // Screen title...
             Text("Backlog")
                 .font(.headingH2())
                 .fontWeight(.heavy)
             
             Spacer()
             
-            // MARK: Hide/Show completed tasks
+            // Hide/Show completed tasks...
             Button {
                 withAnimation {
                     hideCompletedTasks.toggle()
                 }
-                
             } label: {
                 Image(hideCompletedTasks ? "eye" : "eye-close")
                     .resizable()

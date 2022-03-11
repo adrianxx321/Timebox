@@ -57,7 +57,7 @@ struct DynamicTaskList: View {
     
     var body: some View {
         
-        // MARK: List for backlog screen
+        // List for backlog screen...
         if isBacklog {
             if request.isEmpty {
                 // Fallback screen...
@@ -72,7 +72,7 @@ struct DynamicTaskList: View {
             }
         }
         
-        // MARK: List for scheduled screen
+        // List for scheduled screen...
         else {
             if request.isEmpty {
                 // Fallback screen...
@@ -92,19 +92,16 @@ struct DynamicTaskList: View {
                 }
                 
                 VStack(spacing: 32) {
-                    
-                    // MARK: Show time-constrained task if any
+                    // Show time-constrained task if any...
                     if timeboxed.count > 0 {
                         VStack(alignment: .leading, spacing: 16) {
                             Section {
-                                
-                                // MARK: Timeboxed task cards
+                                // Timeboxed task cards...
                                 ForEach(timeboxed, id: \.id) { task in
                                     TaskCardView(task: task)
                                 }
                             } header: {
-                                
-                                // MARK: Heading for time-constrained tasks
+                                // Heading for time-constrained tasks...
                                 HStack(spacing: 12) {
                                     Image("clock")
                                         .resizable()
@@ -121,19 +118,16 @@ struct DynamicTaskList: View {
                         }
                     }
                     
-                    // MARK: Show all-day task if any
+                    // Show all-day task if any...
                     if allDay.count > 0 {
                         VStack(alignment: .leading, spacing: 16) {
-
                             Section {
-                                
-                                // MARK: All-day task cards
+                                // All-day task cards...
                                 ForEach(allDay, id: \.id) { task in
                                     TaskCardView(task: task)
                                 }
                             } header: {
-                                
-                                // MARK: Heading for all-day tasks
+                                // Heading for all-day tasks...
                                 HStack(spacing: 12) {
                                     Image("checkmark")
                                         .resizable()
@@ -154,9 +148,9 @@ struct DynamicTaskList: View {
         }
     }
     
-    func FallBackView(title: String, image: String, caption1: String, caption2: String) -> some View {
+    func FallBackView(title: String, caption1: String, caption2: String, isBacklog: Bool) -> some View {
         VStack {
-            Image("\(image)")
+            Image(isBacklog ? "backlog" : "no-task")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: UIScreen.main.bounds.width - 64)

@@ -18,7 +18,7 @@ struct TaskDetails: View {
             HeaderView()
                 .padding()
             
-            // MARK: Content of task details
+            // Content of task details...
             VStack(alignment: .leading, spacing: 40) {
                 TaskHeaderView()
                 
@@ -26,8 +26,7 @@ struct TaskDetails: View {
                     VStack(alignment: .leading, spacing: 40) {
                         // Subtasks section...
                         TaskSectionView(sectionTitle: "Subtasks") {
-                            
-                            // MARK: Subtasks breakdown, if any
+                            // Subtasks breakdown, if any...
                             VStack(alignment: .leading, spacing: 16) {
                                 ForEach(selectedTask.subtasks, id: \.id) { subtask in
                                     HStack(spacing: 12) {
@@ -60,7 +59,7 @@ struct TaskDetails: View {
                                     }
                                 }
                                 
-                                // MARK: Indicator for no subtask
+                                // Indicator for no subtask...
                                 selectedTask.subtasks.count <= 0 ?
                                 Text("This task doesn't have any subtask.")
                                     .font(.paragraphP1())
@@ -69,11 +68,11 @@ struct TaskDetails: View {
                             }
                         }
                         
-                        // MARK: Task date & time for scheduled task
+                        // Date & Time section...
                         TaskSectionView(sectionTitle: "Date & Time") {
                             VStack(alignment: .leading, spacing: 16) {
                                 
-                                // MARK: Task date
+                                // Task date...
                                 HStack(spacing: 12) {
                                     Image("calendar-alt")
                                         .resizable()
@@ -95,7 +94,7 @@ struct TaskDetails: View {
                                         .foregroundColor(.textPrimary)
                                 }
                                 
-                                // MARK: Task time & duration
+                                // Task time & duration...
                                 HStack(spacing: 12) {
                                     Image("clock")
                                         .resizable()
@@ -106,7 +105,7 @@ struct TaskDetails: View {
                                         .background(Circle()
                                             .foregroundColor(.uiLightPurple))
                                     
-                                    // MARK: Complicated task duration calculation
+                                    // Complicated task duration calculation...
                                     let startTime = taskModel.formatDate(date: selectedTask.taskStartTime ?? Date(), format: "hh:mm a")
                                     
                                     let endTime = taskModel.formatDate(date: selectedTask.taskEndTime ?? Date(), format: "hh:mm a")
@@ -135,7 +134,7 @@ struct TaskDetails: View {
             }
             .padding(.horizontal, 24)
             
-            // MARK: Button for start timeboxing for ongoing task
+            // Button for start timeboxing for ongoing task...
             if taskModel.isScheduledTask(selectedTask) {
                 if selectedTask.taskStartTime! >= Date() && selectedTask.taskEndTime! < Date() {
                     CTAButton(btnLabel: "Start Timeboxing", btnAction: {
@@ -144,9 +143,7 @@ struct TaskDetails: View {
                     .frame(maxWidth: .infinity)
                 }
             } else {
-                
-                // MARK: Button for adding backlog task to scheduled
-                // This will bring up the edit task modal...
+                // Button for adding backlog task to scheduled
                 CTAButton(btnLabel: "Add to Scheduled", btnAction: {
                     // TODO: Bring up the edit task modal...
                     
@@ -162,7 +159,7 @@ struct TaskDetails: View {
     private func HeaderView() -> some View {
         HStack {
             
-            // MARK: Back button leading to previous screen
+            // Back button leading to previous screen...
             Button {
                 presentationMode.wrappedValue.dismiss()
             } label: {
@@ -174,14 +171,14 @@ struct TaskDetails: View {
             
             Spacer()
             
-            // MARK: Title header
+            // Screen title...
             Text("Task Details")
                 .font(.headingH2())
                 .fontWeight(.heavy)
             
             Spacer()
             
-            // MARK: More options button
+            // More options button...
             Button {
                 
             } label: {
@@ -197,7 +194,7 @@ struct TaskDetails: View {
     private func TaskHeaderView() -> some View {
         VStack(alignment: .leading , spacing: 8) {
             
-            // MARK: Importance label if task is important
+            // Importance label if task is important...
             selectedTask.isImportant ?
             Text("!!! Important")
                 .font(.paragraphP1())
@@ -205,7 +202,7 @@ struct TaskDetails: View {
                 .foregroundColor(.uiOrange)
             : nil
             
-            // MARK: Task name
+            // Task name...
             Text(selectedTask.taskTitle)
                 .font(.headingH2())
                 .fontWeight(.bold)
@@ -225,7 +222,7 @@ struct TaskDetails: View {
                 .padding(.top, 4)
             : nil
             
-            // MARK: Indicate if task comes from imported calendar
+            // Indicate if task comes from imported calendar...
             selectedTask.isImported ?
             HStack(alignment: .top, spacing: 8) {
                 Image("alert")
@@ -253,11 +250,11 @@ struct TaskDetails: View {
     private func TaskSectionView<Content: View>(sectionTitle: String, @ViewBuilder content: @escaping () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Section {
-                // MARK: Content goes here
+                // Whatever content goes here...
                 content()
                 
             } header: {
-                // MARK: Heading for the section
+                // Heading for the section...
                 Text("\(sectionTitle)")
                     .font(.subheading1())
                     .fontWeight(.bold)
