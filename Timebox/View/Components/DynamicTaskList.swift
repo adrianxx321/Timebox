@@ -61,7 +61,10 @@ struct DynamicTaskList: View {
         if isBacklog {
             if request.isEmpty {
                 // Fallback screen...
-                FallBackView(title: "Track your undecided tasks", caption1: "Task with no specific date goes here.", caption2: "Schedule them to create timeboxed tasks.", isBacklog: isBacklog)
+                FallBackView(title: "Track your undecided tasks",
+                             caption1: "Task with no specific date goes here.",
+                             caption2: "Schedule them to create timeboxed tasks.",
+                             isBacklog: isBacklog)
                 
             } else {
                 VStack(spacing: 16) {
@@ -76,7 +79,10 @@ struct DynamicTaskList: View {
         else {
             if request.isEmpty {
                 // Fallback screen...
-                FallBackView(title: "No scheduled task", caption1: "You don't have any schedule for today.", caption2: "Tap the plus button to create a new task.", isBacklog: isBacklog)
+                FallBackView(title: "No scheduled task",
+                             caption1: "You don't have any schedule for today.",
+                             caption2: "Tap the plus button to create a new task.",
+                             isBacklog: isBacklog)
                 
             } else {
                 // Split fetched tasks into timeboxed and all-day...

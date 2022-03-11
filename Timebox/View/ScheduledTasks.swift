@@ -35,7 +35,8 @@ struct ScheduledTasks: View {
                 
                 // A scrollview showing a list of tasks...
                 ScrollView(.vertical, showsIndicators: false) {
-                    DynamicTaskList(taskDate: taskModel.currentDay, hideCompleted: hideCompletedTasks)
+                    DynamicTaskList(taskDate: taskModel.currentDay,
+                                    hideCompleted: hideCompletedTasks)
                 }
             }
             .ignoresSafeArea(edges: .top)
@@ -114,11 +115,14 @@ struct ScheduledTasks: View {
                         
                         // MARK: Day label
                         // EEEEE returns day as M,T,W ...
-                        Text(taskModel.formatDate(date: day, format: "EEEEE"))
+                        Text(taskModel.formatDate(date: day,
+                                                  format: "EEEEE"))
                             .font(.paragraphP1())
                             .fontWeight(.bold)
                             .textCase(.uppercase)
-                            .foregroundColor(taskModel.isCurrentDay(date: day) ? .backgroundSecondary : Calendar.current.isDateInToday(day) ? .accent : .textSecondary)
+                            .foregroundColor(taskModel.isCurrentDay(date: day) ? .backgroundSecondary
+                                             : Calendar.current.isDateInToday(day) ? .accent
+                                             : .textSecondary)
                         
                         // MARK: Date label
                         // dd will return date as 01,02 ...
@@ -126,7 +130,9 @@ struct ScheduledTasks: View {
                             .font(.subheading1())
                             .fontWeight(.bold)
                             .textCase(.uppercase)
-                            .foregroundColor(taskModel.isCurrentDay(date: day) ? .uiWhite : Calendar.current.isDateInToday(day) ? .accent : .textPrimary)
+                            .foregroundColor(taskModel.isCurrentDay(date: day) ? .uiWhite
+                                             : Calendar.current.isDateInToday(day) ? .accent
+                                             : .textPrimary)
                     }
                     // Capsule shape for cell...
                     .frame(maxWidth: 56)
@@ -153,7 +159,9 @@ struct ScheduledTasks: View {
             taskModel.updateWeek(offset: offset)
 
             // Update the selected day also upon updating week
-            taskModel.currentDay = Calendar.current.date(byAdding: .weekOfMonth, value: offset, to: taskModel.currentDay)!
+            taskModel.currentDay = Calendar.current.date(byAdding: .weekOfMonth,
+                                                         value: offset,
+                                                         to: taskModel.currentDay)!
         }
     }
 }

@@ -84,7 +84,8 @@ struct TaskDetails: View {
                                             .foregroundColor(.uiLightPurple))
                                     
                                     taskModel.isScheduledTask(selectedTask) ?
-                                    Text(taskModel.formatDate(date: selectedTask.taskDate!, format: "EEEE, d MMMM yyyy"))
+                                    Text(taskModel.formatDate(date: selectedTask.taskDate!,
+                                                              format: "EEEE, d MMMM yyyy"))
                                         .font(.paragraphP1())
                                         .fontWeight(.semibold)
                                         .foregroundColor(.textPrimary)
@@ -106,13 +107,18 @@ struct TaskDetails: View {
                                             .foregroundColor(.uiLightPurple))
                                     
                                     // Complicated task duration calculation...
-                                    let startTime = taskModel.formatDate(date: selectedTask.taskStartTime ?? Date(), format: "hh:mm a")
+                                    let startTime = taskModel.formatDate(date: selectedTask.taskStartTime ?? Date(),
+                                                                         format: "hh:mm a")
                                     
-                                    let endTime = taskModel.formatDate(date: selectedTask.taskEndTime ?? Date(), format: "hh:mm a")
+                                    let endTime = taskModel.formatDate(date: selectedTask.taskEndTime ?? Date(),
+                                                                       format: "hh:mm a")
                                     
-                                    let interval = taskModel.formatTimeInterval(startTime: selectedTask.taskStartTime ?? Date(), endTime: selectedTask.taskEndTime ?? Date(), unitStyle: .full, units: [.hour, .minute])
+                                    let interval = taskModel.formatTimeInterval(startTime: selectedTask.taskStartTime ?? Date(),
+                                                                                endTime: selectedTask.taskEndTime ?? Date(),
+                                                                                unitStyle: .full,
+                                                                                units: [.hour, .minute])
                                     
-                                    selectedTask.taskStartTime != nil && selectedTask.taskEndTime != nil ?
+                                    (selectedTask.taskStartTime != nil && selectedTask.taskEndTime != nil) ?
                                         taskModel.isAllDayTask(selectedTask) ?
                                         Text("All-day")
                                             .font(.paragraphP1())
