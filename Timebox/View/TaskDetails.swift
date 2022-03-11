@@ -24,19 +24,32 @@ struct TaskDetails: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 40) {
-                        
+                        // Subtasks section...
                         TaskSectionView(sectionTitle: "Subtasks") {
                             
                             // MARK: Subtasks breakdown, if any
                             VStack(alignment: .leading, spacing: 16) {
                                 ForEach(selectedTask.subtasks, id: \.id) { subtask in
-                                    
                                     HStack(spacing: 12) {
-                                        Image("check-circle-f")
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 28)
+                                        // Checkbox for subtask completion...
+                                        Button {
+                                            withAnimation {
+                                                // We need this "magic" to overcome the fact that Core Data can't handle view update on to-many entities...
+                                                selectedTask.objectWillChange.send()
+                                                subtask.isCompleted.toggle()
+                                                
+                                                // TODO: Save to Core Data
+                                            }
+                                        } label: {
+                                            Image(subtask.isCompleted ? "checked" : "unchecked")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 28)
+                                                .foregroundColor(subtask.isCompleted ? .accent : .backgroundTertiary)
+                                                .padding(.trailing, 8)
+                                        }
                                         
+                                        // Subtask title...
                                         Text(subtask.subtaskTitle)
                                             .font(.paragraphP1())
                                             .fontWeight(.semibold)
@@ -124,7 +137,6 @@ struct TaskDetails: View {
             
             // MARK: Button for start timeboxing for ongoing task
             if taskModel.isScheduledTask(selectedTask) {
-                
                 if selectedTask.taskStartTime! >= Date() && selectedTask.taskEndTime! < Date() {
                     CTAButton(btnLabel: "Start Timeboxing", btnAction: {
                         
@@ -136,6 +148,7 @@ struct TaskDetails: View {
                 // MARK: Button for adding backlog task to scheduled
                 // This will bring up the edit task modal...
                 CTAButton(btnLabel: "Add to Scheduled", btnAction: {
+                    // TODO: Bring up the edit task modal...
                     
                 }, btnFullSize: true)
                 .frame(maxWidth: .infinity)
@@ -198,6 +211,7 @@ struct TaskDetails: View {
                 .fontWeight(.bold)
                 .foregroundColor(.textPrimary)
             
+            // Task label name & color, if any...
             selectedTask.taskLabel != nil ?
             Text(selectedTask.taskLabel!)
                 .font(.paragraphP1())
@@ -250,36 +264,5 @@ struct TaskDetails: View {
                     .foregroundColor(.textSecondary)
             }
         }
-    }
-}
-
-struct TaskDetails_Previews: PreviewProvider {
-    static var previews: some View {
-        
-        // MARK: Test data for preview
-        let context = PersistenceController.shared.container.viewContext
-        let aTask = Task(context: context)
-        let subtask1 = Subtask(context: context)
-        let subtask2 = Subtask(context: context)
-        aTask.id = UUID()
-        aTask.color = UIColor.blue
-        aTask.isCompleted = false
-        aTask.isImportant = true
-        aTask.isImported = true
-        aTask.taskDate = Date(timeIntervalSince1970: 1646784000)
-        aTask.taskLabel = "Work Stuff"
-        aTask.taskEndTime = Date(timeIntervalSince1970: 1646827200)
-        aTask.taskStartTime = Date(timeIntervalSince1970: 1646816400)
-        aTask.taskTitle = "Get started on learning WordPress development"
-        subtask1.isCompleted = true
-        subtask1.subtaskTitle = "Testing 1"
-        subtask1.order = 1
-        subtask1.isCompleted = false
-        subtask1.subtaskTitle = "Try it out hahahaha XDDD"
-        subtask1.order = 2
-        aTask.subtask = aTask.subtask?.adding(subtask1) as NSSet?
-        aTask.subtask = aTask.subtask?.adding(subtask2) as NSSet?
-        
-        return TaskDetails(selectedTask: aTask)
     }
 }

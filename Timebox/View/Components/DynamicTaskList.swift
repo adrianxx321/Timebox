@@ -10,6 +10,7 @@ import CoreData
 
 struct DynamicTaskList: View {
     @StateObject var taskModel = TaskViewModel()
+    @GestureState private var isDragging = false
     private var isBacklog: Bool
     
     // MARK: Core Data Request for fetching tasks
@@ -59,13 +60,12 @@ struct DynamicTaskList: View {
         // MARK: List for backlog screen
         if isBacklog {
             if request.isEmpty {
-                
                 // Fallback screen...
-                FallBackView(title: "Track your undecided tasks", image: "backlog", caption1: "Task with no specific date goes here.", caption2: "Schedule them to create timeboxed tasks.")
+                FallBackView(title: "Track your undecided tasks", caption1: "Task with no specific date goes here.", caption2: "Schedule them to create timeboxed tasks.", isBacklog: isBacklog)
                 
             } else {
-                ForEach(request, id: \.id) { task in
-                    NavigationLink(destination: TaskDetails(selectedTask: task)) {
+                VStack(spacing: 16) {
+                    ForEach(request, id: \.id) { task in
                         TaskCardView(task: task)
                     }
                 }
@@ -75,16 +75,18 @@ struct DynamicTaskList: View {
         // MARK: List for scheduled screen
         else {
             if request.isEmpty {
-                
                 // Fallback screen...
-                FallBackView(title: "No scheduled task", image: "no-task", caption1: "You don't have any schedule for today.", caption2: "Tap the plus button to create a new task.")
+                FallBackView(title: "No scheduled task", caption1: "You don't have any schedule for today.", caption2: "Tap the plus button to create a new task.", isBacklog: isBacklog)
                 
             } else {
-                
-                // Split fetched tasks into timeboxed and all-day
+                // Split fetched tasks into timeboxed and all-day...
                 let timeboxed = request.filter { task in
                     !taskModel.isAllDayTask(task)
+                }.sorted {
+                    // Sort by task commence time...
+                    $0.taskStartTime! < $1.taskEndTime!
                 }
+                
                 let allDay = request.filter { task in
                     taskModel.isAllDayTask(task)
                 }
@@ -94,16 +96,12 @@ struct DynamicTaskList: View {
                     // MARK: Show time-constrained task if any
                     if timeboxed.count > 0 {
                         VStack(alignment: .leading, spacing: 16) {
-
                             Section {
                                 
                                 // MARK: Timeboxed task cards
                                 ForEach(timeboxed, id: \.id) { task in
-                                    NavigationLink(destination: TaskDetails(selectedTask: task)) {
-                                        TaskCardView(task: task)
-                                    }
+                                    TaskCardView(task: task)
                                 }
-                                
                             } header: {
                                 
                                 // MARK: Heading for time-constrained tasks
@@ -131,16 +129,13 @@ struct DynamicTaskList: View {
                                 
                                 // MARK: All-day task cards
                                 ForEach(allDay, id: \.id) { task in
-                                    NavigationLink(destination: TaskDetails(selectedTask: task)) {
-                                        TaskCardView(task: task)
-                                    }
+                                    TaskCardView(task: task)
                                 }
-                                
                             } header: {
                                 
                                 // MARK: Heading for all-day tasks
                                 HStack(spacing: 12) {
-                                    Image("check")
+                                    Image("checkmark")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .foregroundColor(.textPrimary)

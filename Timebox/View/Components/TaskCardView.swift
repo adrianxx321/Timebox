@@ -9,7 +9,8 @@ import SwiftUI
 
 struct TaskCardView: View {
     @StateObject var taskModel = TaskViewModel()
-    let task: Task
+    @ObservedObject var task: Task
+    @GestureState private var isDragging = false
     
     var body: some View {
         HStack(spacing: 16) {
@@ -79,5 +80,28 @@ struct TaskCardView: View {
         .padding(16)
         .background(Color.uiWhite)
         .cornerRadius(16)
+    }
+    
+    func onChanged(value: DragGesture.Value) {
+        if value.translation.width < 0 && isDragging {
+            task.offset = Float(value.translation.width)
+        }
+    }
+
+    func onEnd(value: DragGesture.Value) {
+        withAnimation {
+            // 65 + 65 = 130
+            if -value.translation.width >= 100 {
+                task.offset = -130
+            } else {
+                task.offset = 0
+            }
+        }
+    }
+}
+
+struct FlatLinkStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
     }
 }
