@@ -27,7 +27,7 @@ struct TaskCardView: View {
                 SwipeToButton(isDestructive: true, action: {
                     // TODO: Perform task deletion...
                 })
-            }
+            }.opacity(task.offset == 0 ? 0 : 1)
             
             // Clickable task card which leads to Task Details screen...
             NavigationLink(destination: TaskDetails(selectedTask: task)) {
