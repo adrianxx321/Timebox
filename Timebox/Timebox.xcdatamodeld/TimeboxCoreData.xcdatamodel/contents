@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20084" systemVersion="21E5227a" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20084" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Subtask" representedClassName="Subtask" syncable="YES">
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="order" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -12,6 +12,7 @@
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isImportant" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isImported" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="offset" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="taskDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="taskEndTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="taskLabel" optional="YES" attributeType="String" defaultValueString=""/>
@@ -26,6 +27,6 @@
     </entity>
     <elements>
         <element name="Subtask" positionX="-54" positionY="63" width="128" height="89"/>
-        <element name="Task" positionX="-242.78125" positionY="97.515625" width="128" height="194"/>
+        <element name="Task" positionX="-242.78125" positionY="97.515625" width="128" height="209"/>
     </elements>
 </model>
