@@ -122,8 +122,9 @@ struct TaskCardView: View {
                             }).onEnded({ (value) in
                                 onEnd(value: value)
                             }))
+                .animation(.spring(), value: task.offset)
             }
-            .buttonStyle(FlatLinkStyle())
+            .buttonStyle(.plain)
         }
         .frame(width: UIScreen.main.bounds.width - 48, alignment: .leading)
     }
@@ -142,7 +143,7 @@ struct TaskCardView: View {
         }
         .padding(.horizontal, 16)
         .frame(maxHeight: .infinity)
-        .background(Color(isDestructive ? .uiPink : .uiWhite))
+        .background(Color(isDestructive ? .uiPink : .backgroundTertiary))
         .cornerRadius(16)
     }
     
