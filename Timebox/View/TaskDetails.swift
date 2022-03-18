@@ -51,7 +51,7 @@ struct TaskDetails: View {
                                         // Subtask title...
                                         Text(subtask.subtaskTitle)
                                             .font(.paragraphP1())
-                                            .fontWeight(.semibold)
+                                            .fontWeight(.bold)
                                             .foregroundColor(subtask.isCompleted ? .textSecondary : .textPrimary)
                                             .if(subtask.isCompleted) { text in
                                                 text.strikethrough()
@@ -63,7 +63,7 @@ struct TaskDetails: View {
                                 selectedTask.subtasks.count <= 0 ?
                                 Text("This task doesn't have any subtask.")
                                     .font(.paragraphP1())
-                                    .fontWeight(.semibold)
+                                    .fontWeight(.bold)
                                     .foregroundColor(.textPrimary) : nil
                             }
                         }
@@ -87,11 +87,11 @@ struct TaskDetails: View {
                                     Text(taskModel.formatDate(date: selectedTask.taskDate!,
                                                               format: "EEEE, d MMMM yyyy"))
                                         .font(.paragraphP1())
-                                        .fontWeight(.semibold)
+                                        .fontWeight(.bold)
                                         .foregroundColor(.textPrimary)
                                     : Text("None")
                                         .font(.paragraphP1())
-                                        .fontWeight(.semibold)
+                                        .fontWeight(.bold)
                                         .foregroundColor(.textPrimary)
                                 }
                                 
@@ -122,15 +122,15 @@ struct TaskDetails: View {
                                         taskModel.isAllDayTask(selectedTask) ?
                                         Text("All-day")
                                             .font(.paragraphP1())
-                                            .fontWeight(.semibold)
+                                            .fontWeight(.bold)
                                             .foregroundColor(.textPrimary)
                                         : Text("\(startTime) - \(endTime) (\(interval))")
                                             .font(.paragraphP1())
-                                            .fontWeight(.semibold)
+                                            .fontWeight(.bold)
                                             .foregroundColor(.textPrimary)
                                     : Text("None")
                                         .font(.paragraphP1())
-                                        .fontWeight(.semibold)
+                                        .fontWeight(.bold)
                                         .foregroundColor(.textPrimary)
                                 }
                             }
@@ -204,21 +204,21 @@ struct TaskDetails: View {
             selectedTask.isImportant ?
             Text("!!! Important")
                 .font(.paragraphP1())
-                .fontWeight(.semibold)
+                .fontWeight(.bold)
                 .foregroundColor(.uiOrange)
             : nil
             
             // Task name...
             Text(selectedTask.taskTitle)
                 .font(.headingH2())
-                .fontWeight(.bold)
+                .fontWeight(.heavy)
                 .foregroundColor(.textPrimary)
             
             // Task label name & color, if any...
             selectedTask.taskLabel != nil ?
             Text(selectedTask.taskLabel!)
                 .font(.paragraphP1())
-                .fontWeight(.semibold)
+                .fontWeight(.bold)
                 .textCase(.uppercase)
                 .foregroundColor(.uiWhite)
                 .padding(.horizontal, 16)

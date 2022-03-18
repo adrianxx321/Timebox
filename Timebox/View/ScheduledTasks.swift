@@ -13,6 +13,7 @@ struct ScheduledTasks: View {
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
     
+    
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
     
@@ -27,7 +28,7 @@ struct ScheduledTasks: View {
                     CalendarView()
                         .padding(.vertical)
                 }
-                .padding(.top, 47)
+                .padding(.top, isNotched ? 47: 20)
                 .background(Color.uiWhite)
                 .cornerRadius(40, corners: [.bottomLeft, .bottomRight])
                 .shadow(radius: 12, x: 0, y: 3)

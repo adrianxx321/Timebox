@@ -17,6 +17,7 @@
 		B551BD8827C685F2006FCB58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8727C685F2006FCB58 /* Assets.xcassets */; };
 		B551BD8B27C685F2006FCB58 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */; };
 		B551BD9827C69157006FCB58 /* figma-export.yaml in Resources */ = {isa = PBXBuildFile; fileRef = B551BD9727C69157006FCB58 /* figma-export.yaml */; };
+		B562123127E41E1C00A45AD7 /* TaskModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B562123027E41E1C00A45AD7 /* TaskModal.swift */; };
 		B58C531E27D7035B00A48AE8 /* TaskDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58C531D27D7035B00A48AE8 /* TaskDetails.swift */; };
 		B592B9FB27CE0A97009F079C /* ScheduledTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */; };
 		B592B9FD27CE0B77009F079C /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FC27CE0B77009F079C /* Task.swift */; };
@@ -50,6 +51,7 @@
 		B551BD8727C685F2006FCB58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B551BD9727C69157006FCB58 /* figma-export.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "figma-export.yaml"; sourceTree = "<group>"; };
+		B562123027E41E1C00A45AD7 /* TaskModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskModal.swift; sourceTree = "<group>"; };
 		B58C531D27D7035B00A48AE8 /* TaskDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetails.swift; sourceTree = "<group>"; };
 		B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledTasks.swift; sourceTree = "<group>"; };
 		B592B9FC27CE0B77009F079C /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 				B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */,
 				B5D152FA27D0A5620073421B /* BacklogTasks.swift */,
 				B58C531D27D7035B00A48AE8 /* TaskDetails.swift */,
+				B562123027E41E1C00A45AD7 /* TaskModal.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -278,6 +281,7 @@
 			files = (
 				B5A323AF27C750D500D9767C /* OnboardingScreen.swift in Sources */,
 				B551BD8627C685F1006FCB58 /* ContentView.swift in Sources */,
+				B562123127E41E1C00A45AD7 /* TaskModal.swift in Sources */,
 				B5057A9827CF279D0005512F /* View+extension.swift in Sources */,
 				B58C531E27D7035B00A48AE8 /* TaskDetails.swift in Sources */,
 				B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */,

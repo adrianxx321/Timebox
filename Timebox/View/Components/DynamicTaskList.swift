@@ -61,7 +61,7 @@ struct DynamicTaskList: View {
         if isBacklog {
             if request.isEmpty {
                 // Fallback screen...
-                FallBackView(title: "Track your undecided tasks",
+                FallBackView(title: "Your untimed to-do's",
                              caption1: "Task with no specific date goes here.",
                              caption2: "Schedule them to create timeboxed tasks.",
                              isBacklog: isBacklog)
@@ -159,23 +159,27 @@ struct DynamicTaskList: View {
             Image(isBacklog ? "backlog" : "no-task")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: UIScreen.main.bounds.width - 64)
+                .frame(maxWidth: UIScreen.main.bounds.width - 64,
+                       maxHeight: isSmallDevice ? 240 : 360)
+                // For some reason the illustration for backlog screen lacks of bottom padding
+                .padding(.vertical, isBacklog ? 16 : 0)
 
-            Text("\(title)")
-                .font(.headingH2())
-                .fontWeight(.heavy)
-                .foregroundColor(.textPrimary)
-                .padding(.vertical, 16)
+            VStack(spacing: 16) {
+                Text("\(title)")
+                    .font(.headingH2())
+                    .fontWeight(.heavy)
+                    .foregroundColor(.textPrimary)
 
-            VStack(spacing: 8) {
-                Text("\(caption1)")
-                    .fontWeight(.semibold)
-                Text("\(caption2)")
-                    .fontWeight(.semibold)
+                VStack(spacing: 8) {
+                    Text("\(caption1)")
+                        .fontWeight(.semibold)
+                    Text("\(caption2)")
+                        .fontWeight(.semibold)
+                }
+                .font(.paragraphP1())
+                .foregroundColor(.textSecondary)
+                .multilineTextAlignment(.center)
             }
-            .font(.paragraphP1())
-            .foregroundColor(.textSecondary)
-            .multilineTextAlignment(.center)
         }
     }
 }

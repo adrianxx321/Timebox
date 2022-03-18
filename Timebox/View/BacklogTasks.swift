@@ -28,8 +28,8 @@ struct BacklogTasks: View {
                       btnAction: {
                 // TODO: Brings up Add Task modal
                 
-            },
-                      btnFullSize: true)
+            }, btnFullSize: true)
+            .padding(.bottom, isNotched ? 0: 15)
         }
         .background(Color.backgroundPrimary)
         .navigationBarHidden(true)
