@@ -9,8 +9,10 @@ import SwiftUI
 
 class TaskViewModel: ObservableObject {
     @Published var currentWeek: [Date] = []
+    @Published var addNewTask: Bool = false
+    @Published var editTask: Task?
     
-    // MARK: Current (selected) day
+    // Currently selected day...
     @Published var currentDay = Date()
     
     init() {

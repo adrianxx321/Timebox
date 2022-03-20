@@ -147,6 +147,7 @@ struct TaskDetails: View {
                         
                     }, btnFullSize: true)
                     .frame(maxWidth: .infinity)
+                    .padding(.bottom, isNotched ? 0 : 15)
                 }
             } else {
                 // Button for adding backlog task to scheduled
@@ -155,6 +156,7 @@ struct TaskDetails: View {
                     
                 }, btnFullSize: true)
                 .frame(maxWidth: .infinity)
+                .padding(.bottom, isNotched ? 0 : 15)
             }
             
         }

@@ -27,12 +27,20 @@ struct BacklogTasks: View {
             CTAButton(btnLabel: "Create a Task",
                       btnAction: {
                 // TODO: Brings up Add Task modal
+                taskModel.addNewTask.toggle()
                 
             }, btnFullSize: true)
             .padding(.bottom, isNotched ? 0: 15)
         }
         .background(Color.backgroundPrimary)
         .navigationBarHidden(true)
+        .sheet(isPresented: $taskModel.addNewTask) {
+            // Clearing Edit Data
+            taskModel.editTask = nil
+        } content: {
+            TaskModal()
+                .environmentObject(taskModel)
+        }
     }
     
     private func HeaderView() -> some View {
