@@ -19,14 +19,13 @@ struct BacklogTasks: View {
             
             // Scrollview showing list of backlog tasks...
             ScrollView(.vertical, showsIndicators: false) {
-                DynamicTaskList(taskDate: nil,
+                DynamicTaskList(dateToFilter: nil,
                                 hideCompleted: hideCompletedTasks)
             }
             
             // Create task button...
             CTAButton(btnLabel: "Create a Task",
                       btnAction: {
-                // TODO: Brings up Add Task modal
                 taskModel.addNewTask.toggle()
                 
             }, btnFullSize: true)

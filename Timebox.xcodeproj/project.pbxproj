@@ -28,6 +28,7 @@
 		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
 		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
 		B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152FA27D0A5620073421B /* BacklogTasks.swift */; };
+		B5D3081527E7071900959EF5 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D3081427E7071900959EF5 /* PickerView.swift */; };
 		B5DB8A2A27D4B2A7000D8B51 /* DynamicTaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */; };
 		B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */; };
 		B5DB8A3927D4B3C9000D8B51 /* Subtask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A3827D4B3C9000D8B51 /* Subtask.swift */; };
@@ -63,6 +64,7 @@
 		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
 		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
 		B5D152FA27D0A5620073421B /* BacklogTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogTasks.swift; sourceTree = "<group>"; };
+		B5D3081427E7071900959EF5 /* PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
 		B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DynamicTaskList.swift; sourceTree = "<group>"; };
 		B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorTransformer.swift; sourceTree = "<group>"; };
 		B5DB8A3827D4B3C9000D8B51 /* Subtask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subtask.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 				B5D152F827D082E10073421B /* TaskCardView.swift */,
 				B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */,
 				B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */,
+				B5D3081427E7071900959EF5 /* PickerView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 				B5F645DF27CB8D9000AF1716 /* HomeScreen.swift in Sources */,
 				B5D152F927D082E10073421B /* TaskCardView.swift in Sources */,
 				B5DB8A3927D4B3C9000D8B51 /* Subtask.swift in Sources */,
+				B5D3081527E7071900959EF5 /* PickerView.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
 				4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */,
 				B592B9FB27CE0A97009F079C /* ScheduledTasks.swift in Sources */,

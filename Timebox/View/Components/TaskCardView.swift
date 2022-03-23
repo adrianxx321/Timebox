@@ -11,6 +11,10 @@ struct TaskCardView: View {
     @StateObject var taskModel = TaskViewModel()
     @ObservedObject var task: Task
     @GestureState private var isDragging = false
+    @State private var showDeleteDialog = false
+    
+    // MARK: Core Data environment
+    @Environment(\.managedObjectContext) var context
     
     var body: some View {
         ZStack {
@@ -20,13 +24,25 @@ struct TaskCardView: View {
                 
                 // Edit...
                 SwipeToButton(isDestructive: false, action: {
-                    // TODO: Brings up edit modal...
+                    // Brings up edit modal...
+                    taskModel.addNewTask.toggle()
+                    taskModel.editTask = task
                 })
                 
                 // Delete...
                 SwipeToButton(isDestructive: true, action: {
-                    // TODO: Perform task deletion...
+                    // Perform task deletion...
+                    showDeleteDialog.toggle()
                 })
+                .confirmationDialog("Are you sure you want to delete this task?",
+                                    isPresented: $showDeleteDialog,
+                                    titleVisibility: .visible) {
+                    Button("Delete Task", role: .destructive) {
+                        context.delete(task)
+                        try? context.save()
+                    }
+                }
+                
             }.opacity(task.offset == 0 ? 0 : 1)
             
             // Clickable task card which leads to Task Details screen...
@@ -127,6 +143,12 @@ struct TaskCardView: View {
             .buttonStyle(.plain)
         }
         .frame(width: UIScreen.main.bounds.width - 48, alignment: .leading)
+        .sheet(isPresented: $taskModel.addNewTask) {
+            // Do nothing
+        } content: {
+            TaskModal()
+                .environmentObject(taskModel)
+        }
     }
     
     func SwipeToButton(isDestructive: Bool, action: @escaping () -> Void) -> some View {

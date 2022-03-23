@@ -12,10 +12,15 @@ struct TaskDetails: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @ObservedObject var selectedTask: Task
     @StateObject var taskModel = TaskViewModel()
+    @State var showMoreOptions = false
+    @State var showDeleteDialog = false
+    
+    // MARK: Core Data environment
+    @Environment(\.managedObjectContext) var context
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HeaderView()
+            NavBarView()
                 .padding()
             
             // Content of task details...
@@ -84,7 +89,7 @@ struct TaskDetails: View {
                                             .foregroundColor(.uiLightPurple))
                                     
                                     taskModel.isScheduledTask(selectedTask) ?
-                                    Text(taskModel.formatDate(date: selectedTask.taskDate!,
+                                    Text(taskModel.formatDate(date: selectedTask.taskStartTime!,
                                                               format: "EEEE, d MMMM yyyy"))
                                         .font(.paragraphP1())
                                         .fontWeight(.bold)
@@ -118,7 +123,7 @@ struct TaskDetails: View {
                                                                                 unitStyle: .full,
                                                                                 units: [.hour, .minute])
                                     
-                                    (selectedTask.taskStartTime != nil && selectedTask.taskEndTime != nil) ?
+                                    taskModel.isScheduledTask(selectedTask) ?
                                         taskModel.isAllDayTask(selectedTask) ?
                                         Text("All-day")
                                             .font(.paragraphP1())
@@ -152,8 +157,9 @@ struct TaskDetails: View {
             } else {
                 // Button for adding backlog task to scheduled
                 CTAButton(btnLabel: "Add to Scheduled", btnAction: {
-                    // TODO: Bring up the edit task modal...
-                    
+                    // Bring up the edit task modal...
+                    taskModel.addNewTask.toggle()
+                    taskModel.editTask = selectedTask
                 }, btnFullSize: true)
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, isNotched ? 0 : 15)
@@ -162,9 +168,15 @@ struct TaskDetails: View {
         }
         .background(Color.backgroundPrimary)
         .navigationBarHidden(true)
+        .sheet(isPresented: $taskModel.addNewTask) {
+            // Do nothing
+        } content: {
+            TaskModal()
+                .environmentObject(taskModel)
+        }
     }
     
-    private func HeaderView() -> some View {
+    private func NavBarView() -> some View {
         HStack {
             
             // Back button leading to previous screen...
@@ -187,13 +199,37 @@ struct TaskDetails: View {
             Spacer()
             
             // More options button...
-            Button {
+            Menu {
+                // Bring up the edit task modal...
+                Button {
+                    taskModel.addNewTask.toggle()
+                    taskModel.editTask = selectedTask
+                } label: {
+                    Label("Edit Task", image: "pencil")
+                }.foregroundColor(.textPrimary)
                 
+                // Delete this task...
+                Button(role: .destructive) {
+                    showDeleteDialog.toggle()
+                } label: {
+                    Label("Delete Task", image: "trash")
+                }
             } label: {
                 Image("more-horizontal-f")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 32)
+            }
+            .font(.paragraphP1().weight(.medium))
+            .confirmationDialog("Are you sure you want to delete this task?",
+                                isPresented: $showDeleteDialog,
+                                titleVisibility: .visible) {
+                Button("Delete Task", role: .destructive) {
+                    context.delete(selectedTask)
+                    try? context.save()
+                    // Go back to previous screen after deletion...
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
         }
         .foregroundColor(.textPrimary)

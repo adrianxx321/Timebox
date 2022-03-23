@@ -17,21 +17,21 @@ struct DynamicTaskList: View {
     @FetchRequest var request: FetchedResults<Task>
     
     /// Fetch  scheduled tasks
-    init(taskDate: Date, hideCompleted: Bool) {
+    init(dateToFilter: Date, hideCompleted: Bool) {
         let calendar = Calendar.current
         
-        let today = calendar.startOfDay(for: taskDate)
-        let tomorrow = calendar.date(byAdding: .day, value: 1, to: taskDate)!
+        let today = calendar.startOfDay(for: dateToFilter)
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: dateToFilter)!
         
         // Building compound predicate based on inputs
-        let p1 = NSPredicate(format: "taskDate >= %@ AND taskDate < %@", argumentArray: [today, tomorrow])
+        let p1 = NSPredicate(format: "taskStartTime >= %@ AND taskStartTime < %@", argumentArray: [today, tomorrow])
         let p2 = NSPredicate(format: "isCompleted == false", argumentArray: [hideCompleted])
         let predicate = hideCompleted ? [p1, p2] : [p1]
         
         // Initializing query using NSCompoundPredicate
         _request = FetchRequest(
             entity: Task.entity(),
-            sortDescriptors: [.init(keyPath: \Task.taskDate, ascending: false)],
+            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: false)],
             predicate: NSCompoundPredicate(andPredicateWithSubpredicates: predicate)
         )
         
@@ -39,9 +39,9 @@ struct DynamicTaskList: View {
     }
     
     /// Fetch backlog tasks
-    init(taskDate: Date?, hideCompleted: Bool) {
+    init(dateToFilter: Date?, hideCompleted: Bool) {
         // Building compound predicate based on inputs
-        let p1 = NSPredicate(format: "taskDate == nil", argumentArray: [])
+        let p1 = NSPredicate(format: "taskStartTime == nil", argumentArray: [])
         let p2 = NSPredicate(format: "isCompleted == false", argumentArray: [hideCompleted])
         let predicate = hideCompleted ? [p1, p2] : [p1]
 

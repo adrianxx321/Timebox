@@ -13,7 +13,6 @@ struct ScheduledTasks: View {
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
     
-    
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
     
@@ -36,7 +35,7 @@ struct ScheduledTasks: View {
                 
                 // A scrollview showing a list of tasks...
                 ScrollView(.vertical, showsIndicators: false) {
-                    DynamicTaskList(taskDate: taskModel.currentDay,
+                    DynamicTaskList(dateToFilter: taskModel.currentDay,
                                     hideCompleted: hideCompletedTasks)
                 }
             }

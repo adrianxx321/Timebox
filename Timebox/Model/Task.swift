@@ -27,7 +27,6 @@ extension Task {
     @NSManaged public var isImportant: Bool
     @NSManaged public var isImported: Bool
     @NSManaged public var offset: Float
-    @NSManaged public var taskDate: Date?
     @NSManaged public var taskLabel: String?
     @NSManaged public var taskEndTime: Date?
     @NSManaged public var taskStartTime: Date?
