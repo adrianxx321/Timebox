@@ -7,10 +7,17 @@
 
 import SwiftUI
 
+struct FlatLinkStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+    }
+}
+
 struct TaskCardView: View {
     @StateObject var taskModel = TaskViewModel()
     @ObservedObject var task: Task
     @GestureState private var isDragging = false
+    @State private var dragOffset: CGFloat = 0
     @State private var showDeleteDialog = false
     
     // MARK: Core Data environment
@@ -38,12 +45,15 @@ struct TaskCardView: View {
                                     isPresented: $showDeleteDialog,
                                     titleVisibility: .visible) {
                     Button("Delete Task", role: .destructive) {
-                        context.delete(task)
-                        try? context.save()
+                        withAnimation {
+                            dragOffset = 0
+                            context.delete(task)
+                            try? context.save()
+                        }
                     }
                 }
                 
-            }.opacity(task.offset == 0 ? 0 : 1)
+            }
             
             // Clickable task card which leads to Task Details screen...
             NavigationLink(destination: TaskDetails(selectedTask: task)) {
@@ -111,7 +121,7 @@ struct TaskCardView: View {
                     // Task checkmark, for task with no subtask...
                     task.subtasks.count <= 0 ?
                     Button {
-                        withAnimation {
+                        withAnimation() {
                             // Perform update onto Core Data...
                             task.isCompleted.toggle()
                         }
@@ -129,22 +139,27 @@ struct TaskCardView: View {
                 .background(Color.uiWhite)
                 .cornerRadius(16)
                 // Swipe gesture...
-                .offset(x: CGFloat(task.offset))
+                .offset(x: dragOffset)
                 .gesture(DragGesture()
-                            .updating($isDragging, body: { (value, state, _) in
-                                // so we can validate for correct drag
-                                state = true
-                                onChanged(value: value)
-                            }).onEnded({ (value) in
-                                onEnd(value: value)
-                            }))
-                .animation(.spring(), value: task.offset)
+                    .updating($isDragging) { (_, state, _) in
+                        state = true
+                    }
+                    .onChanged { value in
+                        dragOffset = isDragging && value.translation.width < 0 ? value.translation.width : dragOffset
+                    }
+                    .onEnded { value in
+                        withAnimation(.spring()) {
+                            dragOffset = value.translation.width <= -50 ? -130 : 0
+                        }
+                    })
             }
-            .buttonStyle(.plain)
+            .buttonStyle(FlatLinkStyle.init())
         }
         .frame(width: UIScreen.main.bounds.width - 48, alignment: .leading)
         .sheet(isPresented: $taskModel.addNewTask) {
-            // Do nothing
+            withAnimation {
+                dragOffset = 0
+            }
         } content: {
             TaskModal()
                 .environmentObject(taskModel)
@@ -167,27 +182,5 @@ struct TaskCardView: View {
         .frame(maxHeight: .infinity)
         .background(Color(isDestructive ? .uiPink : .backgroundTertiary))
         .cornerRadius(16)
-    }
-    
-    func onChanged(value: DragGesture.Value) {
-        if value.translation.width < 0 && isDragging {
-            task.offset = Float(value.translation.width)
-        }
-    }
-
-    func onEnd(value: DragGesture.Value) {
-        withAnimation {
-            if -value.translation.width >= 100 {
-                task.offset = -130
-            } else {
-                task.offset = 0
-            }
-        }
-    }
-}
-
-struct FlatLinkStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
     }
 }

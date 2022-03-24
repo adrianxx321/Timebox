@@ -8,11 +8,11 @@
     </entity>
     <entity name="Task" representedClassName="Task" syncable="YES">
         <attribute name="color" attributeType="Transformable" valueTransformerName="UIColorTransformer" customClassName=" UIColor"/>
+        <attribute name="completedTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isImportant" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isImported" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="offset" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="taskEndTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="taskLabel" optional="YES" attributeType="String" defaultValueString=""/>
         <attribute name="taskStartTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

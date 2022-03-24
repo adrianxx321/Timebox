@@ -69,7 +69,7 @@ struct BacklogTasks: View {
                     hideCompletedTasks.toggle()
                 }
             } label: {
-                Image(hideCompletedTasks ? "eye" : "eye-close")
+                Image(hideCompletedTasks ? "eye-close" : "eye")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 32)

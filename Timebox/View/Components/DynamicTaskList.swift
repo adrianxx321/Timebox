@@ -9,9 +9,8 @@ import SwiftUI
 import CoreData
 
 struct DynamicTaskList: View {
-    @StateObject var taskModel = TaskViewModel()
-    @GestureState private var isDragging = false
     private var isBacklog: Bool
+    @StateObject var taskModel = TaskViewModel()
     
     // MARK: Core Data Request for fetching tasks
     @FetchRequest var request: FetchedResults<Task>
