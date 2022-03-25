@@ -33,7 +33,7 @@ struct ContentView: View {
 //            OnboardingScreen()
 //                .transition(.move(edge: .trailing))
 //        }
-        ScheduledTasks()
+        HomeScreen()
     }
 }
 

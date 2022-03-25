@@ -19,8 +19,7 @@ struct BacklogTasks: View {
             
             // Scrollview showing list of backlog tasks...
             ScrollView(.vertical, showsIndicators: false) {
-                DynamicTaskList(dateToFilter: nil,
-                                hideCompleted: hideCompletedTasks)
+                DynamicTaskList(hideCompleted: hideCompletedTasks)
             }
             
             // Create task button...

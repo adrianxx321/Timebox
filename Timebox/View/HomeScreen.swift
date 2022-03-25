@@ -2,46 +2,58 @@
 //  HomeScreen.swift
 //  Timebox
 //
-//  Created by Lianghan Siew on 27/02/2022.
+//  Created by Lianghan Siew on 24/03/2022.
 //
 
 import SwiftUI
 import AuthenticationServices
 
 struct HomeScreen: View {
-    @AppStorage("isLoggedIn") private var isLoggedIn = false
-    @StateObject private var account = AuthViewModel()
+    @StateObject var taskModel = TaskViewModel()
     
     var body: some View {
-        VStack {
-            Spacer()
-            
-            VStack(alignment: .center, spacing: 24) {
-                Text("Successfully logged in using Apple ID")
-                
-                
-                Button {
-                    // Redirect to home screen...
-                    withAnimation {
-                        isLoggedIn = false
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 24) {
+                    
+                    
+                    // MARK: Contents
+                    VStack(alignment: .leading, spacing: 40) {
+                        // Ongoing Tasks...
+                        SectionView(title: "Ongoing Tasks") {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                DynamicTaskList(timeNow: Date())
+                                    .frame(maxHeight: 128)
+                            }
+                        }
+                        
+                        SectionView(title: "Statistics") {
+                            
+                        }
+                        
+                        SectionView(title: "Achievements") {
+                            
+                        }
                     }
-                    
-                    // Clearing stored UID after log out...
-                    
-                } label: {
-                    Text("Log Out")
-                        .font(.subheading1())
-                        .bold()
-                        .foregroundColor(.backgroundPrimary)
-                        .padding(.vertical, 20)
-                        .padding(.horizontal, 40)
-                        .background(Capsule()
-                                        .foregroundColor(.accent)
-                                        .shadow(radius: 12, x: 0, y: 3))
+                    .padding(.horizontal)
                 }
             }
-            
-            Spacer()
+            .background(Color.backgroundPrimary)
+            .navigationBarHidden(true)
+        }
+        .navigationBarHidden(true)
+    }
+    
+    private func SectionView<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Section {
+                content()
+            } header: {
+                Text(title)
+                    .font(.headingH2())
+                    .fontWeight(.heavy)
+                    .foregroundColor(.textPrimary)
+            }
         }
     }
 }
