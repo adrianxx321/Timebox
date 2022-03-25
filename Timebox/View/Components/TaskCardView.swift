@@ -60,12 +60,12 @@ struct TaskCardView: View {
                 HStack(spacing: 16) {
                     // Task label color...
                     Capsule()
-                        .fill(Color(task.color))
+                        .fill(Color(task.color ?? .accent))
                         .frame(width: 6)
                         .frame(minHeight: 32)
                     
                     // Task information...
-                    VStack(alignment: .leading ,spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
                         // Show the important label only if it's marked so...
                         task.isImportant ?
                         Text("!!! IMPORTANT")
@@ -75,7 +75,7 @@ struct TaskCardView: View {
                         : nil
                         
                         // Task title...
-                        Text(task.taskTitle)
+                        Text(task.taskTitle ?? "")
                             .font(.paragraphP1())
                             .fontWeight(.semibold)
                             .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task)
@@ -124,6 +124,10 @@ struct TaskCardView: View {
                         withAnimation() {
                             // Perform update onto Core Data...
                             task.isCompleted.toggle()
+                            task.completedTime = Date()
+                            
+                            // Save to Core Data
+                            try? context.save()
                         }
                     } label: {
                         Image(task.isCompleted ? "checked" : "unchecked")

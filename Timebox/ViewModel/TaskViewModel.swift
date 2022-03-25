@@ -61,6 +61,25 @@ class TaskViewModel: ObservableObject {
         return formatter.string(from: interval) ?? ""
     }
     
+    func getTimeRemaining(task: Task) -> String {
+        var finalResult = ""
+        
+        if isTimeboxedTask(task) {
+            let interval = formatTimeInterval(startTime: task.taskStartTime!,
+                                             endTime: task.taskEndTime!,
+                                             unitStyle: .full,
+                                             units: [.hour, .minute])
+            
+            finalResult = "\(interval) left"
+        } else if isAllDayTask(task) {
+            let tasksLeft = task.subtasks.count - countCompletedSubtask(task.subtasks)
+            
+            finalResult = tasksLeft > 0 ? "\(tasksLeft) tasks left" : "Due today"
+        }
+        
+        return finalResult
+    }
+    
     func getNearestHour(_ time: Date) -> Date {
         var components = Calendar.current.dateComponents([.minute], from: time)
         let minute = components.minute ?? 0

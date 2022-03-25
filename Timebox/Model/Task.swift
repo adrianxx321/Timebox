@@ -2,7 +2,7 @@
 //  Task+CoreDataClass.swift
 //  Timebox
 //
-//  Created by Lianghan Siew on 06/03/2022.
+//  Created by Lianghan Siew on 25/03/2022.
 //
 //
 
@@ -21,17 +21,19 @@ extension Task {
         return NSFetchRequest<Task>(entityName: "Task")
     }
 
-    @NSManaged public var color:  UIColor
-    @NSManaged public var id: UUID
+    @NSManaged public var color:  UIColor?
+    @NSManaged public var completedTime: Date?
+    @NSManaged public var id: UUID?
     @NSManaged public var isCompleted: Bool
     @NSManaged public var isImportant: Bool
     @NSManaged public var isImported: Bool
+    @NSManaged public var taskEndTime: Date?
     @NSManaged public var taskLabel: String?
     @NSManaged public var taskStartTime: Date?
-    @NSManaged public var taskEndTime: Date?
-    @NSManaged public var completedTime: Date?
-    @NSManaged public var taskTitle: String
+    @NSManaged public var taskTitle: String?
+    @NSManaged public var focusedDuration: Int64
     @NSManaged public var subtask: NSSet?
+    @NSManaged public var user: User?
     
     public var subtasks: [Subtask] {
         let set = subtask as? Set<Subtask> ?? []
@@ -40,7 +42,7 @@ extension Task {
             $0.order < $1.order
         }
     }
-
+    
 }
 
 // MARK: Generated accessors for subtask

@@ -2,7 +2,7 @@
 //  Subtask+CoreDataClass.swift
 //  Timebox
 //
-//  Created by Lianghan Siew on 06/03/2022.
+//  Created by Lianghan Siew on 25/03/2022.
 //
 //
 
@@ -14,10 +14,6 @@ public class Subtask: NSManagedObject {
 
 }
 
-import Foundation
-import CoreData
-
-
 extension Subtask {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Subtask> {
@@ -26,7 +22,7 @@ extension Subtask {
 
     @NSManaged public var isCompleted: Bool
     @NSManaged public var order: Int32
-    @NSManaged public var subtaskTitle: String
+    @NSManaged public var subtaskTitle: String?
     @NSManaged public var parentTask: Task?
 
 }

@@ -54,7 +54,7 @@ struct TaskDetails: View {
                                         }
                                         
                                         // Subtask title...
-                                        Text(subtask.subtaskTitle)
+                                        Text(subtask.subtaskTitle ?? "")
                                             .font(.paragraphP1())
                                             .fontWeight(.bold)
                                             .foregroundColor(subtask.isCompleted ? .textSecondary : .textPrimary)
@@ -247,7 +247,7 @@ struct TaskDetails: View {
             : nil
             
             // Task name...
-            Text(selectedTask.taskTitle)
+            Text(selectedTask.taskTitle ?? "")
                 .font(.headingH2())
                 .fontWeight(.heavy)
                 .foregroundColor(.textPrimary)
@@ -262,7 +262,7 @@ struct TaskDetails: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(Capsule()
-                    .foregroundColor(Color(selectedTask.color)))
+                    .foregroundColor(Color(selectedTask.color ?? .accent)))
                 .padding(.top, 4)
             : nil
             
@@ -282,7 +282,7 @@ struct TaskDetails: View {
                     .foregroundColor(.textSecondary) +
                     Text(" Google Calendar")
                         .fontWeight(.bold)
-                        .foregroundColor(Color(selectedTask.color))
+                        .foregroundColor(Color(selectedTask.color ?? .accent))
                 }
                 .font(.paragraphP1())
                 .lineSpacing(4)

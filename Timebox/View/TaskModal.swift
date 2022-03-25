@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct ColorChoice: Hashable {
+private struct ColorChoice: Hashable {
     var name: String
     var value: UIColor
 }
 
-enum TaskDuration: String, CaseIterable, Identifiable {
+private enum TaskDuration: String, CaseIterable, Identifiable {
     case untimed, allDay, timeboxed
     
     var id: Self { self }
@@ -124,7 +124,7 @@ struct TaskModal: View {
     @EnvironmentObject var taskModel: TaskViewModel
     
     // MARK: Predefined color list
-    static let colors = [
+    static private let colors = [
         ColorChoice(name: "Red", value: UIColor.red),
         ColorChoice(name: "Blue", value: UIColor.blue),
         ColorChoice(name: "Purple", value: UIColor.purple),
@@ -134,7 +134,7 @@ struct TaskModal: View {
     
     @State private var selectedColor: ColorChoice = ColorChoice(name: "Purple", value: UIColor.purple)
     @State private var selectedCustomColor: ColorChoice = ColorChoice(name: "Custom...", value: UIColor.purple)
-    @State var selectedDuration: TaskDuration = .untimed
+    @State private var selectedDuration: TaskDuration = .untimed
     
     var body: some View {
         NavigationView {
@@ -145,7 +145,7 @@ struct TaskModal: View {
                         .onAppear {
                             if let task = taskModel.editTask {
                                 if !isEdited.contains(where: { $0.value }) {
-                                    taskTitle = task.taskTitle
+                                    taskTitle = task.taskTitle ?? ""
                                 }
                             }
                         }
@@ -214,7 +214,7 @@ struct TaskModal: View {
                             if !isEdited.contains(where: { $0.value }) {
                                 // Check if existing task's color is one of the predefined...
                                 guard let index = TaskModal.colors.firstIndex(where: { $0.value == existingTask.color }) else {
-                                    selectedCustomColor = ColorChoice(name: "Custom...", value: existingTask.color)
+                                    selectedCustomColor = ColorChoice(name: "Custom...", value: existingTask.color ?? .accent)
                                     selectedColor = selectedCustomColor
                                     return color = selectedColor.value
                                 }
@@ -478,7 +478,7 @@ struct TaskModal: View {
 
             // Checkmark to indicate selected item...
             item == itemComparator ?
-            Image(systemName: "checkmark")
+            Image("checkmark")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(.accent)
             : nil
