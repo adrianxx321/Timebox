@@ -124,7 +124,7 @@ struct TaskCardView: View {
                         withAnimation() {
                             // Perform update onto Core Data...
                             task.isCompleted.toggle()
-                            task.completedTime = Date()
+                            task.completedTime = task.completedTime == nil ? Date() : task.completedTime
                             
                             // Save to Core Data
                             try? context.save()

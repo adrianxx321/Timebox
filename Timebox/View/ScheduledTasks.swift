@@ -31,6 +31,7 @@ struct ScheduledTasks: View {
                 .background(Color.uiWhite)
                 .cornerRadius(40, corners: [.bottomLeft, .bottomRight])
                 .shadow(radius: 12, x: 0, y: 3)
+                // Cover up the unwanted top shadow
                 .mask(Rectangle().padding(.bottom, -24))
                 
                 // A scrollview showing a list of tasks...

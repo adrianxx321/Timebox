@@ -13,7 +13,7 @@ struct OngoingCardView: View {
     
     var body: some View {
         NavigationLink(destination: TaskDetails(selectedTask: task)) {
-            HStack(spacing: 16) {
+            HStack(spacing: 0) {
                 // Task label color...
                 Capsule()
                     .fill(Color(task.color ?? .accent))
@@ -42,7 +42,7 @@ struct OngoingCardView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.textTertiary)
                 }
-                .frame(maxWidth: 128)
+                .frame(width: 128)
                 .fixedSize(horizontal: true, vertical: false)
             }
             

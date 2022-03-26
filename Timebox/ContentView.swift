@@ -6,8 +6,25 @@
 //
 
 import SwiftUI
+import CoreData
 
-// Global variable to indicate if iPhone is X or later...
+// Dummy Core Data context for preview purposes
+struct CoreDataStack {
+        static var context: NSManagedObjectContext {
+        return persistentContainer.viewContext
+    }
+        static var persistentContainer: NSPersistentContainer = {
+                let container = NSPersistentContainer(name: "Timebox")
+                container.loadPersistentStores { (description, error) in
+                        if let error = error {
+                print(error)
+            }
+        }
+        return container
+    }()
+}
+
+/// Global variable to indicate if iPhone is X or later...
 public var isNotched: Bool {
     let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
     let window = windowScene?.windows.first
@@ -15,15 +32,12 @@ public var isNotched: Bool {
     return (window?.safeAreaInsets.bottom)! > 0
 }
 
-// Global variable to indicate if it's a small device (e.g. iPhone SE/8)...
+/// Global variable to indicate if it's a small device (e.g. iPhone SE/8)...
 public var isSmallDevice: Bool {
     return UIScreen.main.bounds.height < 750
 }
 
 struct ContentView: View {
-    // If UID presents, set is logged in...
-    @AppStorage("isLoggedIn") private var isLoggedIn = (UserDefaults.standard.string(forKey: "loggedInUID") != nil) ? true : false
-    
     @Environment(\.managedObjectContext) var context
     
     var body: some View {
@@ -34,6 +48,7 @@ struct ContentView: View {
 //                .transition(.move(edge: .trailing))
 //        }
         HomeScreen()
+//        ScheduledTasks()
     }
 }
 
