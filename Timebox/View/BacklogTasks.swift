@@ -21,24 +21,9 @@ struct BacklogTasks: View {
             ScrollView(.vertical, showsIndicators: false) {
                 DynamicTaskList(hideCompleted: hideCompletedTasks)
             }
-            
-            // Create task button...
-            CTAButton(btnLabel: "Create a Task",
-                      btnAction: {
-                taskModel.addNewTask.toggle()
-                
-            }, btnFullSize: true)
-            .padding(.bottom, isNotched ? 0: 15)
         }
         .background(Color.backgroundPrimary)
         .navigationBarHidden(true)
-        .sheet(isPresented: $taskModel.addNewTask) {
-            // Clearing Edit Data
-            taskModel.editTask = nil
-        } content: {
-            TaskModal()
-                .environmentObject(taskModel)
-        }
     }
     
     private func HeaderView() -> some View {

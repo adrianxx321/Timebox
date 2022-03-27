@@ -32,6 +32,8 @@
 		B5B43B3927F0669300136E73 /* TaskSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B3727F0669300136E73 /* TaskSession.swift */; };
 		B5B43B3D27F0677500136E73 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B3B27F0677500136E73 /* Task.swift */; };
 		B5B43B4027F068CB00136E73 /* TaskSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B3F27F068CB00136E73 /* TaskSessionViewModel.swift */; };
+		B5B43B4227F0B2E500136E73 /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4127F0B2E500136E73 /* BaseView.swift */; };
+		B5B43B4427F0BB7D00136E73 /* HexagonShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */; };
 		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
 		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
 		B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152FA27D0A5620073421B /* BacklogTasks.swift */; };
@@ -76,6 +78,8 @@
 		B5B43B3727F0669300136E73 /* TaskSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSession.swift; sourceTree = "<group>"; };
 		B5B43B3B27F0677500136E73 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		B5B43B3F27F068CB00136E73 /* TaskSessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSessionViewModel.swift; sourceTree = "<group>"; };
+		B5B43B4127F0B2E500136E73 /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
+		B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexagonShape.swift; sourceTree = "<group>"; };
 		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
 		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
 		B5D152FA27D0A5620073421B /* BacklogTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogTasks.swift; sourceTree = "<group>"; };
@@ -186,6 +190,7 @@
 				B5D152FA27D0A5620073421B /* BacklogTasks.swift */,
 				B58C531D27D7035B00A48AE8 /* TaskDetails.swift */,
 				B562123027E41E1C00A45AD7 /* TaskModal.swift */,
+				B5B43B4127F0B2E500136E73 /* BaseView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -221,6 +226,7 @@
 				B5D3081427E7071900959EF5 /* PickerView.swift */,
 				B5D408AD27EC7378007FEB90 /* OngoingCardView.swift */,
 				B5D9B60827EDF11700B541AA /* DynamicAnalyticsView.swift */,
+				B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -316,6 +322,7 @@
 				B5D9B60927EDF11700B541AA /* DynamicAnalyticsView.swift in Sources */,
 				B50E896C27EDA84E005DBD59 /* Achievement.swift in Sources */,
 				B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */,
+				B5B43B4227F0B2E500136E73 /* BaseView.swift in Sources */,
 				B5B43B3D27F0677500136E73 /* Task.swift in Sources */,
 				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
@@ -336,6 +343,7 @@
 				B50E895C27EDA570005DBD59 /* Subtask.swift in Sources */,
 				B5D3081527E7071900959EF5 /* PickerView.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
+				B5B43B4427F0BB7D00136E73 /* HexagonShape.swift in Sources */,
 				4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */,
 				B592B9FB27CE0A97009F079C /* ScheduledTasks.swift in Sources */,
 				B5F645DD27CB837700AF1716 /* AuthViewModel.swift in Sources */,

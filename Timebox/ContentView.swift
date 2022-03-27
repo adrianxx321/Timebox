@@ -47,7 +47,7 @@ struct ContentView: View {
 //            OnboardingScreen()
 //                .transition(.move(edge: .trailing))
 //        }
-        HomeScreen()
+        BaseView()
 //        ScheduledTasks()
     }
 }

@@ -153,6 +153,7 @@ struct TaskDetails: View {
             }
             .padding(.horizontal, 24)
             
+            // TODO: Move this to task card instead
             // Button for start timeboxing for ongoing task...
             if taskModel.isScheduledTask(selectedTask) {
                 if selectedTask.taskStartTime! >= Date() && selectedTask.taskEndTime! < Date() {
@@ -162,17 +163,7 @@ struct TaskDetails: View {
                     .frame(maxWidth: .infinity)
                     .padding(.bottom, isNotched ? 0 : 15)
                 }
-            } else {
-                // Button for adding backlog task to scheduled
-                CTAButton(btnLabel: "Add to Scheduled", btnAction: {
-                    // Bring up the edit task modal...
-                    taskModel.addNewTask.toggle()
-                    taskModel.editTask = selectedTask
-                }, btnFullSize: true)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, isNotched ? 0 : 15)
             }
-            
         }
         .background(Color.backgroundPrimary)
         .navigationBarHidden(true)
@@ -213,7 +204,8 @@ struct TaskDetails: View {
                     taskModel.addNewTask.toggle()
                     taskModel.editTask = selectedTask
                 } label: {
-                    Label("Edit Task", image: "pencil")
+                    taskModel.isScheduledTask(selectedTask) ?
+                    Label("Edit Task", image: "pencil") : Label("Add to Scheduled", image: "clock")
                 }.foregroundColor(.textPrimary)
                 
                 // Delete this task...
@@ -223,7 +215,7 @@ struct TaskDetails: View {
                     Label("Delete Task", image: "trash")
                 }
             } label: {
-                Image("more-horizontal-f")
+                Image("more-f")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 32)

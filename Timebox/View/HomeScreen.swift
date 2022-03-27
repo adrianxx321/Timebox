@@ -41,17 +41,17 @@ struct HomeScreen: View {
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: false) {
-                // Total points obtained by user...
-                let totalPts = request.reduce(0) { $0 + $1.ptsAwarded }
+            // Total points obtained by user...
+            let totalPts = request.reduce(0) { $0 + $1.ptsAwarded }
+            
+            VStack(alignment: .leading, spacing: 24) {
+                HeaderView(points: totalPts)
+                    .padding(.top, isNotched ? 47: 20)
+                    .background(Color.uiWhite)
                 
-                VStack(spacing: 24) {
-                    HeaderView(points: totalPts)
-                        .padding(.top, isNotched ? 47: 20)
-                        .background(Color.uiWhite)
-                    
-                    // MARK: Contents
-                    VStack(alignment: .leading, spacing: 40) {
+                // MARK: Contents
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 40) {
                         // Ongoing Tasks...
                         SectionView(title: "Ongoing Tasks") {
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -92,6 +92,7 @@ struct HomeScreen: View {
                         }
                     }
                     .padding(.horizontal, isSmallDevice ? 16 : 24)
+                    .padding(.bottom, 32)
                 }
             }
             .ignoresSafeArea(edges: .top)
