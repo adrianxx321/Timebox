@@ -408,7 +408,6 @@ struct TaskModal: View {
                             task.isImportant = isImportant
                             task.taskStartTime = taskStartTime
                             task.taskEndTime = taskEndTime
-                            task.completedTime = nil
                             task.isCompleted = false
                             task.isImported = false
                         }

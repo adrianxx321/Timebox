@@ -42,7 +42,15 @@ struct TaskDetails: View {
                                                 selectedTask.objectWillChange.send()
                                                 subtask.isCompleted.toggle()
                                                 
-                                                // TODO: Save to Core Data
+                                                // Automatically check parent task as completed
+                                                // When all subtasks are done...
+                                                if !selectedTask.subtasks.contains(where: { !$0.isCompleted }) {
+                                                    selectedTask.objectWillChange.send()
+                                                    selectedTask.isCompleted.toggle()
+                                                }
+                                                
+                                                // Save to Core Data...
+                                                try? context.save()
                                             }
                                         } label: {
                                             Image(subtask.isCompleted ? "checked" : "unchecked")
