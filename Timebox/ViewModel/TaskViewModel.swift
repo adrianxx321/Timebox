@@ -10,7 +10,6 @@ import CoreData
 
 class TaskViewModel: ObservableObject {
     @Published var currentWeek: [Date] = []
-    @Published var currentMonth: [Date] = []
     @Published var addNewTask: Bool = false
     @Published var editTask: Task?
     
@@ -25,9 +24,18 @@ class TaskViewModel: ObservableObject {
         let today = Date()
         let calendar = Calendar.current
         
-        let week = calendar.dateInterval(of: .weekOfMonth, for: today)
+        // Because week ends at 00:00 of the Sunday (supposed to be 23:59)
+        // Therefore we need to do some adjustment
+        // So that this doesn't mistakenly return next week as current week
+        // If current time is after 00:00 of the Sunday
+        var week = calendar.dateInterval(of: .weekOfMonth, for: today)
+        if today > (week?.start ?? today) {
+            week = calendar.dateInterval(of: .weekOfMonth, for: calendar.date(byAdding: .day, value: -1, to: today)!)
+        }
         
-        guard let firstWeekDay = week?.start else {
+        // 2022-03-27 00:00:00
+        guard let firstWeekDay = week?.start,
+        let lastWeekDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: week!.end) else {
             return
         }
         
@@ -36,45 +44,8 @@ class TaskViewModel: ObservableObject {
                 currentWeek.append(weekday)
             }
         }
-    }
-    
-    func getWeek(_ forWeek: Date) -> [Date] {
-        var week: [Date] = []
-        let calendar = Calendar.current
-        
-        let weekInterval = calendar.dateInterval(of: .weekOfMonth, for: forWeek)
-        
-        guard let firstWeekDay = weekInterval?.start else {
-            return week
-        }
-        
-        (1...7).forEach { day in
-            if let weekday = calendar.date(byAdding: .day, value: day, to: firstWeekDay) {
-                week.append(weekday)
-            }
-        }
-        
-        return week
-    }
-    
-    func getCurrentMonth() {
-        let today = Date()
-        let calendar = Calendar.current
-        
-        let month = calendar.dateInterval(of: .month, for: today)
-        
-        guard let firstMonthDay = month?.start, let lastMonthDay = month?.end else {
-            return
-        }
-        
-        repeat {
-            var day = 1
-            if let monthday = calendar.date(byAdding: .day, value: day, to: firstMonthDay) {
-                currentMonth.append(monthday)
-            }
-            
-            day += 1
-        } while currentMonth.last! <= lastMonthDay
+        // Replace so that week ends at 23:59 of Sunday
+        currentWeek[currentWeek.count - 1] = lastWeekDay
     }
     
     func updateWeek(offset: Int) {
