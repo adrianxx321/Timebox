@@ -13,11 +13,12 @@ struct OngoingCardView: View {
     
     var body: some View {
         NavigationLink(destination: TaskDetails(selectedTask: task)) {
-            HStack(spacing: 0) {
+            HStack {
                 // Task label color...
                 Capsule()
                     .fill(Color(task.color ?? .accent))
                     .frame(width: 6)
+                    .padding(.trailing, 4)
                 
                 VStack(alignment: .leading, spacing: 8) {
                     // Show the important label only if it's marked so...
@@ -42,7 +43,7 @@ struct OngoingCardView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.textTertiary)
                 }
-                .frame(width: 128)
+                .frame(maxWidth: 128)
                 .fixedSize(horizontal: true, vertical: false)
             }
             
@@ -51,6 +52,7 @@ struct OngoingCardView: View {
                 .frame(width: 48, height: 48)
         }
         .fixedSize(horizontal: false, vertical: true)
+        .frame(maxHeight: 128)
         .padding(16)
         .background(Color.uiWhite)
         .cornerRadius(16)
