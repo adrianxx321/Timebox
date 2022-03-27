@@ -7,33 +7,15 @@
 
 import SwiftUI
 
-private enum GraphRange {
-    case week, month
-    var description : String {
-        switch self {
-            case .week: return "This week"
-            case .month: return "This month"
-        }
-    }
-    var rawValue: String {
-        switch self {
-            case .week: return "week"
-            case .month: return "month"
-        }
-    }
-}
-
 struct DynamicAnalyticsView: View {
-    @State private var selectedRange: GraphRange = .week
+    @Binding private var selectedRange: GraphRange
+    @State private var currentDoneTasks: [TaskSession]
+    @State private var previousDoneTasks: [TaskSession]
     @State private var showProductivityAlert: Bool = false
-    @StateObject var taskModel = TaskViewModel()
-    
-    // MARK: Core Data Request for fetching tasks
-    @FetchRequest var currentDoneTasks: FetchedResults<Task>
-    @FetchRequest var previousDoneTasks: FetchedResults<Task>
+    @StateObject var sessionModel = TaskSessionViewModel()
     
     /// Compare timeboxed hours of this week to last week
-    init(forWeek: Date) {
+    init(data: FetchedResults<TaskSession>, forWeek: Date, selectedRange: Binding<GraphRange>) {
         let calendar = Calendar.current
         
         var thisWeek: [Date] = []
@@ -59,24 +41,19 @@ struct DynamicAnalyticsView: View {
             }
         }
         
-        let query1 = NSPredicate(format: "completedTime >= %@ AND completedTime < %@ AND isCompleted == true",
-                                argumentArray: [thisWeek.first!, thisWeek.last!])
-        let query2 = NSPredicate(format: "completedTime >= %@ AND completedTime < %@ AND isCompleted == true",
-                                 argumentArray: [lastWeek.first!, lastWeek.last!])
+        self.currentDoneTasks = data.filter {
+            $0.timestamp! >= thisWeek.first! && $0.timestamp! < thisWeek.last!
+        }
         
-        _currentDoneTasks = FetchRequest(
-            entity: Task.entity(),
-            sortDescriptors: [.init(keyPath: \Task.completedTime, ascending: true)],
-            predicate: query1)
+        self.previousDoneTasks = data.filter {
+            $0.timestamp! >= lastWeek.first! && $0.timestamp! < lastWeek.last!
+        }
         
-        _previousDoneTasks = FetchRequest(
-            entity: Task.entity(),
-            sortDescriptors: [.init(keyPath: \Task.completedTime, ascending: true)],
-            predicate: query2)
+        self._selectedRange = selectedRange
     }
     
     /// Compare timeboxed hours of this month to last month
-    init(forMonth: Date) {
+    init(data: FetchedResults<TaskSession>, forMonth: Date, selectedRange: Binding<GraphRange>) {
         let calendar = Calendar.current
         
         var thisMonth: [Date] = []
@@ -100,26 +77,25 @@ struct DynamicAnalyticsView: View {
             }
         }
         
-        let query1 = NSPredicate(format: "completedTime >= %@ AND completedTime < %@ AND isCompleted == true",
-                                argumentArray: [thisMonth.first!, thisMonth.last!])
-        let query2 = NSPredicate(format: "completedTime >= %@ AND completedTime < %@ AND isCompleted == true",
-                                argumentArray: [lastMonth.first!, lastMonth.last!])
+        self.currentDoneTasks = data.filter {
+            $0.timestamp! >= thisMonth.first! && $0.timestamp! < thisMonth.last!
+        }
         
-        _currentDoneTasks = FetchRequest(
-            entity: Task.entity(),
-            sortDescriptors: [.init(keyPath: \Task.completedTime, ascending: true)],
-            predicate: query1)
+        self.previousDoneTasks = data.filter {
+            $0.timestamp! >= lastMonth.first! && $0.timestamp! < lastMonth.last!
+        }
         
-        _previousDoneTasks = FetchRequest(
-            entity: Task.entity(),
-            sortDescriptors: [.init(keyPath: \Task.completedTime, ascending: true)],
-            predicate: query2)
+        self._selectedRange = selectedRange
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
+            // MARK: Data needed for analytics presentation
+            let percentage = sessionModel.compareProductivity(current: currentDoneTasks,
+                                                              previous: previousDoneTasks)
+            let data = selectedRange == .week ? sessionModel.analyseTimeboxByWeek(data: currentDoneTasks) : sessionModel.analyseTimeboxByMonth(data: currentDoneTasks)
+            
             // Summary card view...
-            let percentage = taskModel.compareProductivity(current: currentDoneTasks, previous: previousDoneTasks)
             SummaryCardView(percentage: percentage)
                 .onTapGesture {
                     if percentage != 0 {
@@ -135,7 +111,7 @@ struct DynamicAnalyticsView: View {
                 })
             
             // Bar graph view...
-            GraphView()
+            GraphView(data: data)
         }
     }
     
@@ -172,10 +148,9 @@ struct DynamicAnalyticsView: View {
         .cornerRadius(16)
     }
     
-    private func GraphView() -> some View {
+    private func GraphView(data: [(String, Int64)]) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             // MARK: Data needed for drawing graph
-            let data = selectedRange == .week ? taskModel.analyseTaskDoneByWeek(data: currentDoneTasks) : taskModel.analyseTaskDoneByMonth(data: currentDoneTasks)
             let maxBarHeight = data.max { first, second in
                 return second.1 > first.1
             }?.1 ?? 0
@@ -189,7 +164,7 @@ struct DynamicAnalyticsView: View {
             HStack {
                 // Summary...
                 Label {
-                    let formattedDuration = taskModel.formatTimeInterval(interval: TimeInterval(totalSeconds),
+                    let formattedDuration = sessionModel.formatTimeInterval(interval: TimeInterval(totalSeconds),
                                                                          unitsStyle: .full,
                                                                          units: [.hour, .minute])
                     let durationComponents = formattedDuration.components(separatedBy: " ")
