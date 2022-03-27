@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Achievement" representedClassName="Achievement" isAbstract="YES" syncable="YES">
-        <attribute name="desc" optional="YES" attributeType="String"/>
-        <attribute name="icon" optional="YES" attributeType="Binary"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="users" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="achievements" inverseEntity="User"/>
-    </entity>
-    <entity name="Badge" representedClassName="Badge" parentEntity="Achievement" syncable="YES"/>
-    <entity name="Medal" representedClassName="Medal" parentEntity="Achievement" syncable="YES">
-        <attribute name="rank" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-    </entity>
     <entity name="Subtask" representedClassName="Subtask" syncable="YES">
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="order" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -18,8 +8,6 @@
     </entity>
     <entity name="Task" representedClassName="Task" syncable="YES">
         <attribute name="color" optional="YES" attributeType="Transformable" valueTransformerName="UIColorTransformer" customClassName=" UIColor"/>
-        <attribute name="completedTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="focusedDuration" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isImportant" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
@@ -28,24 +16,19 @@
         <attribute name="taskLabel" optional="YES" attributeType="String"/>
         <attribute name="taskStartTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="taskTitle" optional="YES" attributeType="String"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TaskSession" inverseName="task" inverseEntity="TaskSession"/>
         <relationship name="subtask" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Subtask" inverseName="parentTask" inverseEntity="Subtask"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="task" inverseEntity="User"/>
     </entity>
-    <entity name="User" representedClassName="User" syncable="YES">
-        <attribute name="email" optional="YES" attributeType="String"/>
-        <attribute name="points" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="profilePic" optional="YES" attributeType="Binary"/>
-        <attribute name="uid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="username" optional="YES" attributeType="String"/>
-        <relationship name="achievements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Achievement" inverseName="users" inverseEntity="Achievement"/>
-        <relationship name="task" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Task" inverseName="user" inverseEntity="Task"/>
+    <entity name="TaskSession" representedClassName="TaskSession" syncable="YES">
+        <attribute name="focusedDuration" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="ptsAwarded" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Task" inverseName="session" inverseEntity="Task"/>
     </entity>
     <elements>
-        <element name="Achievement" positionX="-21.97265625" positionY="181.36328125" width="128" height="103"/>
-        <element name="Badge" positionX="-94.34765625" positionY="336.90625" width="128" height="43"/>
-        <element name="Medal" positionX="72.1796875" positionY="335.42578125" width="128" height="58"/>
         <element name="Subtask" positionX="-253.4375" positionY="-26.25" width="128" height="103"/>
-        <element name="Task" positionX="-59.15625" positionY="-93.86328125" width="128" height="238"/>
-        <element name="User" positionX="187.42578125" positionY="76.625" width="128" height="148"/>
+        <element name="Task" positionX="-59.15625" positionY="-93.86328125" width="128" height="208"/>
+        <element name="TaskSession" positionX="176.73046875" positionY="-70.23828125" width="128" height="118"/>
     </elements>
 </model>

@@ -108,12 +108,21 @@ struct ScheduledTasks: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
             .foregroundColor(.textPrimary)
+            // Update the view when selecting another week...
+            .onChange(of: currentWeek) { [currentWeek] newVal in
+                let offset = newVal - currentWeek
+                taskModel.updateWeek(offset: offset)
+
+                // Update the selected day also upon updating week
+                taskModel.currentDay = Calendar.current.date(byAdding: .weekOfMonth,
+                                                             value: offset,
+                                                             to: taskModel.currentDay)!
+            }
             
             // Calendar cells...
             HStack(spacing: 4) {
                 ForEach(taskModel.currentWeek, id: \.self) { day in
                     VStack(spacing: 8) {
-                        
                         // MARK: Day label
                         // EEEEE returns day as M,T,W ...
                         Text(taskModel.formatDate(date: day,
@@ -153,16 +162,6 @@ struct ScheduledTasks: View {
                 }
             }
             .padding(.horizontal)
-        }
-        // Update the view when selecting another week...
-        .onChange(of: currentWeek) { [currentWeek] newVal in
-            let offset = newVal - currentWeek
-            taskModel.updateWeek(offset: offset)
-
-            // Update the selected day also upon updating week
-            taskModel.currentDay = Calendar.current.date(byAdding: .weekOfMonth,
-                                                         value: offset,
-                                                         to: taskModel.currentDay)!
         }
     }
 }
