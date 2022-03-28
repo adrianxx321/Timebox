@@ -25,7 +25,6 @@ enum GraphRange {
 }
 
 struct HomeScreen: View {
-    @StateObject var taskModel = TaskViewModel()
     @StateObject var achievementModel = AchievementViewModel()
     @State var selectedRange: GraphRange = .week
     @State private var showMedalInfo = false
@@ -171,6 +170,7 @@ struct HomeScreen: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 72)
                 .cornerRadius(16)
+                .grayscale(achievementModel.isUnlocked(medal, userPoints: userPts) ? 0 : 1.0)
             
             Text(medal.title)
                 .font(.caption())

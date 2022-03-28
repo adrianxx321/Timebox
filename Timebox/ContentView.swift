@@ -38,17 +38,16 @@ public var isSmallDevice: Bool {
 }
 
 struct ContentView: View {
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
     @Environment(\.managedObjectContext) var context
     
     var body: some View {
-//        if isLoggedIn {
-//            HomeScreen()
-//        } else {
-//            OnboardingScreen()
-//                .transition(.move(edge: .trailing))
-//        }
-        BaseView()
-//        ScheduledTasks()
+        if isLoggedIn {
+            RootView()
+        } else {
+            OnboardingScreen()
+                .transition(.move(edge: .trailing))
+        }
     }
 }
 

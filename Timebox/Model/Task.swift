@@ -37,7 +37,7 @@ extension Task {
         let set = subtask as? Set<Subtask> ?? []
         
         return set.sorted {
-            $0.order < $1.order
+            $0.timestamp ?? Date() < $1.timestamp ?? Date()
         }
     }
 

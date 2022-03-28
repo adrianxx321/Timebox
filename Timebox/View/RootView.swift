@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BaseView: View {
+struct RootView: View {
     // Using icon name to identify tab...
     @State var currentTab = "home"
     @StateObject var taskModel = TaskViewModel()
@@ -30,49 +30,60 @@ struct BaseView: View {
                 Text("Timer")
                     .tag("timer")
                 
-                Text("Settings")
+                SettingsScreen()
                     .tag("more")
             }
             
             // Custom Tab Bar...
             TabBarView()
         }
+        .padding(.bottom, isNotched ? 32 : 0)
+        .ignoresSafeArea(edges: .bottom)
     }
     
     private func TabBarView() -> some View {
-        HStack(spacing: 32) {
-            // Tab Buttons...
-            HStack(spacing: 40) {
+        HStack {
+            Spacer()
+            Group {
                 TabButton(icon: "home")
+                Spacer()
                 TabButton(icon: "tasks")
             }
             
+            Spacer()
+            
             // Center Add Button...
-            Button {
-                taskModel.addNewTask.toggle()
-            } label: {
-                ZStack {
-                    Hexagon()
-                        .frame(width: 64, height: 64)
-                        .foregroundColor(.accent)
-                    
-                    Image(systemName: "plus")
+            ZStack {
+                Hexagon(radius: 8)
+                    .aspectRatio((7/8), contentMode: .fit)
+                    .frame(maxHeight: 64)
+                    .foregroundColor(.accent)
+                
+                Button {
+                    taskModel.addNewTask.toggle()
+                } label: {
+                    Image("add")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 24)
+                        .frame(width: 36)
                         .foregroundColor(.uiWhite)
                 }
             }
+            Spacer()
             
-            HStack(spacing: 40) {
+            Group {
                 TabButton(icon: "timer")
+                Spacer()
                 TabButton(icon: "more")
             }
+            Spacer()
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 24)
+        .padding(.top, 12)
         .frame(maxWidth: .infinity)
-        .background(Color.uiWhite)
+        .background(Color.uiWhite
+            .shadow(color: .backgroundQuarternary, radius: 4, x: 0, y: 0)
+            // Cover up the unwanted top shadow
+            .mask(Rectangle().padding(.top, -8)))
         .sheet(isPresented: $taskModel.addNewTask) {
             // Clearing Edit Data
             taskModel.editTask = nil
@@ -99,20 +110,11 @@ struct BaseView: View {
                     .fontWeight(.semibold)
             }.foregroundColor(currentTab == icon ? .accent : .textSecondary)
         }
-
     }
 }
 
-struct BaseView_Previews: PreviewProvider {
+struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        BaseView()
-    }
-}
-
-// BG Modifier...
-struct BGModifier: ViewModifier{
-    func body(content: Content) -> some View {
-        content
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        RootView()
     }
 }

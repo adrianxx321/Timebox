@@ -256,7 +256,7 @@ struct DynamicAnalyticsView: View {
     }
     
     private func GraphFallback() -> some View {
-        Text("No data available")
+        Text("No data to display")
             .font(.subheading1())
             .fontWeight(.semibold)
             .foregroundColor(.textTertiary)
