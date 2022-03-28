@@ -25,60 +25,11 @@ private enum TaskDuration: String, CaseIterable, Identifiable {
     }
 }
 
-struct ColorPickerModal: UIViewControllerRepresentable {
-    @Binding var isPresented: Bool
-    @Binding var selectedColor: UIColor
-
-    func makeUIViewController(context: Context) -> UIViewController {
-        UIViewController()
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        // React on binding
-        // Show if not already...
-        if isPresented && uiViewController.presentedViewController == nil {
-            let controller = UIColorPickerViewController()
-            controller.delegate = context.coordinator
-            controller.selectedColor = self.selectedColor
-            controller.presentationController?.delegate = context.coordinator
-
-            uiViewController.present(controller, animated: true, completion: nil)
-        }
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
-    }
-    
-    class Coordinator: NSObject, UIColorPickerViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
-        let parent: ColorPickerModal
-        
-        init(parent: ColorPickerModal) {
-            self.parent = parent
-        }
-        
-        func colorPickerViewController(_ viewController: UIColorPickerViewController, didSelect color: UIColor, continuously: Bool) {
-
-            viewController.selectedColor = color
-            parent.selectedColor = viewController.selectedColor
-        }
-        
-        /// Dismiss on tapping close button
-        func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
-            parent.isPresented = false
-        }
-
-        /// Dismiss on swipe
-        func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-            parent.isPresented = false
-        }
-    }
-}
-
 struct TaskModal: View {
     @Environment(\.dismiss) var dismiss
     @State private var isModalActive = false
     @State private var showColorPicker = false
+    // A dictionary to keep track of changes in all fields
     @State private var isEdited: [String: Bool] = [
         "taskTitle" : false,
         "subtasks": false,
@@ -95,6 +46,7 @@ struct TaskModal: View {
     @State var id: UUID = UUID.init()
     @State var taskTitle: String = ""
     @State var subtasks: [Subtask] = []
+    @State var subtaskTitles: [String] = []
     @State var taskLabel: String = ""
     @State var color: UIColor = .purple
     @State var isImportant: Bool = false
@@ -141,7 +93,7 @@ struct TaskModal: View {
             List {
                 // Task title & Subtasks...
                 Section {
-                    MyTextField(placeholder: "Task Title", textInput: $taskTitle)
+                    MyTextField("Task Title", $taskTitle)
                         .onAppear {
                             if let task = taskModel.editTask {
                                 if !isEdited.contains(where: { $0.value }) {
@@ -153,12 +105,64 @@ struct TaskModal: View {
                             isEdited["taskTitle"] = taskTitle != taskModel.editTask?.taskTitle
                         })
                     
-                    // TODO: Subtasks
+                    Section {
+                        ForEach($subtasks, id: \.self) { $subtask in
+                            HStack(spacing: 16) {
+                                Image("branch")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .foregroundColor(.textTertiary)
+                                    .frame(width: 24)
+                                    .rotationEffect(.degrees(90))
+                                
+                                MyTextField("Subtask Title", $subtask.subtaskTitle.toUnwrapped(defaultValue: ""))
+                            }
+                        }
+                        .onDelete { index in
+                            withAnimation {
+                                subtasks.remove(atOffsets: index)
+                            }
+                        }
+                        
+                        HStack(spacing: 16) {
+                            Button {
+                                withAnimation {
+                                    let newSubtask = Subtask(context: context)
+                                    newSubtask.subtaskTitle = ""
+                                    newSubtask.timestamp = Date()
+                                    newSubtask.isCompleted = false
+                                    
+                                    subtasks.append(newSubtask)
+                                }
+                            } label: {
+                                Image("add")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 24)
+                                    .rotationEffect(.degrees(90))
+                            }
+                            
+                            Text("Add Subtask")
+                                .font(.paragraphP1())
+                                .fontWeight(.bold)
+                        }.foregroundColor(.textTertiary)
+                    }
+                    .listRowSeparator(.hidden)
+                    .onAppear {
+                        if let task = taskModel.editTask {
+                            if !isEdited.contains(where: { $0.value }) {
+                                subtasks = task.subtasks
+                            }
+                        }
+                    }
+                    .onChange(of: subtasks, perform: { newValue in
+                        isEdited["subtasks"] = subtasks != taskModel.editTask?.subtasks
+                    })
                 }
 
                 // Tag name...
                 Section {
-                    MyTextField(placeholder: "Tag (optional)", textInput: $taskLabel)
+                    MyTextField("Tag (optional)", $taskLabel)
                         .onAppear {
                             if let task = taskModel.editTask {
                                 if !isEdited.contains(where: { $0.value }) {
@@ -169,7 +173,7 @@ struct TaskModal: View {
                         .onChange(of: taskLabel, perform: { newValue in
                             isEdited["taskLabel"] = taskLabel != taskModel.editTask?.taskLabel
                         })
-                }
+                } header: { HeaderLabel(title: "Label") }
 
                 // Color...
                 Section {
@@ -200,7 +204,7 @@ struct TaskModal: View {
                         }
                         .navigationTitle("Task Color")
                         .background {
-                            ColorPickerModal(isPresented: $showColorPicker, selectedColor: ($selectedCustomColor.value))
+                            UIColorPickerModal(isPresented: $showColorPicker, selectedColor: ($selectedCustomColor.value))
                             .onChange(of: selectedCustomColor, perform: { newValue in
                                 selectedColor = newValue
                             })
@@ -379,10 +383,22 @@ struct TaskModal: View {
             // MARK: Action Buttons
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save"){
+                    Button("Save") {
                         // Edit mode...
                         if let task = taskModel.editTask {
                             task.taskTitle = taskTitle
+                            
+                            // Remove all old subtasks before reinserting new ones
+                            task.subtask = []
+                            subtasks.forEach { subtask in
+                                let editSubtask = Subtask(context: context)
+                                editSubtask.subtaskTitle = subtask.subtaskTitle
+                                editSubtask.timestamp = subtask.timestamp
+                                editSubtask.isCompleted = subtask.isCompleted
+                                
+                                task.subtask = task.subtask?.adding(editSubtask) as NSSet?
+                            }
+                            
                             task.taskLabel = (taskLabel == "") ? nil : taskLabel
                             task.color = color
                             task.isImportant = isImportant
@@ -397,7 +413,7 @@ struct TaskModal: View {
                             subtasks.forEach { subtask in
                                 let newSubtask = Subtask(context: context)
                                 newSubtask.subtaskTitle = subtask.subtaskTitle
-                                newSubtask.order = subtask.order
+                                newSubtask.timestamp = subtask.timestamp
                                 newSubtask.isCompleted = subtask.isCompleted
                                 
                                 task.subtask = task.subtask?.adding(newSubtask) as NSSet?
@@ -433,6 +449,7 @@ struct TaskModal: View {
                 }
             }
         }
+        .tint(.accent)
     }
     
     private func HeaderLabel(title: String) -> some View {
@@ -443,7 +460,7 @@ struct TaskModal: View {
             .textCase(.uppercase)
     }
     
-    private func MyTextField(placeholder: String, textInput: Binding<String>) -> some View {
+    private func MyTextField(_ placeholder: String, _ textInput: Binding<String>) -> some View {
         TextField(placeholder, text: textInput)
             .font(.paragraphP1().weight(.semibold))
     }

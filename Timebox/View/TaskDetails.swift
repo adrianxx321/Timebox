@@ -44,10 +44,8 @@ struct TaskDetails: View {
                                                 
                                                 // Automatically check parent task as completed
                                                 // When all subtasks are done...
-                                                if !selectedTask.subtasks.contains(where: { !$0.isCompleted }) {
-                                                    selectedTask.objectWillChange.send()
-                                                    selectedTask.isCompleted.toggle()
-                                                }
+                                                selectedTask.objectWillChange.send()
+                                                selectedTask.isCompleted = !selectedTask.subtasks.contains(where: { !$0.isCompleted })
                                                 
                                                 // Save to Core Data...
                                                 try? context.save()
@@ -57,7 +55,7 @@ struct TaskDetails: View {
                                                 .resizable()
                                                 .aspectRatio(contentMode: .fit)
                                                 .frame(width: 28)
-                                                .foregroundColor(subtask.isCompleted ? .accent : .backgroundTertiary)
+                                                .foregroundColor(.accent)
                                                 .padding(.trailing, 8)
                                         }
                                         
