@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 public enum NotificationOptions: String {
     case fiveMins = "5 minutes before"
@@ -15,26 +16,26 @@ public enum NotificationOptions: String {
 }
 
 struct SettingsScreen: View {
-    @State private var showPreferences = false
     // We can't turn on notification by default for granted
     // Since we need to respect user's privacy & get their consent before doing so
     @AppStorage("allowedNotifications") private var isNotificationAllowed = false
     @AppStorage("enabledNotification") private var isNotificationActive = false
     @AppStorage("notificationOpts") private var notificationOptions = NotificationOptions.fiveMins
     // TODO: EventKit object
-    
+    //                    //
     @AppStorage("whiteNoise") private var selectedWhiteNoise = "ticking"
     
-    init() {
-        UITableView.appearance().backgroundColor = .backgroundPrimary
-    }
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @State private var showNotificationsPref = false
+    @State private var showCalendarsPref = false
+    @State private var showWhiteNoisePref = false
     
     var body: some View {
         NavigationView {
             List {
                 ListSection {
-                    NavigationLink {
-                        // TODO: Predefined portrait pictures
+                    SettingsEntry {
+                        // Profile Picture page...
                     } label: {
                         HStack(spacing: 32) {
                             // TODO: Replace dummy
@@ -45,63 +46,75 @@ struct SettingsScreen: View {
                                 .clipShape(Circle())
                             
                             Text("Display Picture")
-                                .font(.paragraphP1())
+                                .font(.subheading1())
                                 .fontWeight(.bold)
                                 .foregroundColor(.textPrimary)
                         }
                     }
-                    .listRowSeparator(.hidden)
                     
                     TotalView().frame(maxWidth: .infinity)
                 }
                 
                 ListSection {
-                    NavigationLink {
-                        // Notifications page...
-                    } label: { PickerLabel(image: Image("bell-f"), title: "Notifications", isDestructive: false) }
-                        .listRowSeparator(.hidden)
+                    SettingsEntry {
+                        // Profile Picture page...
+                    } label: {
+                        PickerLabel(image: Image("bell-f"), title: "Notifications", isDestructive: false)
+                    }
                     
-                    NavigationLink {
-                        
-                    } label: { PickerLabel(image: Image("calendar-alt"), title: "Calendars", isDestructive: false) }
-                        .listRowSeparator(.hidden)
+                    SettingsEntry {
+                        // Profile Picture page...
+                    } label: {
+                        PickerLabel(image: Image("calendar-alt"), title: "Calendars", isDestructive: false)
+                    }
                     
-                    NavigationLink {
-                        
-                    } label: { PickerLabel(image: Image("volume-circle-f"), title: "White Noise", isDestructive: false) }
-                        .listRowSeparator(.hidden)
+                    SettingsEntry {
+                        // Profile Picture page...
+                    } label: {
+                        PickerLabel(image: Image("volume-circle-f"), title: "White Noise", isDestructive: false)
+                    }
                 }
                 
+                // Bring up email contact form...
                 ListSection {
                     Button {
-                        // Bring up email form...
+                        
                     } label: { PickerLabel(image: Image("envelope-f"), title: "Contact Developer", isDestructive: false) }
                 }
                 
+                // Perform actions to delete account...
                 ListSection {
                     Button {
-                        // Bring up email form...
+                        
                     } label: { PickerLabel(image: Image("trash"), title: "Delete Account", isDestructive: true) }
                 }
                 
+                // Perform action to sign out...
                 ListSection {
                     Button {
-                        // Bring up email form...
+                        
                     } label: { PickerLabel(image: Image("log-out"), title: "Sign Out", isDestructive: false) }
                 }
             }
             .navigationBarHidden(true)
-            
-            
         }
         .navigationBarHidden(true)
     }
-    
+
     private func ListSection<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         Section {
             content()
         }
         .padding(8)
+    }
+    
+    private func SettingsEntry<Content: View, Label: View>(@ViewBuilder content: () -> Content, label: () -> Label) -> some View {
+        NavigationLink {
+            content()
+            .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
+        } label: { label() }
+            .listRowSeparator(.hidden)
     }
     
     private func TotalView() -> some View {

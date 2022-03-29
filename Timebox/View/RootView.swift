@@ -37,7 +37,7 @@ struct RootView: View {
             // Custom Tab Bar...
             TabBarView()
         }
-        .padding(.bottom, isNotched ? 32 : 0)
+        .padding(.bottom, isNotched ? 32 : 8)
         .ignoresSafeArea(edges: .bottom)
     }
     

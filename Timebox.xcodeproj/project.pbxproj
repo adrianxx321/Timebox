@@ -19,6 +19,7 @@
 		B551BD8827C685F2006FCB58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8727C685F2006FCB58 /* Assets.xcassets */; };
 		B551BD8B27C685F2006FCB58 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */; };
 		B551BD9827C69157006FCB58 /* figma-export.yaml in Resources */ = {isa = PBXBuildFile; fileRef = B551BD9727C69157006FCB58 /* figma-export.yaml */; };
+		B561B7F527F2AA34003FDF5B /* UIFont+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B561B7F427F2AA34003FDF5B /* UIFont+extension.swift */; };
 		B562123127E41E1C00A45AD7 /* TaskModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B562123027E41E1C00A45AD7 /* TaskModal.swift */; };
 		B569230927F18A6A0010A04C /* UIColorPickerModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B569230827F18A6A0010A04C /* UIColorPickerModal.swift */; };
 		B569230B27F1BBEB0010A04C /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B569230A27F1BBEB0010A04C /* SettingsScreen.swift */; };
@@ -67,6 +68,7 @@
 		B551BD8727C685F2006FCB58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B551BD9727C69157006FCB58 /* figma-export.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "figma-export.yaml"; sourceTree = "<group>"; };
+		B561B7F427F2AA34003FDF5B /* UIFont+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIFont+extension.swift"; sourceTree = "<group>"; };
 		B562123027E41E1C00A45AD7 /* TaskModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskModal.swift; sourceTree = "<group>"; };
 		B569230827F18A6A0010A04C /* UIColorPickerModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorPickerModal.swift; sourceTree = "<group>"; };
 		B569230A27F1BBEB0010A04C /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 			isa = PBXGroup;
 			children = (
 				E7E9F2C409FF0EF09FFE6374 /* UIColor+extension.swift */,
+				B561B7F427F2AA34003FDF5B /* UIFont+extension.swift */,
 				1E61FE11E9F3672F3851C898 /* Color+extension.swift */,
 				39E3F0396D75807726DEE01A /* Font+extension.swift */,
 				B5057A9727CF279D0005512F /* View+extension.swift */,
@@ -338,6 +341,7 @@
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
 				B5DB8A6C27D50167000D8B51 /* Timebox.xcdatamodeld in Sources */,
 				B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */,
+				B561B7F527F2AA34003FDF5B /* UIFont+extension.swift in Sources */,
 				B569230927F18A6A0010A04C /* UIColorPickerModal.swift in Sources */,
 				B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */,
 				B5A0822C27EF1C92000F7BE3 /* String+extension.swift in Sources */,
