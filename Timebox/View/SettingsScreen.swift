@@ -29,6 +29,18 @@ struct SettingsScreen: View {
     @State private var showNotificationsPref = false
     @State private var showCalendarsPref = false
     @State private var showWhiteNoisePref = false
+    @StateObject private var sessionModel = TaskSessionViewModel()
+    @FetchRequest private var allCompletedTasks: FetchedResults<Task>
+    @FetchRequest private var allTimeboxSessions: FetchedResults<TaskSession>
+    
+    init() {
+        UITableView.appearance().backgroundColor = .backgroundPrimary
+        UITableView.appearance().showsVerticalScrollIndicator = false
+        let predicate = NSPredicate(format: "isCompleted == true", [])
+        
+        _allCompletedTasks = FetchRequest(entity: Task.entity(), sortDescriptors: [], predicate: predicate)
+        _allTimeboxSessions = FetchRequest(entity: TaskSession.entity(), sortDescriptors: [])
+    }
     
     var body: some View {
         NavigationView {
@@ -36,6 +48,7 @@ struct SettingsScreen: View {
                 ListSection {
                     SettingsEntry {
                         // Profile Picture page...
+                        Text("Display Picture")
                     } label: {
                         HStack(spacing: 32) {
                             // TODO: Replace dummy
@@ -96,6 +109,7 @@ struct SettingsScreen: View {
                     } label: { PickerLabel(image: Image("log-out"), title: "Sign Out", isDestructive: false) }
                 }
             }
+            .navigationTitle("Settings")
             .navigationBarHidden(true)
         }
         .navigationBarHidden(true)
@@ -111,8 +125,6 @@ struct SettingsScreen: View {
     private func SettingsEntry<Content: View, Label: View>(@ViewBuilder content: () -> Content, label: () -> Label) -> some View {
         NavigationLink {
             content()
-            .navigationBarHidden(true)
-            .navigationBarBackButtonHidden(true)
         } label: { label() }
             .listRowSeparator(.hidden)
     }
@@ -120,8 +132,8 @@ struct SettingsScreen: View {
     private func TotalView() -> some View {
         HStack(spacing: 32) {
             VStack(spacing: 4) {
-                // TODO: Replace dummy
-                Text("12")
+                // Total tasks completed...
+                Text("\(allCompletedTasks.count)")
                     .fontWeight(.semibold)
                     .foregroundColor(.textSecondary)
                 
@@ -131,8 +143,11 @@ struct SettingsScreen: View {
             }
             
             VStack(spacing: 4) {
-                // TODO: Replace dummy
-                Text("1h 2m")
+                // Total hours focused...
+                let totalDuration = allTimeboxSessions.reduce(0) { $0 + $1.focusedDuration }
+                let formattedTotalDuration = sessionModel.formatTimeInterval(interval: TimeInterval(totalDuration), unitsStyle: .abbreviated, units: [.hour, .minute])
+                
+                Text(formattedTotalDuration)
                     .fontWeight(.semibold)
                     .foregroundColor(.textSecondary)
                 
