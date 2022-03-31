@@ -12,6 +12,7 @@
 		B5015D1C27F5B08F00D01DB6 /* UniversalCustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5015D1B27F5B08F00D01DB6 /* UniversalCustomNavigationBar.swift */; };
 		B5015D1E27F5E4E400D01DB6 /* ListEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5015D1D27F5E4E400D01DB6 /* ListEntryView.swift */; };
 		B5015D2027F5E79000D01DB6 /* ListButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5015D1F27F5E79000D01DB6 /* ListButtonView.swift */; };
+		B5015D2227F6107200D01DB6 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5015D2127F6107200D01DB6 /* MailView.swift */; };
 		B5057A9827CF279D0005512F /* View+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5057A9727CF279D0005512F /* View+extension.swift */; };
 		B50E895C27EDA570005DBD59 /* Subtask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50E895027EDA570005DBD59 /* Subtask.swift */; };
 		B50E896C27EDA84E005DBD59 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50E896427EDA84E005DBD59 /* Achievement.swift */; };
@@ -66,6 +67,7 @@
 		B5015D1B27F5B08F00D01DB6 /* UniversalCustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalCustomNavigationBar.swift; sourceTree = "<group>"; };
 		B5015D1D27F5E4E400D01DB6 /* ListEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEntryView.swift; sourceTree = "<group>"; };
 		B5015D1F27F5E79000D01DB6 /* ListButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListButtonView.swift; sourceTree = "<group>"; };
+		B5015D2127F6107200D01DB6 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
 		B5057A9727CF279D0005512F /* View+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+extension.swift"; sourceTree = "<group>"; };
 		B50E895027EDA570005DBD59 /* Subtask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subtask.swift; sourceTree = "<group>"; };
 		B50E896427EDA84E005DBD59 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 				B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */,
 				B5015D1B27F5B08F00D01DB6 /* UniversalCustomNavigationBar.swift */,
 				B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */,
+				B5015D2127F6107200D01DB6 /* MailView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -359,6 +362,7 @@
 				B5B43B3D27F0677500136E73 /* Task.swift in Sources */,
 				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
 				B5F39DA827F1EA6D00878579 /* Binding+extension.swift in Sources */,
+				B5015D2227F6107200D01DB6 /* MailView.swift in Sources */,
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
 				B5DB8A6C27D50167000D8B51 /* Timebox.xcdatamodeld in Sources */,
 				B567D40127F3585000BB469F /* SettingsViewModel.swift in Sources */,

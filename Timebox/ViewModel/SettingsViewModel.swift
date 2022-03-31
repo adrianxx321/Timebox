@@ -9,34 +9,66 @@
 // Will be initialized/handled
 // Calendar syncing, loading preset white noises, notification permission etc.
 import SwiftUI
-
-public enum NotificationOptions: String {
-    case fiveMins = "5 minutes before"
-    case tenMins = "10 minutes before"
-    case fifteenMins = "15 minutes before"
-    case halfHour = "30 minutes before"
-}
+import UserNotifications
+import EventKit
 
 class SettingsViewModel: ObservableObject {
     // MARK: Source of truths
     @Published var whiteNoises: [String] = []
-    @AppStorage("whiteNoise") public var selectedWhiteNoise = "Ticking"
+    @Published var calendarStore = EKEventStore()
     @AppStorage("notificationsAllowed") public var notificationsAllowed = false
     @AppStorage("notifyAtStart") public var notifyAtStart = true
     @AppStorage("notifyAtEnd") public var notifyAtEnd = true
     @AppStorage("notifyAllDay") public var notifyAllDay = false
-    
-    // TODO: EventKit object
+    @AppStorage("syncCalendarsAllowed") public var syncCalendarsAllowed = false
+    @AppStorage("whiteNoise") public var selectedWhiteNoise = "Ticking"
     
     init() {
         loadWhiteNoises()
+        checkNotificationPermission()
+        checkCalendarPermission()
+    }
+    
+    func checkNotificationPermission() {
+        UNUserNotificationCenter.current().getNotificationSettings(completionHandler: { settings in
+            DispatchQueue.main.async {
+                self.notificationsAllowed = settings.authorizationStatus == .authorized
+            }
+        })
+    }
+    
+    func checkCalendarPermission() {
+        let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
         
-        // Initialise notifications authorisation status
-        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
-            if settings.authorizationStatus == .authorized {
-                UserDefaults.standard.set(true, forKey: "notificationsAllowed")
-            } else {
-                UserDefaults.standard.set(false, forKey: "notificationsAllowed")
+        DispatchQueue.main.async {
+            self.syncCalendarsAllowed = EKAuthStatus == .authorized
+        }
+    }
+    
+    /// Request user's permission for notifications for once
+    func requestNotificationsPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { success, _ in
+            DispatchQueue.main.async {
+                if success {
+                    withAnimation {
+                        self.notificationsAllowed = true
+                    }
+                } else {
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+                }
+            }
+        })
+    }
+    
+    /// Request user's permission for calendars for once
+    func requestCalendarAccessPermission() {
+        self.calendarStore.requestAccess(to: .event) { granted, denied in
+            DispatchQueue.main.async {
+                if granted {
+                    self.syncCalendarsAllowed = true
+                } else {
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+                }
             }
         }
     }
@@ -57,7 +89,7 @@ class SettingsViewModel: ObservableObject {
         if notificationsAllowed {
             return notifyAtStart || notifyAtEnd || notifyAllDay ? "On" : "Off"
         } else {
-            return "Permission Required"
+            return ""
         }
     }
 }

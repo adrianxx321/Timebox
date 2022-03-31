@@ -9,5 +9,7 @@
 		<string>Montserrat-Italic.ttf</string>
 		<string>Montserrat.ttf</string>
 	</array>
+	<key>NSCalendarsUsageDescription</key>
+	<string>By allowing us to access your personal calendar, we can help to integrate your existing routines/schedules into Timebox to get you more productive.</string>
 </dict>
 </plist>

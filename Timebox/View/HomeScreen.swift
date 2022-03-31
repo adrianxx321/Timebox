@@ -43,13 +43,10 @@ struct HomeScreen: View {
             // Total points obtained by user...
             let totalPts = request.reduce(0) { $0 + $1.ptsAwarded }
             
-            VStack(alignment: .leading, spacing: 24) {
-                HeaderView(points: totalPts)
-                    .padding(.top, isNotched ? 47: 20)
-                    .background(Color.uiWhite)
-                
-                // MARK: Contents
-                ScrollView(.vertical, showsIndicators: false) {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 24) {
+                    HeaderView(points: totalPts)
+                    
                     VStack(spacing: 40) {
                         // Ongoing Tasks...
                         SectionView(title: "Ongoing Tasks") {
@@ -142,6 +139,9 @@ struct HomeScreen: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 32)
+        // Double padding
+        // Latter one is to offset the ignore top safe area
+        .padding(.top, isNotched ? 47: 20)
         .background(Color.uiWhite)
         .cornerRadius(40, corners: [.bottomLeft, .bottomRight])
         .shadow(radius: 12, x: 0, y: 3)

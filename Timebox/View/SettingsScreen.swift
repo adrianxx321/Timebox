@@ -7,7 +7,7 @@
 
 import SwiftUI
 import UIKit
-import UserNotifications
+import MessageUI
 
 struct SettingsScreen: View {
     @StateObject private var sessionModel = TaskSessionViewModel()
@@ -15,6 +15,9 @@ struct SettingsScreen: View {
     @State private var showProfilePref = false
     @State private var showNotificationsPref = false
     @State private var showCalendarsPref = false
+    @State private var sendEmail = false
+    @State private var showCantSendEmail = false
+    @State private var result: Result<MFMailComposeResult, Error>? = nil
     
     // MARK: Core Data fetch requests
     @FetchRequest private var allCompletedTasks: FetchedResults<Task>
@@ -70,7 +73,11 @@ struct SettingsScreen: View {
                     
                     ListSection {
                         // Notifications page...
-                        ListEntryView(selector: $showNotificationsPref, icon: Image("bell-f"), entryTitle: "Notifications", hideDefaultNavigationBar: true, iconIsDestructive: false, tagValue: settingsModel.getNotificationStatus()) {
+                        ListEntryView(selector: $showNotificationsPref, icon: Image("bell-f"),
+                                      entryTitle: "Notifications",
+                                      hideDefaultNavigationBar: true,
+                                      iconIsDestructive: false,
+                                      tagValue: settingsModel.getNotificationStatus()) {
                             if settingsModel.notificationsAllowed {
                                 NotificationsPage()
                             } else {
@@ -79,8 +86,17 @@ struct SettingsScreen: View {
                         }
                         
                         // Calendars page...
-                        ListEntryView(selector: $showCalendarsPref, icon: Image("calendar-alt"), entryTitle: "Calendars", hideDefaultNavigationBar: true, iconIsDestructive: false, tagValue: nil) {
-                            CalendarsFallbackPage()
+                        ListEntryView(selector: $showCalendarsPref,
+                                      icon: Image("calendar-alt"),
+                                      entryTitle: "Calendars",
+                                      hideDefaultNavigationBar: true,
+                                      iconIsDestructive: false,
+                                      tagValue: nil) {
+                            if settingsModel.syncCalendarsAllowed {
+                                Text("Calendar")
+                            } else {
+                                CalendarsFallbackPage()
+                            }
                         }
                         
                         // White noise page...
@@ -102,8 +118,22 @@ struct SettingsScreen: View {
                     ListSection {
                         ListButtonView(icon: Image("envelope-f"), entryTitle: "Contact Developer", iconIsDestructive: false) {
                             // Bring up email contact form...
+                            if MFMailComposeViewController.canSendMail() {
+                                self.sendEmail.toggle()
+                            } else {
+                                self.showCantSendEmail.toggle()
+                            }
                         }
                     }
+                    .sheet(isPresented: $sendEmail) {
+                        MailView(isShowing: self.$sendEmail, result: self.$result)
+                    }
+                    .alert("Couldn't send email from this device",
+                           isPresented: $showCantSendEmail,
+                           actions: {},
+                           message: {
+                        Text("Your device is not capable of composing email, or is lack of an email client app to do so. ")
+                    })
                 }
                 .listStyle(.insetGrouped)
             }
@@ -144,20 +174,8 @@ struct SettingsScreen: View {
                 .multilineTextAlignment(.center)
             }
             
-            CTAButton(btnLabel: "Allow Access", btnFullSize: true, btnAction: {
-                // Request user's permission for notifications
-                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { success, _ in
-                    if success {
-                        withAnimation {
-                            settingsModel.notificationsAllowed = true
-                        }
-                    } else {
-                        DispatchQueue.main.async {
-                            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-                        }
-                    }
-                })
-                
+            CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
+                settingsModel.requestNotificationsPermission()
             }).offset(y: 16)
         }
         .frame(maxHeight: .infinity, alignment: .center)
@@ -188,8 +206,8 @@ struct SettingsScreen: View {
                 .multilineTextAlignment(.center)
             }
             
-            CTAButton(btnLabel: "Allow Access", btnFullSize: true, btnAction: {
-                // Request user's permission for calendars
+            CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
+                settingsModel.requestCalendarAccessPermission()
             }).offset(y: 16)
         }
     }
@@ -199,13 +217,13 @@ struct SettingsScreen: View {
             Group {
                 ListSection {
                     Toggle(isOn: settingsModel.$notifyAtStart) {
-                        Text("Notify me at the start")
+                        Text("Notify me when task starts")
                     }
                 }
                 
                 ListSection {
                     Toggle(isOn: settingsModel.$notifyAtEnd) {
-                        Text("Notify me at the end")
+                        Text("Notify me at the end of task")
                     }
                 }
                 

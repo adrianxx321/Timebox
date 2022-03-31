@@ -10,6 +10,7 @@ import SwiftUI
 struct ListEntryView<Content: View>: View {
     @Binding var selector: Bool
     var icon: Image
+    var customIconColor: Color?
     var entryTitle: String
     var hideDefaultNavigationBar: Bool
     var iconIsDestructive: Bool
@@ -23,6 +24,7 @@ struct ListEntryView<Content: View>: View {
                 
                 content()
             }
+            .navigationTitle(entryTitle)
             .navigationBarHidden(hideDefaultNavigationBar)
             .background(Color.backgroundPrimary)
         } label: {
@@ -36,7 +38,7 @@ struct ListEntryView<Content: View>: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24)
-                .foregroundColor(isDestructive ? .uiRed : .accent)
+                .foregroundColor(isDestructive ? .uiRed : customIconColor ?? .accent)
             
             Text(title)
                 .fontWeight(.bold)

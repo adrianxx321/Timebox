@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ListButtonView: View {
     var icon: Image
+    var customIconColor: Color?
     var entryTitle: String
     var iconIsDestructive: Bool
     var action: () -> ()
@@ -17,16 +18,16 @@ struct ListButtonView: View {
     var body: some View {
         Button {
             action()
-        } label: { EntryLabel(image: Image("envelope-f"), title: "Contact Developer", isDestructive: false, tag: nil) }
+        } label: { ButtonLabel(image: Image("envelope-f"), title: "Contact Developer", isDestructive: false, tag: nil) }
     }
     
-    private func EntryLabel(image: Image, title: String, isDestructive: Bool, tag: String?) -> some View {
+    private func ButtonLabel(image: Image, title: String, isDestructive: Bool, tag: String?) -> some View {
         HStack(spacing: 16) {
             image
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24)
-                .foregroundColor(isDestructive ? .uiRed : .accent)
+                .foregroundColor(isDestructive ? .uiRed : customIconColor ?? .accent)
             
             Text(title)
                 .fontWeight(.bold)
