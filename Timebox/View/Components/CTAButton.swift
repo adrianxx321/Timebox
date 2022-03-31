@@ -9,8 +9,9 @@ import SwiftUI
 
 struct CTAButton: View {
     let btnLabel: String
-    let btnAction: () -> Void
     let btnFullSize: Bool
+    let btnAction: () -> Void
+    
 
     var body: some View {
         Button {
@@ -31,8 +32,7 @@ struct CTAButton: View {
                 .frame(maxWidth: btnFullSize ? UIScreen.main.bounds.width - 64 : nil)
                 // MARK: Gives capsule shape for the button
                 .background(Capsule()
-                                .foregroundColor(.accent)
-                                .shadow(radius: 12, x: 0, y: 3))
+                                .foregroundColor(.accent))
         }
     }
 }

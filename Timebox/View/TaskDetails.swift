@@ -155,9 +155,9 @@ struct TaskDetails: View {
             // Button for start timeboxing for ongoing task...
             if taskModel.isScheduledTask(selectedTask) {
                 if selectedTask.taskStartTime! >= Date() && selectedTask.taskEndTime! < Date() {
-                    CTAButton(btnLabel: "Start Timeboxing", btnAction: {
+                    CTAButton(btnLabel: "Start Timeboxing", btnFullSize: true, btnAction: {
                         
-                    }, btnFullSize: true)
+                    })
                     .frame(maxWidth: .infinity)
                     .padding(.bottom, isNotched ? 0 : 15)
                 }

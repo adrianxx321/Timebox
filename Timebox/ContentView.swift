@@ -41,6 +41,14 @@ struct ContentView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
     @Environment(\.managedObjectContext) var context
     
+    init() {
+        // Globally define UIKit appearances that suits my app's theme
+        UITableView.appearance().showsVerticalScrollIndicator = false
+        UITableView.appearance().backgroundColor = .backgroundPrimary
+        UINavigationBar.appearance().tintColor = .accent
+        UITableView.appearance().contentInset.top = -16
+    }
+    
     var body: some View {
         if isLoggedIn {
             RootView()

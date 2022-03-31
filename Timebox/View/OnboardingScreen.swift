@@ -36,11 +36,11 @@ struct OnboardingScreen: View {
                 }
             }
             
-            CTAButton(btnLabel: "Get Started", btnAction: {
+            CTAButton(btnLabel: "Get Started", btnFullSize: false, btnAction: {
                 withAnimation {
                     viewDismissed = true
                 }
-            }, btnFullSize: false)
+            })
             
             Spacer()
             Spacer()

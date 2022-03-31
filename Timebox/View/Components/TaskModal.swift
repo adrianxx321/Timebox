@@ -173,7 +173,7 @@ struct TaskModal: View {
                         .onChange(of: taskLabel, perform: { newValue in
                             isEdited["taskLabel"] = taskLabel != taskModel.editTask?.taskLabel
                         })
-                } header: { HeaderLabel(title: "Label") }
+                } header: { SectionHeaderLabel(title: "Label") }
 
                 // Color...
                 Section {
@@ -209,7 +209,6 @@ struct TaskModal: View {
                                 selectedColor = newValue
                             })
                         }
-
                     }, label: {
                         PickerLabel(title: selectedColor.name, icon: Image(systemName: "circle.fill"), iconColor: Color(selectedColor.value))
                     })
@@ -231,7 +230,7 @@ struct TaskModal: View {
                         color = newColor.value
                         isEdited["color"] = color != taskModel.editTask?.color
                     })
-                } header: { HeaderLabel(title: "Color") }
+                } header: { SectionHeaderLabel(title: "Color") }
 
                 // Is important...
                 Section {
@@ -249,21 +248,23 @@ struct TaskModal: View {
                     .onChange(of: isImportant, perform: { newValue in
                         isEdited["isImportant"] = isImportant != taskModel.editTask?.isImportant
                     })
-                } header: { HeaderLabel(title: "Task Priority") }
+                } header: { SectionHeaderLabel(title: "Task Priority") }
 
                 // Date & Time
                 Section {
                     // First, let user select whether the task is time-constrained
-                    PickerView<TaskDuration>(selectedItem: $selectedDuration,
+                    ListItemPickerView<TaskDuration>(selectedItem: $selectedDuration,
                                              items: TaskDuration.allCases,
                                              screenTitle: "Task Duration",
+                                             hideDefaultNavigationBar: false,
                                              mainIcon: Image("clock"),
                                              mainIconColor: .textPrimary,
                                              mainLabel: "Duration",
                                              innerIcon: nil,
                                              innerIconColor: nil,
                                              innerLabel: \TaskDuration.description,
-                                             hideSelectedValue: false)
+                                             hideSelectedValue: false,
+                                             hideRowSeparator: false)
                     .onAppear {
                         // Pre-selects duration from saved task BASED ON START & END TIME
                         if let task = taskModel.editTask {
@@ -373,7 +374,7 @@ struct TaskModal: View {
                         }
                     }
                     : nil
-                } header: { HeaderLabel(title: "Date & Time") }
+                } header: { SectionHeaderLabel(title: "Date & Time") }
             }
             .listStyle(.insetGrouped)
             .navigationTitle(taskModel.editTask != nil ? "Edit Task" : "Create a Task")
@@ -449,10 +450,9 @@ struct TaskModal: View {
                 }
             }
         }
-        .tint(.accent)
     }
-    
-    private func HeaderLabel(title: String) -> some View {
+
+    private func SectionHeaderLabel(title: String) -> some View {
         Text(title)
             .font(.paragraphP1())
             .fontWeight(.semibold)

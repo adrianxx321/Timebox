@@ -7,35 +7,20 @@
 
 import SwiftUI
 import UIKit
-
-public enum NotificationOptions: String {
-    case fiveMins = "5 minutes before"
-    case tenMins = "10 minutes before"
-    case fifteenMins = "15 minutes before"
-    case halfHour = "30 minutes before"
-}
+import UserNotifications
 
 struct SettingsScreen: View {
-    // We can't turn on notification by default for granted
-    // Since we need to respect user's privacy & get their consent before doing so
-    @AppStorage("allowedNotifications") private var isNotificationAllowed = false
-    @AppStorage("enabledNotification") private var isNotificationActive = false
-    @AppStorage("notificationOpts") private var notificationOptions = NotificationOptions.fiveMins
-    // TODO: EventKit object
-    //                    //
-    @AppStorage("whiteNoise") private var selectedWhiteNoise = "ticking"
-    
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @StateObject private var sessionModel = TaskSessionViewModel()
+    @StateObject private var settingsModel = SettingsViewModel()
+    @State private var showProfilePref = false
     @State private var showNotificationsPref = false
     @State private var showCalendarsPref = false
-    @State private var showWhiteNoisePref = false
-    @StateObject private var sessionModel = TaskSessionViewModel()
+    
+    // MARK: Core Data fetch requests
     @FetchRequest private var allCompletedTasks: FetchedResults<Task>
     @FetchRequest private var allTimeboxSessions: FetchedResults<TaskSession>
     
     init() {
-        UITableView.appearance().backgroundColor = .backgroundPrimary
-        UITableView.appearance().showsVerticalScrollIndicator = false
         let predicate = NSPredicate(format: "isCompleted == true", [])
         
         _allCompletedTasks = FetchRequest(entity: Task.entity(), sortDescriptors: [], predicate: predicate)
@@ -44,72 +29,84 @@ struct SettingsScreen: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ListSection {
-                    SettingsEntry {
+            VStack(spacing: 0) {
+                // Screen title...
+                Text("Settings")
+                    .font(.headingH2())
+                    .fontWeight(.heavy)
+                    .foregroundColor(.textPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                    .background(Color.backgroundPrimary)
+                
+                List {
+                    ListSection {
                         // Profile Picture page...
-                        Text("Display Picture")
-                    } label: {
-                        HStack(spacing: 32) {
-                            // TODO: Replace dummy
-                            Image("144083514_3832508416843992_8153494803557931190_n")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 48)
-                                .clipShape(Circle())
-                            
-                            Text("Display Picture")
-                                .font(.subheading1())
-                                .fontWeight(.bold)
-                                .foregroundColor(.textPrimary)
+                        NavigationLink(isActive: $showProfilePref) {
+                            VStack(spacing: 24) {
+                                UniversalCustomNavigationBar(screenTitle: "Avatar")
+                                Text("Display Picture").frame(maxHeight: .infinity)
+                            }
+                            .navigationBarHidden(true)
+                            .background(Color.backgroundPrimary)
+                        } label: {
+                            HStack(spacing: 32) {
+                                // TODO: Replace dummy
+                                Image("144083514_3832508416843992_8153494803557931190_n")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 48)
+                                    .clipShape(Circle())
+                                
+                                Text("Display Picture")
+                                    .font(.subheading1())
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.textPrimary)
+                            }
+                        }.listRowSeparator(.hidden)
+                        
+                        TotalView().frame(maxWidth: .infinity)
+                    }
+                    
+                    ListSection {
+                        // Notifications page...
+                        ListEntryView(selector: $showNotificationsPref, icon: Image("bell-f"), entryTitle: "Notifications", hideDefaultNavigationBar: true, iconIsDestructive: false, tagValue: settingsModel.getNotificationStatus()) {
+                            if settingsModel.notificationsAllowed {
+                                NotificationsPage()
+                            } else {
+                                NotificationsFallbackPage().padding(.horizontal)
+                            }
+                        }
+                        
+                        // Calendars page...
+                        ListEntryView(selector: $showCalendarsPref, icon: Image("calendar-alt"), entryTitle: "Calendars", hideDefaultNavigationBar: true, iconIsDestructive: false, tagValue: nil) {
+                            CalendarsFallbackPage()
+                        }
+                        
+                        // White noise page...
+                        ListItemPickerView(selectedItem: settingsModel.$selectedWhiteNoise,
+                                   items: settingsModel.whiteNoises,
+                                   screenTitle: "White Noise",
+                                   hideDefaultNavigationBar: true,
+                                   mainIcon: Image("volume-circle-f"),
+                                   mainIconColor: .accent,
+                                   mainLabel: "White Noise",
+                                   innerIcon: nil,
+                                   innerIconColor: nil,
+                                   innerLabel: \.self,
+                                   hideSelectedValue: false,
+                                   hideRowSeparator: true)
+                    }
+                    
+                    // Contact developer
+                    ListSection {
+                        ListButtonView(icon: Image("envelope-f"), entryTitle: "Contact Developer", iconIsDestructive: false) {
+                            // Bring up email contact form...
                         }
                     }
-                    
-                    TotalView().frame(maxWidth: .infinity)
                 }
-                
-                ListSection {
-                    SettingsEntry {
-                        // Profile Picture page...
-                    } label: {
-                        PickerLabel(image: Image("bell-f"), title: "Notifications", isDestructive: false)
-                    }
-                    
-                    SettingsEntry {
-                        // Profile Picture page...
-                    } label: {
-                        PickerLabel(image: Image("calendar-alt"), title: "Calendars", isDestructive: false)
-                    }
-                    
-                    SettingsEntry {
-                        // Profile Picture page...
-                    } label: {
-                        PickerLabel(image: Image("volume-circle-f"), title: "White Noise", isDestructive: false)
-                    }
-                }
-                
-                // Bring up email contact form...
-                ListSection {
-                    Button {
-                        
-                    } label: { PickerLabel(image: Image("envelope-f"), title: "Contact Developer", isDestructive: false) }
-                }
-                
-                // Perform actions to delete account...
-                ListSection {
-                    Button {
-                        
-                    } label: { PickerLabel(image: Image("trash"), title: "Delete Account", isDestructive: true) }
-                }
-                
-                // Perform action to sign out...
-                ListSection {
-                    Button {
-                        
-                    } label: { PickerLabel(image: Image("log-out"), title: "Sign Out", isDestructive: false) }
-                }
+                .listStyle(.insetGrouped)
             }
-            .navigationTitle("Settings")
             .navigationBarHidden(true)
         }
         .navigationBarHidden(true)
@@ -122,11 +119,106 @@ struct SettingsScreen: View {
         .padding(8)
     }
     
-    private func SettingsEntry<Content: View, Label: View>(@ViewBuilder content: () -> Content, label: () -> Label) -> some View {
-        NavigationLink {
-            content()
-        } label: { label() }
-            .listRowSeparator(.hidden)
+    private func NotificationsFallbackPage() -> some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            Image("request-notifications")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: UIScreen.main.bounds.width - 64,
+                       maxHeight: isSmallDevice ? 240 : 360)
+
+            VStack(spacing: 16) {
+                Text("We need your permission.")
+                    .font(.headingH2())
+                    .fontWeight(.heavy)
+                    .foregroundColor(.textPrimary)
+
+                VStack(spacing: 8) {
+                    Text("Grant notification access to Timebox")
+                        .fontWeight(.semibold)
+                    Text("So we can keep you reminded all the time.")
+                        .fontWeight(.semibold)
+                }
+                .font(.paragraphP1())
+                .foregroundColor(.textSecondary)
+                .multilineTextAlignment(.center)
+            }
+            
+            CTAButton(btnLabel: "Allow Access", btnFullSize: true, btnAction: {
+                // Request user's permission for notifications
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { success, _ in
+                    if success {
+                        withAnimation {
+                            settingsModel.notificationsAllowed = true
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+                        }
+                    }
+                })
+                
+            }).offset(y: 16)
+        }
+        .frame(maxHeight: .infinity, alignment: .center)
+    }
+    
+    private func CalendarsFallbackPage() -> some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            Image("request-calendars")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: UIScreen.main.bounds.width - 64,
+                       maxHeight: isSmallDevice ? 240 : 360)
+
+            VStack(spacing: 16) {
+                Text("We need your permission.")
+                    .font(.headingH2())
+                    .fontWeight(.heavy)
+                    .foregroundColor(.textPrimary)
+
+                VStack(spacing: 8) {
+                    Text("Let us access your calendar")
+                        .fontWeight(.semibold)
+                    Text("To have your existing plans timeboxed.")
+                        .fontWeight(.semibold)
+                }
+                .font(.paragraphP1())
+                .foregroundColor(.textSecondary)
+                .multilineTextAlignment(.center)
+            }
+            
+            CTAButton(btnLabel: "Allow Access", btnFullSize: true, btnAction: {
+                // Request user's permission for calendars
+            }).offset(y: 16)
+        }
+    }
+    
+    private func NotificationsPage() -> some View {
+        List {
+            Group {
+                ListSection {
+                    Toggle(isOn: settingsModel.$notifyAtStart) {
+                        Text("Notify me at the start")
+                    }
+                }
+                
+                ListSection {
+                    Toggle(isOn: settingsModel.$notifyAtEnd) {
+                        Text("Notify me at the end")
+                    }
+                }
+                
+                ListSection {
+                    Toggle(isOn: settingsModel.$notifyAllDay) {
+                        Text("All-Day Tasks Notifications")
+                    }
+                }
+            }
+            .font(.paragraphP1().weight(.semibold))
+            .foregroundColor(.textPrimary)
+            .tint(.accent)
+        }
     }
     
     private func TotalView() -> some View {
@@ -160,20 +252,6 @@ struct SettingsScreen: View {
         .font(.paragraphP1())
     }
     
-    private func PickerLabel(image: Image, title: String, isDestructive: Bool) -> some View {
-        HStack(spacing: 16) {
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 24)
-                .foregroundColor(isDestructive ? .uiRed : .accent)
-            
-            Text(title)
-                .font(.paragraphP1())
-                .fontWeight(.bold)
-                .foregroundColor(isDestructive ? .uiRed : .textPrimary)
-        }
-    }
 }
 
 struct SettingsScreen_Previews: PreviewProvider {
