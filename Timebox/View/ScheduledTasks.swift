@@ -17,8 +17,6 @@ struct ScheduledTasks: View {
     @Environment(\.managedObjectContext) var context
     
     var body: some View {
-        var calendarSettings = taskModel.settingsModel.calendarStore
-        
         NavigationView {
             VStack(spacing: 24) {
                 VStack {

@@ -28,6 +28,7 @@ class SettingsViewModel: ObservableObject {
     
     // This is the accessor for all your calendars
     let calendarAccessor = EKEventStore()
+    let notificationAccessor = UNUserNotificationCenter.current()
     
     init() {
         loadWhiteNoises()
@@ -64,39 +65,26 @@ class SettingsViewModel: ObservableObject {
     }
     
     func loadCalendars() {
-        self.calendarAccessor.requestAccess(to: .event) { granted, denied in
-            DispatchQueue.main.async {
-                if granted {
-                    let calendar = Calendar.current
-                    let today = calendar.startOfDay(for: Date())
-                    let nextYear = calendar.date(byAdding: .year, value: 1, to: today)!
-                    
-                    // Fetch all calendars...
-                    let calendars = self.calendarAccessor.calendars(for: .event)
-                    self.calendarStore = calendars
-                    
-                    // Fetch all tasks from all calendars...
-                    let predicate = self.calendarAccessor.predicateForEvents(withStart: today, end: nextYear, calendars: nil)
-                    // Returned EKEvents are sorted chronologically
-                    self.eventStore = self.calendarAccessor.events(matching: predicate).sorted(by: {
-                        $0.startDate < $1.startDate
-                    })
-                } else {
-                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-                }
-            }
+        let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
+        
+        if EKAuthStatus == .authorized {
+            self.calendarStore = self.calendarAccessor.calendars(for: .event)
         }
     }
 
     /// Request user's permission for notifications for once
     func requestNotificationsPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { success, _ in
-            DispatchQueue.main.async {
-                if success {
-                    withAnimation {
-                        self.notificationsAllowed = true
+        self.notificationAccessor.getNotificationSettings(completionHandler: { [self] settings in
+            if settings.authorizationStatus == .notDetermined {
+                self.notificationAccessor.requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { granted, _ in
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            self.notificationsAllowed = granted
+                        }
                     }
-                } else {
+                })
+            } else if settings.authorizationStatus == .denied {
+                DispatchQueue.main.async {
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
                 }
             }
@@ -104,15 +92,20 @@ class SettingsViewModel: ObservableObject {
     }
     
     /// Request user's permission for calendars for once
-    func requestCalendarPermission() {
+    func requestCalendarAccessPermission() {
         let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
         
-        if EKAuthStatus == .authorized {
-            DispatchQueue.main.async {
-                self.syncCalendarsAllowed = true
+        if EKAuthStatus == .notDetermined {
+            self.calendarAccessor.requestAccess(to: .event) { granted, _ in
+                DispatchQueue.main.async {
+                    self.syncCalendarsAllowed = granted
+                }
             }
-        } else {
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+        } else if EKAuthStatus == .denied {
+            DispatchQueue.main.async {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+            }
         }
     }
 }
+

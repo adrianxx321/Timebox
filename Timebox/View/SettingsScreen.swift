@@ -8,6 +8,7 @@
 import SwiftUI
 import UIKit
 import MessageUI
+import EventKit
 
 struct SettingsScreen: View {
     @StateObject private var sessionModel = TaskSessionViewModel()
@@ -207,7 +208,7 @@ struct SettingsScreen: View {
             }
             
             CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
-                settingsModel.requestCalendarPermission()
+                settingsModel.requestCalendarAccessPermission()
             }).offset(y: 16)
         }
     }
@@ -243,8 +244,7 @@ struct SettingsScreen: View {
         List {
             let calendars = settingsModel.calendarStore
             ForEach(calendars, id:\.self) { calendar in
-                Text(calendar.title
-                )
+                Text("\(calendar.source.title)")
             }
         }
     }
