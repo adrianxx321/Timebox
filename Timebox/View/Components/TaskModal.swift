@@ -426,7 +426,7 @@ struct TaskModal: View {
                             task.taskStartTime = taskStartTime
                             task.taskEndTime = taskEndTime
                             task.isCompleted = false
-                            task.isImported = false
+                            task.ekeventID = nil
                         }
 
                         // Saving

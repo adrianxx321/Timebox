@@ -25,7 +25,7 @@ extension Task {
     @NSManaged public var id: UUID?
     @NSManaged public var isCompleted: Bool
     @NSManaged public var isImportant: Bool
-    @NSManaged public var isImported: Bool
+    @NSManaged public var ekeventID: String?
     @NSManaged public var taskEndTime: Date?
     @NSManaged public var taskLabel: String?
     @NSManaged public var taskStartTime: Date?

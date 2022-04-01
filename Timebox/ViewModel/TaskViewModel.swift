@@ -6,15 +6,20 @@
 //
 
 import SwiftUI
-import CoreData
+import EventKit
 
 class TaskViewModel: ObservableObject {
     @Published var currentWeek: [Date] = []
     @Published var addNewTask: Bool = false
     @Published var editTask: Task?
+    // Subscribes to the source of truth
+    @Published var settingsModel = SettingsViewModel()
     
     // Currently selected day...
     @Published var currentDay = Date()
+    
+    // MARK: Core Data environment
+    @Environment(\.managedObjectContext) var context
     
     init() {
         getCurrentWeek()
@@ -48,6 +53,46 @@ class TaskViewModel: ObservableObject {
         currentWeek[currentWeek.count - 1] = lastWeekDay
     }
     
+    func importTasks() -> [Task] {
+        let calendarStore = settingsModel.calendarStore
+        var tasks = [Task]()
+        
+        if calendarStore.isEmpty {
+            return tasks
+        } else {
+            let calendar = Calendar.current
+            let eventStore = EKEventStore()
+            let today = calendar.startOfDay(for: Date())
+            let monthFromNow = calendar.date(byAdding: .month, value: 1, to: today)!
+            let predicate = eventStore.predicateForEvents(withStart: today, end: monthFromNow, calendars: calendarStore)
+            let events = eventStore.events(matching: predicate)
+            
+            events.forEach { event in
+                let newTask = Task(context: context)
+                newTask.id = UUID()
+                newTask.taskTitle = event.title
+                newTask.subtask = []
+                newTask.taskLabel = event.calendar.title
+                newTask.color = UIColor(cgColor: event.calendar.cgColor)
+                newTask.isImportant = event.hasAlarms
+                newTask.taskStartTime = event.isAllDay ? calendar.startOfDay(for: event.startDate) : event.startDate
+                newTask.taskEndTime = event.isAllDay ? getOneMinToMidnight(event.startDate) : event.endDate
+                newTask.isCompleted = false
+                newTask.ekeventID = event.eventIdentifier
+                
+                tasks.append(newTask)
+            }
+        }
+        
+        return tasks
+    }
+    
+    func lookupCalendarEvent(_ id: String) -> EKEvent? {
+        let eventFinder = EKEventStore()
+        
+        return eventFinder.event(withIdentifier: id)
+    }
+
     func updateWeek(offset: Int) {
         let calendar = Calendar.current
 

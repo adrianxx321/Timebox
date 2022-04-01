@@ -11,7 +11,7 @@ import MessageUI
 
 struct SettingsScreen: View {
     @StateObject private var sessionModel = TaskSessionViewModel()
-    @StateObject private var settingsModel = SettingsViewModel()
+    @ObservedObject private var settingsModel = SettingsViewModel()
     @State private var showProfilePref = false
     @State private var showNotificationsPref = false
     @State private var showCalendarsPref = false
@@ -93,9 +93,9 @@ struct SettingsScreen: View {
                                       iconIsDestructive: false,
                                       tagValue: nil) {
                             if settingsModel.syncCalendarsAllowed {
-                                Text("Calendar")
+                                CalendarsPage()
                             } else {
-                                CalendarsFallbackPage()
+                                CalendarsFallbackPage().padding(.horizontal)
                             }
                         }
                         
@@ -132,7 +132,7 @@ struct SettingsScreen: View {
                            isPresented: $showCantSendEmail,
                            actions: {},
                            message: {
-                        Text("Your device is not capable of composing email, or is lack of an email client app to do so. ")
+                        Text("Your device is not capable of composing email, or is lack of an email client app to do so.")
                     })
                 }
                 .listStyle(.insetGrouped)
@@ -207,7 +207,7 @@ struct SettingsScreen: View {
             }
             
             CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
-                settingsModel.requestCalendarAccessPermission()
+                settingsModel.requestCalendarPermission()
             }).offset(y: 16)
         }
     }
@@ -236,6 +236,16 @@ struct SettingsScreen: View {
             .font(.paragraphP1().weight(.semibold))
             .foregroundColor(.textPrimary)
             .tint(.accent)
+        }
+    }
+    
+    private func CalendarsPage() -> some View {
+        List {
+            let calendars = settingsModel.calendarStore
+            ForEach(calendars, id:\.self) { calendar in
+                Text(calendar.title
+                )
+            }
         }
     }
     

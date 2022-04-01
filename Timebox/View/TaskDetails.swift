@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import EventKit
 
 struct TaskDetails: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
@@ -265,27 +266,30 @@ struct TaskDetails: View {
             : nil
             
             // Indicate if task comes from imported calendar...
-            selectedTask.isImported ?
-            HStack(alignment: .top, spacing: 8) {
-                Image("alert")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 28)
-                    .foregroundColor(.textSecondary)
-                    .rotationEffect(Angle(degrees: 180))
+            if let ekEventID = selectedTask.ekeventID {
+                let foundEvent = taskModel.lookupCalendarEvent(ekEventID)
+                let foundCalendarSource = foundEvent?.calendar.source.title.capitalized ?? "Calendar"
                 
-                Group {
-                    Text("This task/event comes from your")
-                    .fontWeight(.semibold)
-                    .foregroundColor(.textSecondary) +
-                    Text(" Google Calendar")
-                        .fontWeight(.bold)
-                        .foregroundColor(Color(selectedTask.color ?? .accent))
-                }
-                .font(.paragraphP1())
-                .lineSpacing(4)
-            }.padding(.top, 8)
-            : nil
+                HStack(alignment: .top, spacing: 8) {
+                    Image("alert")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 28)
+                        .foregroundColor(.textSecondary)
+                        .rotationEffect(Angle(degrees: 180))
+                    
+                    Group {
+                        Text("This task/event comes from your ")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.textSecondary) +
+                        Text(foundCalendarSource)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color(selectedTask.color ?? .accent))
+                    }
+                    .font(.paragraphP1())
+                    .lineSpacing(4)
+                }.padding(.top, 8)
+            }
         }
     }
     

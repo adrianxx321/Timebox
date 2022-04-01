@@ -8,16 +8,16 @@
     </entity>
     <entity name="Task" representedClassName="Task" syncable="YES">
         <attribute name="color" optional="YES" attributeType="Transformable" valueTransformerName="UIColorTransformer" customClassName=" UIColor"/>
+        <attribute name="ekeventID" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isImportant" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="isImported" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="taskEndTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="taskLabel" optional="YES" attributeType="String"/>
         <attribute name="taskStartTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="taskTitle" optional="YES" attributeType="String"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TaskSession" inverseName="task" inverseEntity="TaskSession"/>
-        <relationship name="subtask" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Subtask" inverseName="parentTask" inverseEntity="Subtask"/>
+        <relationship name="subtask" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Subtask" inverseName="parentTask" inverseEntity="Subtask"/>
     </entity>
     <entity name="TaskSession" representedClassName="TaskSession" syncable="YES">
         <attribute name="focusedDuration" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -28,7 +28,7 @@
     </entity>
     <elements>
         <element name="Subtask" positionX="-253.4375" positionY="-26.25" width="128" height="103"/>
-        <element name="Task" positionX="-59.15625" positionY="-93.86328125" width="128" height="208"/>
+        <element name="Task" positionX="-59.15625" positionY="-93.86328125" width="128" height="194"/>
         <element name="TaskSession" positionX="176.73046875" positionY="-70.23828125" width="128" height="118"/>
     </elements>
 </model>
