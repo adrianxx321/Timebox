@@ -10,6 +10,7 @@ import SwiftUI
 struct ScheduledTasks: View {
     @Namespace var animation
     @StateObject var taskModel = TaskViewModel()
+    @ObservedObject var settingsModel = SettingsViewModel()
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
     

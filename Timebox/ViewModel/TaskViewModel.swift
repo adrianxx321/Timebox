@@ -53,15 +53,14 @@ class TaskViewModel: ObservableObject {
         currentWeek[currentWeek.count - 1] = lastWeekDay
     }
     
-    func importTasks() -> [Task] {
+    func importTasks() {
         let calendarStore = settingsModel.calendarStore
-        var tasks = [Task]()
         
         if calendarStore.isEmpty {
-            return tasks
+            return
         } else {
             let calendar = Calendar.current
-            let eventStore = EKEventStore()
+            let eventStore = settingsModel.calendarAccessor
             let today = calendar.startOfDay(for: Date())
             let monthFromNow = calendar.date(byAdding: .month, value: 1, to: today)!
             let predicate = eventStore.predicateForEvents(withStart: today, end: monthFromNow, calendars: calendarStore)
@@ -80,11 +79,13 @@ class TaskViewModel: ObservableObject {
                 newTask.isCompleted = false
                 newTask.ekeventID = event.eventIdentifier
                 
-                tasks.append(newTask)
+                do {
+                    try context.save()
+                } catch { let error = error
+                    print(error.localizedDescription)
+                }
             }
         }
-        
-        return tasks
     }
     
     func lookupCalendarEvent(_ id: String) -> EKEvent? {

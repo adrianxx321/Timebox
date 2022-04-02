@@ -26,7 +26,7 @@ class SettingsViewModel: ObservableObject {
     @AppStorage("syncCalendarsAllowed") public var syncCalendarsAllowed = false
     @AppStorage("whiteNoise") public var selectedWhiteNoise = "Ticking"
     
-    // This is the accessor for all your calendars
+    // This is the accessor for all your calendars/notifications
     let calendarAccessor = EKEventStore()
     let notificationAccessor = UNUserNotificationCenter.current()
     
@@ -66,6 +66,7 @@ class SettingsViewModel: ObservableObject {
     
     func loadCalendars() {
         let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
+        self.syncCalendarsAllowed = EKAuthStatus == .authorized
         
         if EKAuthStatus == .authorized {
             self.calendarStore = self.calendarAccessor.calendars(for: .event)
