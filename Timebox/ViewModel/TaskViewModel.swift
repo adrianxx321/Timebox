@@ -14,6 +14,9 @@ class TaskViewModel: ObservableObject {
     @Published var editTask: Task?
     // Subscribes to the source of truth
     @Published var settingsModel = SettingsViewModel()
+    // This is the store for events from all calendars
+    // It is dependent on EKCalendar store from settings
+    @Published var eventStore: [EKEvent] = []
     
     // Currently selected day...
     @Published var currentDay = Date()
@@ -23,6 +26,7 @@ class TaskViewModel: ObservableObject {
     
     init() {
         getCurrentWeek()
+        importCalendarEvents()
     }
     
     func getCurrentWeek() {
@@ -53,38 +57,20 @@ class TaskViewModel: ObservableObject {
         currentWeek[currentWeek.count - 1] = lastWeekDay
     }
     
-    func importTasks() {
+    func importCalendarEvents() {
         let calendarStore = settingsModel.calendarStore
         
         if calendarStore.isEmpty {
             return
         } else {
-            let calendar = Calendar.current
+            // Dependency on Settings' ViewModel EKEvent accessor
             let eventStore = settingsModel.calendarAccessor
+            let calendar = Calendar.current
             let today = calendar.startOfDay(for: Date())
             let monthFromNow = calendar.date(byAdding: .month, value: 1, to: today)!
             let predicate = eventStore.predicateForEvents(withStart: today, end: monthFromNow, calendars: calendarStore)
-            let events = eventStore.events(matching: predicate)
             
-            events.forEach { event in
-                let newTask = Task(context: context)
-                newTask.id = UUID()
-                newTask.taskTitle = event.title
-                newTask.subtask = []
-                newTask.taskLabel = event.calendar.title
-                newTask.color = UIColor(cgColor: event.calendar.cgColor)
-                newTask.isImportant = event.hasAlarms
-                newTask.taskStartTime = event.isAllDay ? calendar.startOfDay(for: event.startDate) : event.startDate
-                newTask.taskEndTime = event.isAllDay ? getOneMinToMidnight(event.startDate) : event.endDate
-                newTask.isCompleted = false
-                newTask.ekeventID = event.eventIdentifier
-                
-                do {
-                    try context.save()
-                } catch { let error = error
-                    print(error.localizedDescription)
-                }
-            }
+            self.eventStore = eventStore.events(matching: predicate)
         }
     }
     
@@ -92,6 +78,46 @@ class TaskViewModel: ObservableObject {
         let eventFinder = EKEventStore()
         
         return eventFinder.event(withIdentifier: id)
+    }
+    
+    func getOngoingTasks(data: FetchedResults<Task>) -> [Task] {
+        return data.filter {
+            self.isOngoing($0)
+        }
+    }
+    
+//    func getBacklogTasks(data: FetchedResults<Task>, hideCompleted: Bool) -> [Task] {
+//        let filtered = data.filter {
+//            !self.isScheduledTask($0)
+//        }.sorted { $0.isImportant && !$1.isImportant }
+//
+//        return hideCompleted ? filtered.filter { $0.isCompleted } : filtered
+//    }
+    
+    func getScheduledTasks(data: FetchedResults<Task>, hideCompleted: Bool) -> [Task] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: self.currentDay)
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
+        
+        if data.isEmpty {
+            return []
+        } else {
+            let filtered = data.filter {
+                self.isScheduledTask($0)
+            }.filter {
+                $0.taskStartTime! >= today && $0.taskStartTime! < tomorrow
+            }
+            
+            return hideCompleted ? filtered.filter{ !$0.isCompleted } : filtered
+        }
+    }
+    
+    func filterTimeboxedTasks(data: [Task]) -> [Task] {
+        return data.filter { self.isTimeboxedTask($0) }
+    }
+    
+    func filterAllDayTasks(data: [Task]) -> [Task] {
+        return data.filter { self.isAllDayTask($0) }
     }
 
     func updateWeek(offset: Int) {
@@ -169,6 +195,10 @@ class TaskViewModel: ObservableObject {
         return completedCount
     }
     
+    func getCompletedTaskCount(_ tasks: [Task]) -> Int {
+        return tasks.filter { $0.isCompleted }.count
+    }
+    
     func isTimeboxedTask(_ task: Task) -> Bool {
         return isScheduledTask(task) && !isAllDayTask(task)
     }
@@ -185,4 +215,26 @@ class TaskViewModel: ObservableObject {
     func isScheduledTask(_ task: Task) -> Bool {
         return task.taskStartTime != nil && task.taskEndTime != nil
     }
+    
+    func isOngoing(_ task: Task) -> Bool {
+        return task.taskStartTime ?? Date() <= Date() && task.taskEndTime ?? Date() > Date()
+    }
+    
+    func isOverdue(_ task: Task) -> Bool {
+        return task.taskEndTime ?? Date() < Date()
+    }
 }
+
+//events.forEach { event in
+//    let newTask = Task(context: context)
+//    newTask.id = UUID()
+//    newTask.taskTitle = event.title
+//    newTask.subtask = []
+//    newTask.taskLabel = event.calendar.title
+//    newTask.color = UIColor(cgColor: event.calendar.cgColor)
+//    newTask.isImportant = event.hasAlarms
+//    newTask.taskStartTime = event.isAllDay ? calendar.startOfDay(for: event.startDate) : event.startDate
+//    newTask.taskEndTime = event.isAllDay ? getOneMinToMidnight(event.startDate) : event.endDate
+//    newTask.isCompleted = false
+//    newTask.ekeventID = event.eventIdentifier
+//}

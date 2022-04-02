@@ -16,8 +16,6 @@ class SettingsViewModel: ObservableObject {
     @Published var whiteNoises: [String] = []
     // This is the store for all calendar entities retrieved from your calendar
     @Published var calendarStore = [EKCalendar]()
-    // This is the store for events from all calendars
-    @Published var eventStore = [EKEvent]()
     
     @AppStorage("notificationsAllowed") public var notificationsAllowed = false
     @AppStorage("notifyAtStart") public var notifyAtStart = true
@@ -79,9 +77,7 @@ class SettingsViewModel: ObservableObject {
             if settings.authorizationStatus == .notDetermined {
                 self.notificationAccessor.requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { granted, _ in
                     DispatchQueue.main.async {
-                        withAnimation {
-                            self.notificationsAllowed = granted
-                        }
+                        self.notificationsAllowed = granted
                     }
                 })
             } else if settings.authorizationStatus == .denied {

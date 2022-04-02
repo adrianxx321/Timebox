@@ -45,7 +45,6 @@ struct TaskDetails: View {
                                                 
                                                 // Automatically check parent task as completed
                                                 // When all subtasks are done...
-                                                selectedTask.objectWillChange.send()
                                                 selectedTask.isCompleted = !selectedTask.subtasks.contains(where: { !$0.isCompleted })
                                                 
                                                 // Save to Core Data...
@@ -176,7 +175,6 @@ struct TaskDetails: View {
     
     private func NavBarView() -> some View {
         HStack {
-            
             // Back button leading to previous screen...
             Button {
                 presentationMode.wrappedValue.dismiss()

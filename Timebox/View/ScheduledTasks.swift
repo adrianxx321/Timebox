@@ -8,14 +8,36 @@
 import SwiftUI
 
 struct ScheduledTasks: View {
+    // MARK: Core Data stuff
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
     @StateObject var taskModel = TaskViewModel()
     @ObservedObject var settingsModel = SettingsViewModel()
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
     
-    // MARK: Core Data environment
-    @Environment(\.managedObjectContext) var context
+    // MARK: Tasks prepared from CD fetch
+    var timeboxedTasks: [Task] {
+        get {
+            let filtered = taskModel.filterTimeboxedTasks(data: self.fetchedTasks.map { $0 as Task })
+            
+            return self.hideCompletedTasks ? filtered.filter{ !$0.isCompleted } : filtered
+        }
+    }
+    var allDayTasks: [Task] {
+        get {
+            let filtered = taskModel.filterAllDayTasks(data: self.fetchedTasks.map { $0 as Task })
+            
+            return self.hideCompletedTasks ? filtered.filter{ !$0.isCompleted } : filtered
+        }
+    }
+    
+    init() {
+        _fetchedTasks = FetchRequest(
+            entity: Task.entity(),                    
+            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: false)])
+    }
     
     var body: some View {
         NavigationView {
@@ -37,13 +59,39 @@ struct ScheduledTasks: View {
                 
                 // A scrollview showing a list of tasks...
                 ScrollView(.vertical, showsIndicators: false) {
-                    DynamicTaskList(dateToFilter: taskModel.currentDay,
-                                    hideCompleted: hideCompletedTasks)
+                    if timeboxedTasks.isEmpty && allDayTasks.isEmpty {
+                        ScreenFallbackView(title: "No scheduled task",
+                                          image: Image("no-task"),
+                                          caption1: "You don't have any schedule for today.",
+                                          caption2: "Tap the plus button to create a new task.")
+                    } else {
+                        TaskListView().padding(.bottom, 32)
+                    }
                 }
             }
             .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
+//            .onReceive(taskModel.$eventStore ) { events in
+//                let calendar = Calendar.current
+//                // Add to Core Data if not already existed...
+//                // Update the task entity if EKEvent is changed...
+//                events.forEach { event in
+//                    let newTask = Task(context: context)
+//                    newTask.id = UUID()
+//                    newTask.taskTitle = event.title
+//                    newTask.subtask = []
+//                    newTask.taskLabel = event.calendar.title
+//                    newTask.color = UIColor(cgColor: event.calendar.cgColor)
+//                    newTask.isImportant = event.hasAlarms
+//                    newTask.taskStartTime = event.isAllDay ? calendar.startOfDay(for: event.startDate) : event.startDate
+//                    newTask.taskEndTime = event.isAllDay ? taskModel.getOneMinToMidnight(event.startDate) : event.endDate
+//                    newTask.isCompleted = false
+//                    newTask.ekeventID = event.eventIdentifier
+//
+//                    try? context.save()
+//                }
+//            }
         }
         .navigationBarHidden(true)
     }
@@ -163,6 +211,41 @@ struct ScheduledTasks: View {
                 }
             }
             .padding(.horizontal)
+        }
+    }
+    
+    private func TaskListView() -> some View {
+        VStack(alignment: .leading, spacing: 32) {
+            // Show time-constrained task if any...
+            self.timeboxedTasks.count > 0 ? TaskSectionView(data: self.timeboxedTasks, header: "Timeboxed", icon: Image("clock")) : nil
+            
+            // Show all-day task if any...
+            self.allDayTasks.count > 0 ? TaskSectionView(data: self.allDayTasks, header: "To-do Anytime", icon: Image("checkmark")) : nil
+        }
+    }
+    
+    private func TaskSectionView(data: [Task], header: String, icon: Image) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Section {
+                // Timeboxed task cards...
+                ForEach(data, id: \.id) { task in
+                    TaskCardView(task: task)
+                }
+            } header: {
+                // Heading for time-constrained tasks...
+                HStack(spacing: 12) {
+                    icon
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundColor(.textPrimary)
+                        .frame(width: 28)
+
+                    Text(header)
+                        .font(.subheading1())
+                        .fontWeight(.bold)
+                        .foregroundColor(.textPrimary)
+                }
+            }
         }
     }
 }

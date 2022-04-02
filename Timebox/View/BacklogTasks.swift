@@ -8,21 +8,55 @@
 import SwiftUI
 
 struct BacklogTasks: View {
+    // MARK: Core Data stuff
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @FetchRequest var fetchedBacklog: FetchedResults<Task>
     @StateObject var taskModel = TaskViewModel()
     @State private var hideCompletedTasks = false
     
-    var body: some View {
-        VStack(spacing: 16) {
-            HeaderView()
-                .padding()
+    // MARK: Tasks prepared from CD fetch
+    var backlogTasks: [Task] {
+        get {
+            let tasks = self.fetchedBacklog.map { $0 as Task }
             
-            // Scrollview showing list of backlog tasks...
-            ScrollView(.vertical, showsIndicators: false) {
-                DynamicTaskList(hideCompleted: hideCompletedTasks)
-            }
+            return hideCompletedTasks ? tasks.filter{ !$0.isCompleted } : tasks
         }
-        .background(Color.backgroundPrimary)
+    }
+    
+    init() {
+        let predicate = NSPredicate(format: "taskStartTime == nil AND taskEndTime == nil", argumentArray: [])
+
+        _fetchedBacklog = FetchRequest(
+            entity: Task.entity(),
+            sortDescriptors: [.init(keyPath: \Task.isImportant, ascending: false)],
+            predicate: predicate)
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 16) {
+                HeaderView()
+                    .padding()
+                
+                // Scrollview showing list of backlog tasks...
+                ScrollView(.vertical, showsIndicators: false) {
+                    if backlogTasks.isEmpty {
+                        ScreenFallbackView(title: "Your untimed to-do's",
+                                           image: Image("backlog"),
+                                           caption1: "Task with no specific date goes here.",
+                                           caption2: "")
+                    } else {
+                        VStack(spacing: 16) {
+                            ForEach(backlogTasks, id: \.id) { task in
+                                TaskCardView(task: task)
+                            }
+                        }.padding(.bottom, 32)
+                    }
+                }
+            }
+            .background(Color.backgroundPrimary)
+            .navigationBarHidden(true)
+        }
         .navigationBarHidden(true)
     }
     

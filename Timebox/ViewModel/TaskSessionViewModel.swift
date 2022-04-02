@@ -10,6 +10,12 @@ import SwiftUI
 class TaskSessionViewModel: ObservableObject {
     // Some properties to be used by timer
     
+    func getTotalTimeboxedHours(data: [TaskSession]) -> String {
+        let total = data.reduce(0) { $0 + $1.focusedDuration }
+        
+        return self.formatTimeInterval(interval: TimeInterval(total), unitsStyle: .abbreviated, units: [.hour, .minute])
+    }
+    
     func analyseTimeboxByWeek(data: [TaskSession]) -> [(String, Int64)] {
         let defaultData: [(String, Int64)] = [("Mon", 0), ("Tue", 0), ("Wed", 0),
                                               ("Thu", 0), ("Fri", 0), ("Sat", 0),

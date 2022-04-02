@@ -29,6 +29,7 @@
 		B567D40127F3585000BB469F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B567D40027F3585000BB469F /* SettingsViewModel.swift */; };
 		B569230927F18A6A0010A04C /* UIColorPickerModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B569230827F18A6A0010A04C /* UIColorPickerModal.swift */; };
 		B569230B27F1BBEB0010A04C /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B569230A27F1BBEB0010A04C /* SettingsScreen.swift */; };
+		B569429427F81CAB00A6E701 /* ScreenFallbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B569429327F81CAB00A6E701 /* ScreenFallbackView.swift */; };
 		B58C531E27D7035B00A48AE8 /* TaskDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58C531D27D7035B00A48AE8 /* TaskDetails.swift */; };
 		B592B9FB27CE0A97009F079C /* ScheduledTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */; };
 		B592B9FF27CE2079009F079C /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FE27CE2079009F079C /* TaskViewModel.swift */; };
@@ -50,7 +51,6 @@
 		B5D3081527E7071900959EF5 /* ListItemPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D3081427E7071900959EF5 /* ListItemPickerView.swift */; };
 		B5D408AE27EC7378007FEB90 /* OngoingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D408AD27EC7378007FEB90 /* OngoingCardView.swift */; };
 		B5D9B60927EDF11700B541AA /* DynamicAnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D9B60827EDF11700B541AA /* DynamicAnalyticsView.swift */; };
-		B5DB8A2A27D4B2A7000D8B51 /* DynamicTaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */; };
 		B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */; };
 		B5DB8A3B27D4B57B000D8B51 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */; };
 		B5DB8A6C27D50167000D8B51 /* Timebox.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */; };
@@ -85,6 +85,7 @@
 		B567D40027F3585000BB469F /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		B569230827F18A6A0010A04C /* UIColorPickerModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorPickerModal.swift; sourceTree = "<group>"; };
 		B569230A27F1BBEB0010A04C /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		B569429327F81CAB00A6E701 /* ScreenFallbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenFallbackView.swift; sourceTree = "<group>"; };
 		B58C531D27D7035B00A48AE8 /* TaskDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetails.swift; sourceTree = "<group>"; };
 		B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledTasks.swift; sourceTree = "<group>"; };
 		B592B9FE27CE2079009F079C /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
@@ -107,7 +108,6 @@
 		B5D3081427E7071900959EF5 /* ListItemPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItemPickerView.swift; sourceTree = "<group>"; };
 		B5D408AD27EC7378007FEB90 /* OngoingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OngoingCardView.swift; sourceTree = "<group>"; };
 		B5D9B60827EDF11700B541AA /* DynamicAnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicAnalyticsView.swift; sourceTree = "<group>"; };
-		B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DynamicTaskList.swift; sourceTree = "<group>"; };
 		B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorTransformer.swift; sourceTree = "<group>"; };
 		B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		B5DB8A6B27D50167000D8B51 /* TimeboxCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TimeboxCoreData.xcdatamodel; sourceTree = "<group>"; };
@@ -248,7 +248,6 @@
 			isa = PBXGroup;
 			children = (
 				B5D9B60827EDF11700B541AA /* DynamicAnalyticsView.swift */,
-				B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */,
 				B5D152F827D082E10073421B /* TaskCardView.swift */,
 				B5D408AD27EC7378007FEB90 /* OngoingCardView.swift */,
 				B562123027E41E1C00A45AD7 /* TaskModal.swift */,
@@ -260,6 +259,7 @@
 				B5015D1B27F5B08F00D01DB6 /* UniversalCustomNavigationBar.swift */,
 				B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */,
 				B5015D2127F6107200D01DB6 /* MailView.swift */,
+				B569429327F81CAB00A6E701 /* ScreenFallbackView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -371,9 +371,9 @@
 				B569230927F18A6A0010A04C /* UIColorPickerModal.swift in Sources */,
 				B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */,
 				B5A0822C27EF1C92000F7BE3 /* String+extension.swift in Sources */,
-				B5DB8A2A27D4B2A7000D8B51 /* DynamicTaskList.swift in Sources */,
 				B5DB8A3B27D4B57B000D8B51 /* Persistence.swift in Sources */,
 				B5D408AE27EC7378007FEB90 /* OngoingCardView.swift in Sources */,
+				B569429427F81CAB00A6E701 /* ScreenFallbackView.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
 				B5015D1C27F5B08F00D01DB6 /* UniversalCustomNavigationBar.swift in Sources */,
 				B5B43B3927F0669300136E73 /* TaskSession.swift in Sources */,

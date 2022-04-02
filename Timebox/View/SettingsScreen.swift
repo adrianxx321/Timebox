@@ -11,7 +11,11 @@ import MessageUI
 import EventKit
 
 struct SettingsScreen: View {
+    // MARK: Core Data fetch requests
+    @FetchRequest private var fetchCompletedTasks: FetchedResults<Task>
+    @FetchRequest private var fetchedSessions: FetchedResults<TaskSession>
     @StateObject private var sessionModel = TaskSessionViewModel()
+    @StateObject private var taskModel = TaskViewModel()
     @ObservedObject private var settingsModel = SettingsViewModel()
     @State private var showProfilePref = false
     @State private var showNotificationsPref = false
@@ -20,15 +24,23 @@ struct SettingsScreen: View {
     @State private var showCantSendEmail = false
     @State private var result: Result<MFMailComposeResult, Error>? = nil
     
-    // MARK: Core Data fetch requests
-    @FetchRequest private var allCompletedTasks: FetchedResults<Task>
-    @FetchRequest private var allTimeboxSessions: FetchedResults<TaskSession>
+    // MARK: Data prepared from CD fetch
+    var totalCompleted: Int {
+        get {
+            return fetchCompletedTasks.count
+        }
+    }
+    var totalHours: String {
+        get {
+            return sessionModel.getTotalTimeboxedHours(data: fetchedSessions.map { $0 as TaskSession })
+        }
+    }
     
     init() {
         let predicate = NSPredicate(format: "isCompleted == true", [])
         
-        _allCompletedTasks = FetchRequest(entity: Task.entity(), sortDescriptors: [], predicate: predicate)
-        _allTimeboxSessions = FetchRequest(entity: TaskSession.entity(), sortDescriptors: [])
+        _fetchCompletedTasks = FetchRequest(entity: Task.entity(), sortDescriptors: [], predicate: predicate)
+        _fetchedSessions = FetchRequest(entity: TaskSession.entity(), sortDescriptors: [])
     }
     
     var body: some View {
@@ -176,7 +188,9 @@ struct SettingsScreen: View {
             }
             
             CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
-                settingsModel.requestNotificationsPermission()
+                withAnimation {
+                    settingsModel.requestNotificationsPermission()
+                }
             }).offset(y: 16)
         }
         .frame(maxHeight: .infinity, alignment: .center)
@@ -208,7 +222,9 @@ struct SettingsScreen: View {
             }
             
             CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
-                settingsModel.requestCalendarAccessPermission()
+                withAnimation {
+                    settingsModel.requestCalendarAccessPermission()
+                }
             }).offset(y: 16)
         }
     }
@@ -253,7 +269,7 @@ struct SettingsScreen: View {
         HStack(spacing: 32) {
             VStack(spacing: 4) {
                 // Total tasks completed...
-                Text("\(allCompletedTasks.count)")
+                Text("\(self.totalCompleted)")
                     .fontWeight(.semibold)
                     .foregroundColor(.textSecondary)
                 
@@ -263,11 +279,7 @@ struct SettingsScreen: View {
             }
             
             VStack(spacing: 4) {
-                // Total hours focused...
-                let totalDuration = allTimeboxSessions.reduce(0) { $0 + $1.focusedDuration }
-                let formattedTotalDuration = sessionModel.formatTimeInterval(interval: TimeInterval(totalDuration), unitsStyle: .abbreviated, units: [.hour, .minute])
-                
-                Text(formattedTotalDuration)
+                Text(self.totalHours)
                     .fontWeight(.semibold)
                     .foregroundColor(.textSecondary)
                 

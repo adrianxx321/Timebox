@@ -25,15 +25,28 @@ enum GraphRange {
 }
 
 struct HomeScreen: View {
+    @FetchRequest var fetchedTasks: FetchedResults<Task>
+    @FetchRequest var timeboxSessions: FetchedResults<TaskSession>
     @StateObject var achievementModel = AchievementViewModel()
+    @StateObject var taskModel = TaskViewModel()
     @State var selectedRange: GraphRange = .week
     @State private var showMedalInfo = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
-    @FetchRequest var request: FetchedResults<TaskSession>
+    
+    // MARK: Ongoing tsks prepared from CD fetch
+    var ongoingTasks: [Task] {
+        get {
+            return taskModel.getOngoingTasks(data: self.fetchedTasks).map { $0 }
+        }
+    }
     
     init() {
-        _request = FetchRequest(
+        _fetchedTasks = FetchRequest(
+            entity: Task.entity(),
+            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: false)])
+        
+        _timeboxSessions = FetchRequest(
             entity: TaskSession.entity(),
             sortDescriptors: [.init(keyPath: \TaskSession.timestamp, ascending: true)])
     }
@@ -41,7 +54,7 @@ struct HomeScreen: View {
     var body: some View {
         NavigationView {
             // Total points obtained by user...
-            let totalPts = request.reduce(0) { $0 + $1.ptsAwarded }
+            let totalPts = timeboxSessions.reduce(0) { $0 + $1.ptsAwarded }
             
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
@@ -51,18 +64,26 @@ struct HomeScreen: View {
                         // Ongoing Tasks...
                         SectionView(title: "Ongoing Tasks") {
                             ScrollView(.horizontal, showsIndicators: false) {
-                                DynamicTaskList(timeNow: Date())
-                                    .frame(maxHeight: 128)
+                                let ongoingTasks = taskModel.getOngoingTasks(data: fetchedTasks)
+                                if ongoingTasks.isEmpty {
+                                    OngoingFallback()
+                                } else {
+                                    HStack(spacing: 16) {
+                                        ForEach(ongoingTasks, id: \.id) { task in
+                                            OngoingCardView(task: task)
+                                        }
+                                    }
+                                }
                             }
-                        }
+                        }.frame(maxHeight: 128)
                         
                         // Analytics...
                         SectionView(title: "Statistics") {
                             switch selectedRange {
                             case .week:
-                                DynamicAnalyticsView(data: request, forWeek: Date(), selectedRange: $selectedRange)
+                                DynamicAnalyticsView(data: timeboxSessions, forWeek: Date(), selectedRange: $selectedRange)
                             case .month:
-                                DynamicAnalyticsView(data: request, forMonth: Date(), selectedRange: $selectedRange)
+                                DynamicAnalyticsView(data: timeboxSessions, forMonth: Date(), selectedRange: $selectedRange)
                             }
                         }
                         
@@ -177,6 +198,26 @@ struct HomeScreen: View {
                 .fontWeight(.semibold)
                 .foregroundColor(achievementModel.isUnlocked(medal, userPoints: userPts) ? .textPrimary : .textTertiary)
                 .multilineTextAlignment(.center)
+        }
+    }
+    
+    private func OngoingFallback() -> some View {
+        HStack(spacing: 16) {
+            Image("no-ongoing")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Uhh, nothing's going on")
+                    .font(.subheading1())
+                    .fontWeight(.heavy)
+                    .foregroundColor(.textPrimary)
+                
+                Text("Looks like you are currently free.")
+                    .font(.paragraphP1())
+                    .fontWeight(.semibold)
+                    .foregroundColor(.textSecondary)
+            }
         }
     }
 }

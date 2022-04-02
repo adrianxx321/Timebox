@@ -75,11 +75,11 @@ struct TaskCardView: View {
                         : nil
                         
                         // Task title...
+                        // Overdue task's title will be greyed out
                         Text(task.taskTitle ?? "")
                             .font(.paragraphP1())
                             .fontWeight(.semibold)
-                            .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task)
-                                                                   && Date() > task.taskEndTime!)) ? .textTertiary : .textPrimary)
+                            .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textPrimary)
                             .if(task.isCompleted) { text in
                                 text.strikethrough()
                             }
@@ -99,8 +99,7 @@ struct TaskCardView: View {
                                 .fontWeight(.semibold)
                         }
                         // Text color varies depending on overdue and/or completion status...
-                        .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task)
-                                                               && Date() > task.taskEndTime!)) ? .textTertiary : .textSecondary)
+                        .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textSecondary)
                         : nil
                         
                         // Show the task duration if
@@ -111,8 +110,7 @@ struct TaskCardView: View {
                             .font(.caption())
                             .fontWeight(.semibold)
                             // Text color varies depending on overdue and/or completion status...
-                            .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task)
-                                                                   && Date() > task.taskEndTime!)) ? .textTertiary : .textSecondary)
+                            .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textSecondary)
                         : nil
                     }
                     
