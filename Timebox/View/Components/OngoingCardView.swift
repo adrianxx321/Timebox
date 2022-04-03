@@ -11,8 +11,19 @@ struct OngoingCardView: View {
     @StateObject var taskModel = TaskViewModel()
     @ObservedObject var task: Task
     
+    // Numbers needed for circular progress bar presentation
+    var percentage: Float {
+        get {
+            let completed = taskModel.countCompletedSubtask(task.subtasks)
+            // Avoid division by 0
+            let total = self.task.subtasks.count != 0 ? Float(self.task.subtasks.count) : 1
+            
+            return (Float(completed) / Float(total))
+        }
+    }
+    
     var body: some View {
-        NavigationLink(destination: TaskDetails(selectedTask: task)) {
+        NavigationLink(destination: TaskDetails(selectedTask: self.task)) {
             HStack {
                 // Task label color...
                 Capsule()
@@ -60,23 +71,18 @@ struct OngoingCardView: View {
     
     private func CircularProgressBar() -> some View {
         ZStack {
-            let completedSubtasks = taskModel.countCompletedSubtask(task.subtasks)
-            let totalSubtasks = task.subtasks.count
-            // Avoid division by 0
-            let percent: Float = totalSubtasks != 0 ? Float(completedSubtasks / totalSubtasks) : 0
-            
             Circle()
                 .stroke(lineWidth: 6)
                 .foregroundColor(.uiLightPurple)
             
             Circle()
-                .trim(from: 0.0, to: CGFloat(min(percent, 1.0)))
+                .trim(from: 0.0, to: CGFloat(min(self.percentage, 1.0)))
                 .stroke(style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round))
                 .foregroundColor(.uiPurple)
                 .rotationEffect(Angle(degrees: 270.0))
-                .animation(.linear, value: percent)
+                .animation(.linear, value: self.percentage)
 
-            Text(String(format: "%.0f%%", min(percent, 1.0) * 100.0))
+            Text(String(format: "%.0f%%", min(self.percentage, 1.0) * 100.0))
                 .font(.caption())
                 .fontWeight(.bold)
                 .foregroundColor(.textPrimary)

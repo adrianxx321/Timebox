@@ -12,24 +12,28 @@ struct ScheduledTasks: View {
     @Environment(\.managedObjectContext) var context
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
-    @StateObject var taskModel = TaskViewModel()
-    @ObservedObject var settingsModel = SettingsViewModel()
+    @ObservedObject var taskModel = TaskViewModel()
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
     
     // MARK: Tasks prepared from CD fetch
+    var allTasks: [Task] {
+        get {
+            fetchedTasks.map { $0 as Task }
+        }
+    }
     var timeboxedTasks: [Task] {
         get {
-            let filtered = taskModel.filterTimeboxedTasks(data: self.fetchedTasks.map { $0 as Task })
-            
-            return self.hideCompletedTasks ? filtered.filter{ !$0.isCompleted } : filtered
+            // Get scheduled task
+            let filtered = taskModel.getScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
+            return filtered.filter { taskModel.isTimeboxedTask($0) }
         }
     }
     var allDayTasks: [Task] {
         get {
-            let filtered = taskModel.filterAllDayTasks(data: self.fetchedTasks.map { $0 as Task })
-            
-            return self.hideCompletedTasks ? filtered.filter{ !$0.isCompleted } : filtered
+            // Get scheduled task
+            let filtered = taskModel.getScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
+            return filtered.filter { taskModel.isAllDayTask($0) }
         }
     }
     
@@ -72,26 +76,19 @@ struct ScheduledTasks: View {
             .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
-//            .onReceive(taskModel.$eventStore ) { events in
-//                let calendar = Calendar.current
-//                // Add to Core Data if not already existed...
-//                // Update the task entity if EKEvent is changed...
-//                events.forEach { event in
-//                    let newTask = Task(context: context)
-//                    newTask.id = UUID()
-//                    newTask.taskTitle = event.title
-//                    newTask.subtask = []
-//                    newTask.taskLabel = event.calendar.title
-//                    newTask.color = UIColor(cgColor: event.calendar.cgColor)
-//                    newTask.isImportant = event.hasAlarms
-//                    newTask.taskStartTime = event.isAllDay ? calendar.startOfDay(for: event.startDate) : event.startDate
-//                    newTask.taskEndTime = event.isAllDay ? taskModel.getOneMinToMidnight(event.startDate) : event.endDate
-//                    newTask.isCompleted = false
-//                    newTask.ekeventID = event.eventIdentifier
-//
-//                    try? context.save()
-//                }
-//            }
+            .onReceive(taskModel.$eventStore) { _ in
+                if let removedEvents = taskModel.shouldRemoveEvents(taskStore: self.allTasks) {
+                    taskModel.removeEventsFromPersistent(context: self.context, events: removedEvents)
+                }
+                
+                if let newEvents = taskModel.shouldAddNewEvents(taskStore: self.allTasks) {
+                    taskModel.addNewEventsToPersistent(context: self.context, events: newEvents)
+                }
+                
+                if let updatedEvents = taskModel.shouldUpdateEvents(taskStore: self.allTasks) {
+                    taskModel.updateEvents(context: self.context, events: updatedEvents)
+                }
+            }
         }
         .navigationBarHidden(true)
     }

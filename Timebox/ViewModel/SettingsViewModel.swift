@@ -31,7 +31,7 @@ class SettingsViewModel: ObservableObject {
     init() {
         loadWhiteNoises()
         loadNotificationsPermission()
-        loadCalendars()
+        loadCalendarsPermission()
     }
     
     func loadWhiteNoises() {
@@ -45,7 +45,7 @@ class SettingsViewModel: ObservableObject {
         // Sorting array since dictionary/plist is originally unsorted
         self.whiteNoises = Array(data.keys).sorted { $0 < $1 }
     }
-    
+
     func loadNotificationsPermission() {
         UNUserNotificationCenter.current().getNotificationSettings(completionHandler: { settings in
             DispatchQueue.main.async {
@@ -54,18 +54,14 @@ class SettingsViewModel: ObservableObject {
         })
     }
     
-    func getNotificationStatus() -> String {
-        if notificationsAllowed {
-            return notifyAtStart || notifyAtEnd || notifyAllDay ? "On" : "Off"
-        } else {
-            return ""
-        }
-    }
-    
-    func loadCalendars() {
+    func loadCalendarsPermission() {
         let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
-        self.syncCalendarsAllowed = EKAuthStatus == .authorized
         
+        DispatchQueue.main.async {
+            self.syncCalendarsAllowed = EKAuthStatus == .authorized
+        }
+        
+        // Load calendars into settings...
         if EKAuthStatus == .authorized {
             self.calendarStore = self.calendarAccessor.calendars(for: .event)
         }
@@ -102,6 +98,14 @@ class SettingsViewModel: ObservableObject {
             DispatchQueue.main.async {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
             }
+        }
+    }
+    
+    func getNotificationStatus() -> String {
+        if notificationsAllowed {
+            return notifyAtStart || notifyAtEnd || notifyAllDay ? "On" : "Off"
+        } else {
+            return ""
         }
     }
 }

@@ -37,7 +37,8 @@ struct HomeScreen: View {
     // MARK: Ongoing tsks prepared from CD fetch
     var ongoingTasks: [Task] {
         get {
-            return taskModel.getOngoingTasks(data: self.fetchedTasks).map { $0 }
+            let allTasks = self.fetchedTasks.map { $0 as Task }
+            return taskModel.getOngoingTasks(data: allTasks).map { $0 }
         }
     }
     
@@ -64,7 +65,6 @@ struct HomeScreen: View {
                         // Ongoing Tasks...
                         SectionView(title: "Ongoing Tasks") {
                             ScrollView(.horizontal, showsIndicators: false) {
-                                let ongoingTasks = taskModel.getOngoingTasks(data: fetchedTasks)
                                 if ongoingTasks.isEmpty {
                                     OngoingFallback()
                                 } else {

@@ -16,7 +16,7 @@ class TaskSessionViewModel: ObservableObject {
         return self.formatTimeInterval(interval: TimeInterval(total), unitsStyle: .abbreviated, units: [.hour, .minute])
     }
     
-    func analyseTimeboxByWeek(data: [TaskSession]) -> [(String, Int64)] {
+    func presentGraphByWeek(data: [TaskSession]) -> [(String, Int64)] {
         let defaultData: [(String, Int64)] = [("Mon", 0), ("Tue", 0), ("Wed", 0),
                                               ("Thu", 0), ("Fri", 0), ("Sat", 0),
                                               ("Sun", 0)]
@@ -44,7 +44,7 @@ class TaskSessionViewModel: ObservableObject {
         }
     }
     
-    func analyseTimeboxByMonth(data: [TaskSession]) -> [(String, Int64)] {
+    func presentGraphByMonth(data: [TaskSession]) -> [(String, Int64)] {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.month, .year], from: Date())
         let currentYear = components.year!

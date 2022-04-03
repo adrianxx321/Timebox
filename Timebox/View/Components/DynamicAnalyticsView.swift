@@ -14,7 +14,39 @@ struct DynamicAnalyticsView: View {
     @State private var showProductivityAlert: Bool = false
     @StateObject var sessionModel = TaskSessionViewModel()
     
-    /// Compare timeboxed hours of this week to last week
+    // MARK: Data needed for analytics presentation
+    // Percentage of productivity improvement for display in summary card view
+    var percentage: Int {
+        get {
+            self.sessionModel.compareProductivity(current: currentDoneTasks, previous: previousDoneTasks)
+        }
+    }
+    // Graph columns and values presented in array of tuples
+    var data: [(String, Int64)] {
+        get {
+            self.selectedRange == .week ? sessionModel.presentGraphByWeek(data: currentDoneTasks)
+            : self.sessionModel.presentGraphByMonth(data: currentDoneTasks)
+        }
+    }
+    var maxBarHeight: Int64 {
+        get {
+            self.data.max { first, second in
+                return second.1 > first.1
+            }?.1 ?? 0
+        }
+    }
+    // String formatted in "1h 2m" etc.
+    var totalDuration: [String] {
+        get {
+            let totalSeconds = self.data.reduce(0) { $0 + $1.1 }
+            let formattedDuration = sessionModel.formatTimeInterval(interval: TimeInterval(totalSeconds),
+                                                                 unitsStyle: .full,
+                                                                 units: [.hour, .minute])
+            return formattedDuration.components(separatedBy: " ")
+        }
+    }
+    
+    /// Prepare graph for weekly view
     init(data: FetchedResults<TaskSession>, forWeek: Date, selectedRange: Binding<GraphRange>) {
         let calendar = Calendar.current
         
@@ -52,7 +84,7 @@ struct DynamicAnalyticsView: View {
         self._selectedRange = selectedRange
     }
     
-    /// Compare timeboxed hours of this month to last month
+    /// Prepare graph for monthly view
     init(data: FetchedResults<TaskSession>, forMonth: Date, selectedRange: Binding<GraphRange>) {
         let calendar = Calendar.current
         
@@ -90,11 +122,6 @@ struct DynamicAnalyticsView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // MARK: Data needed for analytics presentation
-            let percentage = sessionModel.compareProductivity(current: currentDoneTasks,
-                                                              previous: previousDoneTasks)
-            let data = selectedRange == .week ? sessionModel.analyseTimeboxByWeek(data: currentDoneTasks) : sessionModel.analyseTimeboxByMonth(data: currentDoneTasks)
-            
             // Summary card view...
             SummaryCardView(percentage: percentage)
                 .onTapGesture {
@@ -150,12 +177,6 @@ struct DynamicAnalyticsView: View {
     
     private func GraphView(data: [(String, Int64)]) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            // MARK: Data needed for drawing graph
-            let maxBarHeight = data.max { first, second in
-                return second.1 > first.1
-            }?.1 ?? 0
-            let totalSeconds = data.reduce(0) { $0 + $1.1 }
-            
             Text("Timeboxed Duration")
                 .font(.subheading1())
                 .fontWeight(.bold)
@@ -164,15 +185,10 @@ struct DynamicAnalyticsView: View {
             HStack {
                 // Summary...
                 Label {
-                    let formattedDuration = sessionModel.formatTimeInterval(interval: TimeInterval(totalSeconds),
-                                                                         unitsStyle: .full,
-                                                                         units: [.hour, .minute])
-                    let durationComponents = formattedDuration.components(separatedBy: " ")
-                    
                     // Stylish total focus duration text
                     // Numeric part is big, non-numeric part is small
                     HStack(alignment: .lastTextBaseline, spacing: 4) {
-                        ForEach(durationComponents, id: \.self) { component in
+                        ForEach(self.totalDuration, id: \.self) { component in
                             // Numeric part
                             Text(component.isNumber ? component : "")
                                 .font(.subheading1())
@@ -219,8 +235,8 @@ struct DynamicAnalyticsView: View {
             // Presentation of graph...
             // Show fallback instead if graph is empty
             Group {
-                totalSeconds > 0 ? GraphRenderer(data: data, max: Int(maxBarHeight)) : nil
-                totalSeconds == 0 ? GraphFallback() : nil
+                maxBarHeight > 0 ? GraphRenderer(data: data, max: Int(maxBarHeight)) : nil
+                maxBarHeight == 0 ? GraphFallback() : nil
             }
             .frame(height: 128, alignment: .leading)
         }
