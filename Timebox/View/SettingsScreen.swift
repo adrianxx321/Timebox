@@ -14,9 +14,12 @@ struct SettingsScreen: View {
     // MARK: Core Data fetch requests
     @FetchRequest private var fetchCompletedTasks: FetchedResults<Task>
     @FetchRequest private var fetchedSessions: FetchedResults<TaskSession>
+
+    @StateObject private var eventModel = EventViewModel()
+    @StateObject private var notificationModel = NotificationViewModel()
     @StateObject private var sessionModel = TaskSessionViewModel()
     @StateObject private var taskModel = TaskViewModel()
-    @ObservedObject private var settingsModel = SettingsViewModel()
+    @StateObject private var settingsModel = SettingsViewModel()
     @State private var showProfilePref = false
     @State private var showNotificationsPref = false
     @State private var showCalendarsPref = false
@@ -189,7 +192,7 @@ struct SettingsScreen: View {
             
             CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
                 withAnimation {
-                    settingsModel.requestNotificationsPermission()
+                    notificationModel.requestNotificationsPermission()
                 }
             }).offset(y: 16)
         }
@@ -223,7 +226,7 @@ struct SettingsScreen: View {
             
             CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
                 withAnimation {
-                    settingsModel.requestCalendarAccessPermission()
+                    eventModel.requestCalendarAccessPermission()
                 }
             }).offset(y: 16)
         }
@@ -258,7 +261,7 @@ struct SettingsScreen: View {
     
     private func CalendarsPage() -> some View {
         List {
-            let calendars = settingsModel.calendarStore
+            let calendars = eventModel.calendarStore
             ForEach(calendars, id:\.self) { calendar in
                 Text("\(calendar.source.title)")
             }

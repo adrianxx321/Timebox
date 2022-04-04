@@ -14,11 +14,11 @@ struct FlatLinkStyle: ButtonStyle {
 }
 
 struct TaskCardView: View {
-    @StateObject var taskModel = TaskViewModel()
     @ObservedObject var task: Task
-    @GestureState private var isDragging = false
+    @StateObject var taskModel = TaskViewModel()
     @State private var dragOffset: CGFloat = 0
     @State private var showDeleteDialog = false
+    @GestureState private var isDragging = false
     
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context

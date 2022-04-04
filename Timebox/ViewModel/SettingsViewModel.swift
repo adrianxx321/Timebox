@@ -14,19 +14,14 @@ import EventKit
 
 class SettingsViewModel: ObservableObject {
     @Published var whiteNoises: [String] = []
-    // This is the store for all calendar entities retrieved from your calendar
-    @Published var calendarStore = [EKCalendar]()
     
+    // UserDefaults persistent store...
     @AppStorage("notificationsAllowed") public var notificationsAllowed = false
     @AppStorage("notifyAtStart") public var notifyAtStart = true
     @AppStorage("notifyAtEnd") public var notifyAtEnd = true
     @AppStorage("notifyAllDay") public var notifyAllDay = false
-    @AppStorage("syncCalendarsAllowed") public var syncCalendarsAllowed = false
+    @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
     @AppStorage("whiteNoise") public var selectedWhiteNoise = "Ticking"
-    
-    // This is the accessor for all your calendars/notifications
-    let calendarAccessor = EKEventStore()
-    let notificationAccessor = UNUserNotificationCenter.current()
     
     init() {
         loadWhiteNoises()
@@ -59,45 +54,6 @@ class SettingsViewModel: ObservableObject {
         
         DispatchQueue.main.async {
             self.syncCalendarsAllowed = EKAuthStatus == .authorized
-        }
-        
-        // Load calendars into settings...
-        if EKAuthStatus == .authorized {
-            self.calendarStore = self.calendarAccessor.calendars(for: .event)
-        }
-    }
-
-    /// Request user's permission for notifications for once
-    func requestNotificationsPermission() {
-        self.notificationAccessor.getNotificationSettings(completionHandler: { [self] settings in
-            if settings.authorizationStatus == .notDetermined {
-                self.notificationAccessor.requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { granted, _ in
-                    DispatchQueue.main.async {
-                        self.notificationsAllowed = granted
-                    }
-                })
-            } else if settings.authorizationStatus == .denied {
-                DispatchQueue.main.async {
-                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-                }
-            }
-        })
-    }
-    
-    /// Request user's permission for calendars for once
-    func requestCalendarAccessPermission() {
-        let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
-        
-        if EKAuthStatus == .notDetermined {
-            self.calendarAccessor.requestAccess(to: .event) { granted, _ in
-                DispatchQueue.main.async {
-                    self.syncCalendarsAllowed = granted
-                }
-            }
-        } else if EKAuthStatus == .denied {
-            DispatchQueue.main.async {
-                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-            }
         }
     }
     

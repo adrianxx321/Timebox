@@ -10,17 +10,17 @@ import SwiftUI
 struct ListItemPickerView<Item>: View where Item: Hashable {
     @State private var isActive = false
     @Binding var selectedItem: Item
-    let items: [Item]
-    let screenTitle: String
-    let hideDefaultNavigationBar: Bool
-    let mainIcon: Image
-    let mainIconColor: Color?
-    let mainLabel: String
-    let innerIcon: Image?
-    let innerIconColor: Color?
-    let innerLabel: KeyPath<Item, String>
-    let hideSelectedValue: Bool
-    let hideRowSeparator: Bool
+    var items: [Item]
+    var screenTitle: String
+    var hideDefaultNavigationBar: Bool
+    var mainIcon: Image
+    var mainIconColor: Color?
+    var mainLabel: String
+    var innerIcon: Image?
+    var innerIconColor: Color?
+    var innerLabel: KeyPath<Item, String>
+    var hideSelectedValue: Bool
+    var hideRowSeparator: Bool
 
     var body: some View {
         NavigationLink(isActive: $isActive) {

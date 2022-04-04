@@ -10,18 +10,20 @@ import CoreData
 
 // Dummy Core Data context for preview purposes
 struct CoreDataStack {
-        static var context: NSManagedObjectContext {
+    static var context: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
-        static var persistentContainer: NSPersistentContainer = {
-                let container = NSPersistentContainer(name: "Timebox")
-                container.loadPersistentStores { (description, error) in
-                        if let error = error {
+    
+    static var persistentContainer: NSPersistentContainer {
+        let container = NSPersistentContainer(name: "Timebox")
+        container.loadPersistentStores { (description, error) in
+            if let error = error {
                 print(error)
             }
         }
+        
         return container
-    }()
+    }
 }
 
 /// Global variable to indicate if iPhone is X or later...
@@ -40,6 +42,7 @@ public var isSmallDevice: Bool {
 struct ContentView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
     @Environment(\.managedObjectContext) var context
+    @ObservedObject var eventModel = EventViewModel()
     
     init() {
         // Globally define UIKit appearances that suits my app's theme

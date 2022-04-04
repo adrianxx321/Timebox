@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct CTAButton: View {
-    let btnLabel: String
-    let btnFullSize: Bool
-    let btnAction: () -> Void
+    var btnLabel: String
+    var btnFullSize: Bool
+    var btnAction: () -> Void
     
 
     var body: some View {

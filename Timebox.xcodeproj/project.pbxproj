@@ -46,6 +46,8 @@
 		B5B43B4227F0B2E500136E73 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4127F0B2E500136E73 /* RootView.swift */; };
 		B5B43B4427F0BB7D00136E73 /* HexagonShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */; };
 		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
+		B5CD0AEB27F9D5A100D33D87 /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */; };
+		B5CD0AED27F9DC4100D33D87 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */; };
 		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
 		B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152FA27D0A5620073421B /* BacklogTasks.swift */; };
 		B5D3081527E7071900959EF5 /* ListItemPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D3081427E7071900959EF5 /* ListItemPickerView.swift */; };
@@ -103,6 +105,8 @@
 		B5B43B4127F0B2E500136E73 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexagonShape.swift; sourceTree = "<group>"; };
 		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
+		B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
+		B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
 		B5D152FA27D0A5620073421B /* BacklogTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogTasks.swift; sourceTree = "<group>"; };
 		B5D3081427E7071900959EF5 /* ListItemPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItemPickerView.swift; sourceTree = "<group>"; };
@@ -197,6 +201,8 @@
 				B5B43B3127F037E700136E73 /* AchievementViewModel.swift */,
 				B5B43B3F27F068CB00136E73 /* TaskSessionViewModel.swift */,
 				B567D40027F3585000BB469F /* SettingsViewModel.swift */,
+				B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */,
+				B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -358,6 +364,7 @@
 				B5D9B60927EDF11700B541AA /* DynamicAnalyticsView.swift in Sources */,
 				B50E896C27EDA84E005DBD59 /* Achievement.swift in Sources */,
 				B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */,
+				B5CD0AED27F9DC4100D33D87 /* NotificationViewModel.swift in Sources */,
 				B5B43B4227F0B2E500136E73 /* RootView.swift in Sources */,
 				B5B43B3D27F0677500136E73 /* Task.swift in Sources */,
 				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
@@ -375,6 +382,7 @@
 				B5D408AE27EC7378007FEB90 /* OngoingCardView.swift in Sources */,
 				B569429427F81CAB00A6E701 /* ScreenFallbackView.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
+				B5CD0AEB27F9D5A100D33D87 /* EventViewModel.swift in Sources */,
 				B5015D1C27F5B08F00D01DB6 /* UniversalCustomNavigationBar.swift in Sources */,
 				B5B43B3927F0669300136E73 /* TaskSession.swift in Sources */,
 				B592B9FF27CE2079009F079C /* TaskViewModel.swift in Sources */,

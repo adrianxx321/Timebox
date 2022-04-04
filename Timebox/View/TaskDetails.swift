@@ -12,7 +12,8 @@ import EventKit
 struct TaskDetails: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @ObservedObject var selectedTask: Task
-    @StateObject var taskModel = TaskViewModel()
+    @ObservedObject private var eventModel = EventViewModel()
+    @StateObject private var taskModel = TaskViewModel()
     @State var showMoreOptions = false
     @State var showDeleteDialog = false
     
@@ -265,7 +266,7 @@ struct TaskDetails: View {
             
             // Indicate if task comes from imported calendar...
             if let ekEventID = selectedTask.ekeventID {
-                let foundEvent = taskModel.lookupCalendarEvent(ekEventID)
+                let foundEvent = eventModel.lookupCalendarEvent(ekEventID)
                 let foundCalendarSource = foundEvent?.calendar.source.title.capitalized ?? "Calendar"
                 
                 HStack(alignment: .top, spacing: 8) {

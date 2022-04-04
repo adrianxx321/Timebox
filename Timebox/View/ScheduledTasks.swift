@@ -12,7 +12,8 @@ struct ScheduledTasks: View {
     @Environment(\.managedObjectContext) var context
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
-    @ObservedObject var taskModel = TaskViewModel()
+    @ObservedObject var eventModel = EventViewModel()
+    @StateObject var taskModel = TaskViewModel()
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
     
@@ -40,7 +41,7 @@ struct ScheduledTasks: View {
     init() {
         _fetchedTasks = FetchRequest(
             entity: Task.entity(),                    
-            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: false)])
+            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: true)])
     }
     
     var body: some View {
@@ -76,17 +77,20 @@ struct ScheduledTasks: View {
             .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
-            .onReceive(taskModel.$eventStore) { _ in
-                if let removedEvents = taskModel.shouldRemoveEvents(taskStore: self.allTasks) {
-                    taskModel.removeEventsFromPersistent(context: self.context, events: removedEvents)
-                }
-                
-                if let newEvents = taskModel.shouldAddNewEvents(taskStore: self.allTasks) {
-                    taskModel.addNewEventsToPersistent(context: self.context, events: newEvents)
-                }
-                
-                if let updatedEvents = taskModel.shouldUpdateEvents(taskStore: self.allTasks) {
-                    taskModel.updateEvents(context: self.context, events: updatedEvents)
+            .onReceive(eventModel.$eventStore) { _ in
+                DispatchQueue.main.async {
+                    if let removedEvents = eventModel.shouldRemoveEvents(taskStore: self.allTasks) {
+                        print("has removed tasks")
+                        eventModel.removeEventsFromPersistent(context: self.context, events: removedEvents)
+                    }
+                    if let newEvents = eventModel.shouldAddNewEvents(taskStore: self.allTasks) {
+                        print("has new tasks")
+                        eventModel.addNewEventsToPersistent(context: self.context, events: newEvents)
+                    }
+    //                    if let updatedEvents = eventModel.shouldUpdateEvents(taskStore: self.allTasks) {
+    //                        print("has updated tasks")
+    //                        eventModel.updateEvents(context: self.context, events: updatedEvents)
+    //                    }
                 }
             }
         }

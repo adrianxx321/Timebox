@@ -14,7 +14,6 @@ struct ListButtonView: View {
     var iconIsDestructive: Bool
     var action: () -> ()
     
-    
     var body: some View {
         Button {
             action()

@@ -26,6 +26,7 @@ private enum TaskDuration: String, CaseIterable, Identifiable {
 }
 
 struct TaskModal: View {
+    // MARK: Dismissal action for modal pop up
     @Environment(\.dismiss) var dismiss
     @State private var isModalActive = false
     @State private var showColorPicker = false

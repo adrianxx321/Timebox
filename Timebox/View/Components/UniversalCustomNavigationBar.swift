@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UniversalCustomNavigationBar: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    let screenTitle: String
+    var screenTitle: String
     
     var body: some View {
         HStack {
