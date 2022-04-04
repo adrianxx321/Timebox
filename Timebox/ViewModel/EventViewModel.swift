@@ -117,38 +117,40 @@ class EventViewModel: ObservableObject {
     /// Detects if event(s) from calendar are modified (includes addition, deletion and/or update). Returns the updated tasks if true, otherwise returns nil.
     func shouldUpdateEvents(taskStore: [Task]) -> [Task]? {
         var updatedTasks = [Task]()
-        // Source of truth: The EKEvent instances loaded from API
+        // Assumes both source of truth and persisted store have equal number of objects
         let sourceOfTruth = self.eventStore.map{self.EKEventMapper($0)}
         let persistentEvents = taskStore.filter{$0.ekeventID != nil}
-        // Finding the differences between both arrays
-        let difference = sourceOfTruth.difference(from: persistentEvents)
-        let updatedEventStore = sourceOfTruth.applying(difference) ?? []
         
-        // Return the subset of modified events
-        for existingEvent in persistentEvents {
-            for updatedEvent in updatedEventStore {
-                // Check if same event has been modified externally
-                // Except for user-defineable properties
-                if existingEvent.ekeventID == updatedEvent.ekeventID {
-                    existingEvent.taskTitle = updatedEvent.taskTitle
-                    existingEvent.taskLabel = updatedEvent.taskLabel
-                    existingEvent.color = updatedEvent.color
-                    existingEvent.taskStartTime = updatedEvent.taskStartTime
-                    existingEvent.taskEndTime = updatedEvent.taskEndTime
-                    
-                    updatedTasks.append(existingEvent)
+        // Finding the differences between both arrays
+        sourceOfTruth.forEach { event in
+            persistentEvents.forEach { task in
+                if event.ekeventID == task.ekeventID {
+                    if task.taskTitle != event.taskTitle
+                        || task.taskLabel != event.taskLabel
+                        || task.color != event.color
+                        || task.taskStartTime != event.taskEndTime
+                        || task.taskEndTime != event.taskEndTime {
+                        updatedTasks.append(task)
+                    }
                 }
             }
         }
-        
+
         return updatedTasks.isEmpty ? nil : updatedTasks
     }
 
     /// Includes updates due to insertion, deletion &/ edit done from source of truth (Calendar app)
     func updateEvents(context: NSManagedObjectContext, events: [Task]) {
         events.forEach { event in
-            var updatedTask = context.object(with: event.objectID)
-            updatedTask = event
+            let calendar = Calendar.current
+            let updatedTask = context.object(with: event.objectID) as! Task
+            let updatedEvent = self.lookupCalendarEvent(event.ekeventID!)!
+            
+            updatedTask.taskTitle = updatedEvent.title
+            updatedTask.taskLabel = updatedEvent.calendar.title
+            updatedTask.color = UIColor(cgColor: updatedEvent.calendar.cgColor)
+            updatedTask.taskStartTime = updatedEvent.isAllDay ? calendar.startOfDay(for: updatedEvent.startDate) : updatedEvent.startDate
+            updatedTask.taskEndTime = updatedEvent.isAllDay ? calendar.date(bySettingHour: 23, minute: 59, second: 59, of: updatedEvent.startDate) : updatedEvent.endDate
         }
         
         try? context.save()

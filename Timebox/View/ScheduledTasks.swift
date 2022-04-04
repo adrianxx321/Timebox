@@ -87,10 +87,10 @@ struct ScheduledTasks: View {
                         print("has new tasks")
                         eventModel.addNewEventsToPersistent(context: self.context, events: newEvents)
                     }
-    //                    if let updatedEvents = eventModel.shouldUpdateEvents(taskStore: self.allTasks) {
-    //                        print("has updated tasks")
-    //                        eventModel.updateEvents(context: self.context, events: updatedEvents)
-    //                    }
+                    if let updatedEvents = eventModel.shouldUpdateEvents(taskStore: self.allTasks) {
+                        print("has updated tasks")
+                        eventModel.updateEvents(context: self.context, events: updatedEvents)
+                    }
                 }
             }
         }
