@@ -51,16 +51,7 @@ struct TaskDetails: View {
                                         // Checkbox for subtask completion...
                                         Button {
                                             withAnimation {
-                                                // We need this "magic" to overcome the fact that Core Data can't handle view update on to-many entities...
-                                                selectedTask.objectWillChange.send()
-                                                subtask.isCompleted.toggle()
-                                                
-                                                // Automatically check parent task as completed
-                                                // When all subtasks are done...
-                                                selectedTask.isCompleted = !selectedTask.subtasks.contains(where: { !$0.isCompleted })
-                                                
-                                                // Save to Core Data...
-                                                try? context.save()
+                                                taskModel.completeSubtask(selectedTask: self.selectedTask, subtask: subtask, context: self.context)
                                             }
                                         } label: {
                                             Image(subtask.isCompleted ? "checked" : "unchecked")
@@ -237,8 +228,7 @@ struct TaskDetails: View {
                                 isPresented: $showDeleteDialog,
                                 titleVisibility: .visible) {
                 Button("Delete Task", role: .destructive) {
-                    context.delete(selectedTask)
-                    try? context.save()
+                    taskModel.deleteTask(context: self.context, task: selectedTask)
                     // Go back to previous screen after deletion...
                     presentationMode.wrappedValue.dismiss()
                 }

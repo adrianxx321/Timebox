@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ScheduledTasks: View {
-    // MARK: Core Data stuff
+    // MARK: Core Data synchronisation for imported events from EventKit
     @Environment(\.managedObjectContext) var context
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
@@ -26,14 +26,14 @@ struct ScheduledTasks: View {
     var timeboxedTasks: [Task] {
         get {
             // Get scheduled task
-            let filtered = taskModel.getScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
+            let filtered = taskModel.filterScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
             return filtered.filter { taskModel.isTimeboxedTask($0) }
         }
     }
     var allDayTasks: [Task] {
         get {
             // Get scheduled task
-            let filtered = taskModel.getScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
+            let filtered = taskModel.filterScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
             return filtered.filter { taskModel.isAllDayTask($0) }
         }
     }

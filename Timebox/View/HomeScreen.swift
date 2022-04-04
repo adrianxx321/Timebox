@@ -38,7 +38,7 @@ struct HomeScreen: View {
     var ongoingTasks: [Task] {
         get {
             let allTasks = self.fetchedTasks.map { $0 as Task }
-            return taskModel.getOngoingTasks(data: allTasks).map { $0 }
+            return taskModel.filterOngoingTasks(data: allTasks).map { $0 }
         }
     }
     

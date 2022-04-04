@@ -59,8 +59,11 @@ struct OngoingCardView: View {
             }
             
             // Circular progress bar for task completion...
+            // Don't show for task without subtask...
+            task.subtasks.count > 0 ?
             CircularProgressBar()
                 .frame(width: 48, height: 48)
+            : nil
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxHeight: 128)

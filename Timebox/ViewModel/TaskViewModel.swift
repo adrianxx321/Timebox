@@ -44,13 +44,7 @@ class TaskViewModel: ObservableObject {
         currentWeek[currentWeek.count - 1] = lastWeekDay
     }
     
-    func getOngoingTasks(data: [Task]) -> [Task] {
-        return data.filter {
-            self.isOngoing($0)
-        }
-    }
-    
-    func getScheduledTasks(data: [Task], hideCompleted: Bool) -> [Task] {
+    func filterScheduledTasks(data: [Task], hideCompleted: Bool) -> [Task] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: self.currentDay)
         let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
@@ -74,6 +68,105 @@ class TaskViewModel: ObservableObject {
     
     func filterAllDayTasks(data: [Task]) -> [Task] {
         return data.filter { self.isAllDayTask($0) }
+    }
+    
+    func filterOngoingTasks(data: [Task]) -> [Task] {
+        return data.filter {
+            self.isOngoing($0)
+        }
+    }
+    
+    func addTask(context: NSManagedObjectContext, id: UUID,
+                 _ taskTitle: String, _ subtasks: [Subtask],
+                 _ taskLabel: String, _ color: UIColor,
+                 _ isImportant: Bool, _ taskStartTime: Date?,
+                 _ taskEndTime: Date?) {
+        let task = Task(context: context)
+        task.id = id
+        task.taskTitle = taskTitle
+        
+        subtasks.forEach { subtask in
+            let newSubtask = Subtask(context: context)
+            newSubtask.subtaskTitle = subtask.subtaskTitle
+            newSubtask.timestamp = subtask.timestamp
+            newSubtask.isCompleted = subtask.isCompleted
+            
+            task.subtask = task.subtask?.adding(newSubtask) as NSSet?
+        }
+        
+        task.taskLabel = (taskLabel == "") ? nil : taskLabel
+        task.color = color
+        task.isImportant = isImportant
+        task.taskStartTime = taskStartTime
+        task.taskEndTime = taskEndTime
+        task.isCompleted = false
+        // This is for imported event from Calendar API
+        task.ekeventID = nil
+        
+        try? context.save()
+    }
+    
+    func addSubtask(context: NSManagedObjectContext) -> Subtask {
+        let newSubtask = Subtask(context: context)
+        newSubtask.subtaskTitle = ""
+        newSubtask.timestamp = Date()
+        newSubtask.isCompleted = false
+        
+        return newSubtask
+    }
+    
+    func updateTask(context: NSManagedObjectContext, task: Task,
+                    _ taskTitle: String, _ subtasks: [Subtask],
+                    _ taskLabel: String, _ color: UIColor,
+                    _ isImportant: Bool, _ taskStartTime: Date?,
+                    _ taskEndTime: Date?) {
+        task.taskTitle = taskTitle
+        
+        // Remove all old subtasks before reinserting new ones
+        task.subtask = []
+        subtasks.forEach { subtask in
+            let editSubtask = Subtask(context: context)
+            editSubtask.subtaskTitle = subtask.subtaskTitle
+            editSubtask.timestamp = subtask.timestamp
+            editSubtask.isCompleted = subtask.isCompleted
+            
+            task.subtask = task.subtask?.adding(editSubtask) as NSSet?
+        }
+        
+        task.taskLabel = (taskLabel == "") ? nil : taskLabel
+        task.color = color
+        task.isImportant = isImportant
+        task.taskStartTime = taskStartTime
+        task.taskEndTime = taskEndTime
+        
+        try? context.save()
+    }
+    
+    func deleteTask(context: NSManagedObjectContext, task: Task) {
+        context.delete(task)
+        
+        try? context.save()
+    }
+    
+    func completeTask(_ task: Task, context: NSManagedObjectContext) {
+        task.isCompleted.toggle()
+        
+        // Save to Core Data
+        try? context.save()
+    }
+    
+    func completeSubtask(selectedTask: Task, subtask: Subtask, context: NSManagedObjectContext) {
+        // We need this "magic" to overcome the fact that Core Data can't handle view update on to-many entities...
+        selectedTask.objectWillChange.send()
+        subtask.isCompleted.toggle()
+        
+        // Automatically check parent task as completed
+        // When all subtasks are done...
+        selectedTask.isCompleted = !selectedTask.subtasks
+            .contains(where: { !$0.isCompleted })
+        
+        // Save to Core Data...
+        try? context.save()
     }
 
     func updateWeek(offset: Int) {

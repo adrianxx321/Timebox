@@ -71,6 +71,9 @@ struct TaskModal: View {
             taskEndTime = $0
         }
     }
+    private var isEditMode: Bool {
+        return taskModel.editTask != nil
+    }
     private var disableEditForImported: Bool {
         get {
             guard let task = taskModel.editTask else {
@@ -150,12 +153,7 @@ struct TaskModal: View {
                             HStack(spacing: 16) {
                                 Button {
                                     withAnimation {
-                                        let newSubtask = Subtask(context: context)
-                                        newSubtask.subtaskTitle = ""
-                                        newSubtask.timestamp = Date()
-                                        newSubtask.isCompleted = false
-                                        
-                                        subtasks.append(newSubtask)
+                                        subtasks.append(taskModel.addSubtask(context: self.context))
                                     }
                                 } label: {
                                     Image("add")
@@ -405,7 +403,7 @@ struct TaskModal: View {
                 .listStyle(.insetGrouped)
             }
             .background(Color.backgroundPrimary)
-            .navigationTitle(taskModel.editTask != nil ? "Edit Task" : "Create a Task")
+            .navigationTitle(self.isEditMode ? "Edit Task" : "Create a Task")
             .navigationBarTitleDisplayMode(.inline)
             // MARK: Conditionally dismiss on swipe
             .interactiveDismissDisabled(isEdited.contains(where: { $0.value }))
@@ -413,56 +411,35 @@ struct TaskModal: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        // Edit mode...
+                        // Create new task...
                         if let task = taskModel.editTask {
-                            task.taskTitle = taskTitle
-                            
-                            // Remove all old subtasks before reinserting new ones
-                            task.subtask = []
-                            subtasks.forEach { subtask in
-                                let editSubtask = Subtask(context: context)
-                                editSubtask.subtaskTitle = subtask.subtaskTitle
-                                editSubtask.timestamp = subtask.timestamp
-                                editSubtask.isCompleted = subtask.isCompleted
-                                
-                                task.subtask = task.subtask?.adding(editSubtask) as NSSet?
-                            }
-                            
-                            task.taskLabel = (taskLabel == "") ? nil : taskLabel
-                            task.color = color
-                            task.isImportant = isImportant
-                            task.taskStartTime = taskStartTime
-                            task.taskEndTime = taskEndTime
-                        }
-                        else {
-                            let task = Task(context: context)
-                            task.id = id
-                            task.taskTitle = taskTitle
-                            
-                            subtasks.forEach { subtask in
-                                let newSubtask = Subtask(context: context)
-                                newSubtask.subtaskTitle = subtask.subtaskTitle
-                                newSubtask.timestamp = subtask.timestamp
-                                newSubtask.isCompleted = subtask.isCompleted
-                                
-                                task.subtask = task.subtask?.adding(newSubtask) as NSSet?
-                            }
-                            
-                            task.taskLabel = (taskLabel == "") ? nil : taskLabel
-                            task.color = color
-                            task.isImportant = isImportant
-                            task.taskStartTime = taskStartTime
-                            task.taskEndTime = taskEndTime
-                            task.isCompleted = false
-                            task.ekeventID = nil
-                        }
-
-                        // Saving
-                        try? context.save()
-                        // Dismissing View
+                            // Edit existing task...
+                            taskModel.updateTask(context: self.context,
+                                                 task: task,
+                                                 self.taskTitle,
+                                                 self.subtasks,
+                                                 self.taskLabel,
+                                                 self.color,
+                                                 self.isImportant,
+                                                 self.taskStartTime,
+                                                 self.taskEndTime)
+                        } else {
+                            taskModel.addTask(context: self.context,
+                                              id: self.id,
+                                              self.taskTitle,
+                                              self.subtasks,
+                                              self.taskLabel,
+                                              self.color,
+                                              self.isImportant,
+                                              self.taskStartTime,
+                                              self.taskEndTime)}
+                        
+                        // Dismiss view after completion
                         dismiss()
                     }
-                    .disabled(taskTitle == "" || !isEdited.contains(where: { $0.value }))
+                    .disabled(taskTitle == ""
+                              || !isEdited.contains(where: { $0.value })
+                              || subtasks.contains(where: {$0.subtaskTitle == ""}))
                 }
 
                 ToolbarItem(placement: .navigationBarLeading) {

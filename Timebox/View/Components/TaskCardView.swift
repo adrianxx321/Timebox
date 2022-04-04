@@ -23,12 +23,12 @@ struct TaskCardView: View {
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
     
+    // Determines if this task can be edited and/or deleted
     var canDelete: Bool {
         get {
             task.ekeventID == nil
         }
     }
-    
     var canEdit: Bool {
         get {
             !taskModel.isOverdue(self.task)
@@ -61,8 +61,7 @@ struct TaskCardView: View {
                     Button("Delete Task", role: .destructive) {
                         withAnimation {
                             dragOffset = 0
-                            context.delete(task)
-                            try? context.save()
+                            taskModel.deleteTask(context: self.context, task: self.task)
                         }
                     }
                 } : nil
@@ -135,10 +134,7 @@ struct TaskCardView: View {
                     Button {
                         withAnimation() {
                             // Perform update onto Core Data...
-                            task.isCompleted.toggle()
-                            
-                            // Save to Core Data
-                            try? context.save()
+                            taskModel.completeTask(self.task, context: self.context)
                         }
                     } label: {
                         Image(task.isCompleted ? "checked" : "unchecked")
@@ -176,8 +172,7 @@ struct TaskCardView: View {
                 dragOffset = 0
             }
         } content: {
-            TaskModal()
-                .environmentObject(taskModel)
+            TaskModal().environmentObject(taskModel)
         }
     }
     
