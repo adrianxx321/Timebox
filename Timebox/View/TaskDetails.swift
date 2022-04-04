@@ -281,7 +281,7 @@ struct TaskDetails: View {
             // Indicate if task comes from imported calendar...
             if let ekEventID = selectedTask.ekeventID {
                 let foundEvent = eventModel.lookupCalendarEvent(ekEventID)
-                let foundCalendarSource = foundEvent?.calendar.source.title.capitalized ?? "Calendar"
+                let foundCalendarSource = foundEvent?.calendar.source.title ?? "Calendar"
                 
                 HStack(alignment: .top, spacing: 8) {
                     Image("alert")
@@ -292,10 +292,10 @@ struct TaskDetails: View {
                         .rotationEffect(Angle(degrees: 180))
                     
                     Group {
-                        Text("This task/event comes from your ")
+                        Text("This task/event comes from: ")
                         .fontWeight(.semibold)
                         .foregroundColor(.textSecondary) +
-                        Text(foundCalendarSource)
+                        Text(foundCalendarSource.uppercased())
                             .fontWeight(.bold)
                             .foregroundColor(Color(selectedTask.color ?? .accent))
                     }

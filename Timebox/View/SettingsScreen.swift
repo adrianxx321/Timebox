@@ -12,14 +12,16 @@ import EventKit
 
 struct SettingsScreen: View {
     // MARK: Core Data fetch requests
-    @FetchRequest private var fetchCompletedTasks: FetchedResults<Task>
+    @FetchRequest private var fetchedCompletedTasks: FetchedResults<Task>
     @FetchRequest private var fetchedSessions: FetchedResults<TaskSession>
 
-    @StateObject private var eventModel = EventViewModel()
-    @StateObject private var notificationModel = NotificationViewModel()
-    @StateObject private var sessionModel = TaskSessionViewModel()
-    @StateObject private var taskModel = TaskViewModel()
+    // MARK: ViewModels used (@ObservedObject are dependencies)
+    @ObservedObject private var eventModel = EventViewModel()
+    @ObservedObject private var notificationModel = NotificationViewModel()
+    @ObservedObject private var sessionModel = TaskSessionViewModel()
+    @ObservedObject private var taskModel = TaskViewModel()
     @StateObject private var settingsModel = SettingsViewModel()
+    
     @State private var showProfilePref = false
     @State private var showNotificationsPref = false
     @State private var showCalendarsPref = false
@@ -30,7 +32,7 @@ struct SettingsScreen: View {
     // MARK: Data prepared from CD fetch
     var totalCompleted: Int {
         get {
-            return fetchCompletedTasks.count
+            return fetchedCompletedTasks.count
         }
     }
     var totalHours: String {
@@ -39,10 +41,23 @@ struct SettingsScreen: View {
         }
     }
     
+    // MARK: Calendars aggregated by sources
+    var allCalendarsOnDevice: [(sourceName: String, calendars: [EKCalendar])] {
+        get {
+            return Dictionary(grouping: EventViewModel.CalendarAccessor.calendars(for: .event), by: {
+                $0.source.title
+            }).map{ key, value in
+                (key, value)
+            }.sorted {
+                $0.sourceName < $1.sourceName
+            }
+        }
+    }
+    
     init() {
         let predicate = NSPredicate(format: "isCompleted == true", [])
         
-        _fetchCompletedTasks = FetchRequest(entity: Task.entity(), sortDescriptors: [], predicate: predicate)
+        _fetchedCompletedTasks = FetchRequest(entity: Task.entity(), sortDescriptors: [], predicate: predicate)
         _fetchedSessions = FetchRequest(entity: TaskSession.entity(), sortDescriptors: [])
     }
     
@@ -261,9 +276,33 @@ struct SettingsScreen: View {
     
     private func CalendarsPage() -> some View {
         List {
-            let calendars = eventModel.calendarStore
-            ForEach(calendars, id:\.self) { calendar in
-                Text("\(calendar.source.title)")
+            ForEach(self.allCalendarsOnDevice, id: \.sourceName) { source in
+                Section {
+                    ForEach(source.calendars, id: \.self) { calendar in
+                        HStack(spacing: 16) {
+                            var check = eventModel.calendarStore.contains(calendar)
+                            let icon: Image = check ? Image("checked") : Image("unchecked")
+                            
+                            Button {
+                                withAnimation {
+                                    check.toggle()
+                                    eventModel.updateCalendarStore(put: check, selected: calendar)
+                                }
+                            } label: {
+                                icon
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24)
+                                .foregroundColor(Color(cgColor: calendar.cgColor))
+                            }
+                            
+                            Text(calendar.title)
+                                .font(.paragraphP1())
+                                .fontWeight(.semibold)
+                                .foregroundColor(.textPrimary)
+                        }.listRowSeparator(.hidden)
+                    }
+                } header: {SectionHeaderLabel(title: source.sourceName)}
             }
         }
     }
@@ -295,6 +334,13 @@ struct SettingsScreen: View {
         .font(.paragraphP1())
     }
     
+    private func SectionHeaderLabel(title: String) -> some View {
+        Text(title)
+            .font(.paragraphP1())
+            .fontWeight(.semibold)
+            .foregroundColor(.textTertiary)
+            .textCase(.uppercase)
+    }
 }
 
 struct SettingsScreen_Previews: PreviewProvider {

@@ -77,19 +77,27 @@ struct ScheduledTasks: View {
             .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
-            .onReceive(eventModel.$eventStore) { _ in
+            .onReceive(eventModel.$eventStore) { events in
                 DispatchQueue.main.async {
-                    if let removedEvents = eventModel.shouldRemoveEvents(taskStore: self.allTasks) {
-                        print("has removed tasks")
-                        eventModel.removeEventsFromPersistent(context: self.context, events: removedEvents)
-                    }
                     if let newEvents = eventModel.shouldAddNewEvents(taskStore: self.allTasks) {
                         print("has new tasks")
-                        eventModel.addNewEventsToPersistent(context: self.context, events: newEvents)
+                        withAnimation {
+                            eventModel.addNewEventsToPersistent(context: self.context, events: newEvents)
+                        }
                     }
+
+                    if let removedEvents = eventModel.shouldRemoveEvents(taskStore: self.allTasks) {
+                        print("has removed tasks")
+                        withAnimation {
+                            eventModel.removeEventsFromPersistent(context: self.context, events: removedEvents)
+                        }
+                    }
+
                     if let updatedEvents = eventModel.shouldUpdateEvents(taskStore: self.allTasks) {
                         print("has updated tasks")
-                        eventModel.updateEvents(context: self.context, events: updatedEvents)
+                        withAnimation {
+                            eventModel.updateEvents(context: self.context, events: updatedEvents)
+                        }
                     }
                 }
             }

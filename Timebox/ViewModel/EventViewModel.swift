@@ -17,18 +17,25 @@ class EventViewModel: ObservableObject {
     // Singleton EventKit API accessor
     static let CalendarAccessor = EKEventStore()
     @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
+    @AppStorage("selectedCalendars") var selectedCalendars = ""
     
     init() {
         // Not sure if this check is needed...
         if syncCalendarsAllowed {
             // Initialise calendar store...
-            self.calendarStore = EventViewModel.CalendarAccessor.calendars(for: .event)
+            // selectedCalendars is a delimited string sequence that contains all the calendar IDs
+            self.calendarStore = self.selectedCalendars.count <= 0 ?
+            EventViewModel.CalendarAccessor.calendars(for: .event) : self.decodeSelectedCalendars(self.selectedCalendars)
+            
+            // Remember the selected calendars...
+            self.selectedCalendars = self.encodeSelectedCalendars(self.calendarStore)
             
             // Initialise event store...
             let calendar = Calendar.current
-            let today = calendar.startOfDay(for: Date())
-            let monthFromNow = calendar.date(byAdding: .month, value: 1, to: today)!
-            let predicate = EventViewModel.CalendarAccessor.predicateForEvents(withStart: today, end: monthFromNow, calendars: calendarStore)
+            // Limit range from 1 year ago to a year after
+            let lastYear = calendar.date(byAdding: .year, value: -1, to: Date())!
+            let oneYearLater = calendar.date(byAdding: .year, value: 2, to: lastYear)!
+            let predicate = EventViewModel.CalendarAccessor.predicateForEvents(withStart: lastYear, end: oneYearLater, calendars: self.calendarStore)
             
             self.eventStore = EventViewModel.CalendarAccessor.events(matching: predicate)
         }
@@ -50,7 +57,22 @@ class EventViewModel: ObservableObject {
             }
         }
     }
-
+    
+    func updateCalendarStore(put: Bool, selected: EKCalendar) {
+        if put {
+            self.calendarStore.append(selected)
+            self.selectedCalendars = self.encodeSelectedCalendars(self.calendarStore)
+            print("selected calendar: \(selected)")
+        } else {
+            guard let index = self.calendarStore.firstIndex(of: selected) else {
+                return
+            }
+            self.calendarStore.remove(at: index)
+            self.selectedCalendars = self.encodeSelectedCalendars(self.calendarStore)
+            print("unselected calendar: \(selected)")
+        }
+    }
+    
     /// Detects if new event(s) are added into calendar. Returns true for insertions, false for deletion..
     func shouldAddNewEvents(taskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from source of truth & persistent store
@@ -58,7 +80,7 @@ class EventViewModel: ObservableObject {
         let persistentEK = taskStore.filter{$0.ekeventID != nil}
         let addedEvents = originEK.filter { (origin: Task) -> Bool in
             !persistentEK.contains { (existing: Task) -> Bool in
-                existing.id == origin.id
+                existing.ekeventID == origin.ekeventID
             }
         }
         print("\(originEK.count) - \(persistentEK.count) = \(addedEvents.count)")
@@ -95,7 +117,7 @@ class EventViewModel: ObservableObject {
         let persistentEK = taskStore.filter{$0.ekeventID != nil}
         let removedEvents = persistentEK.filter { (existing: Task) -> Bool in
             !originEK.contains { (origin: Task) -> Bool in
-                origin.id == existing.id
+                origin.ekeventID == existing.ekeventID
             }
         }
         
@@ -106,7 +128,7 @@ class EventViewModel: ObservableObject {
 
     func removeEventsFromPersistent(context: NSManagedObjectContext, events: [Task]) {
         events.forEach { event in
-            var removedTask = Task(context: context)
+            var removedTask = context.object(with: event.objectID) as! Task
             removedTask = event
             context.delete(removedTask)
         }
@@ -143,14 +165,14 @@ class EventViewModel: ObservableObject {
     func updateEvents(context: NSManagedObjectContext, events: [Task]) {
         events.forEach { event in
             let calendar = Calendar.current
-            let updatedTask = context.object(with: event.objectID) as! Task
-            let updatedEvent = self.lookupCalendarEvent(event.ekeventID!)!
-            
-            updatedTask.taskTitle = updatedEvent.title
-            updatedTask.taskLabel = updatedEvent.calendar.title
-            updatedTask.color = UIColor(cgColor: updatedEvent.calendar.cgColor)
-            updatedTask.taskStartTime = updatedEvent.isAllDay ? calendar.startOfDay(for: updatedEvent.startDate) : updatedEvent.startDate
-            updatedTask.taskEndTime = updatedEvent.isAllDay ? calendar.date(bySettingHour: 23, minute: 59, second: 59, of: updatedEvent.startDate) : updatedEvent.endDate
+            if let updatedEvent = EventViewModel.CalendarAccessor.event(withIdentifier: event.ekeventID!) {
+                let updatedTask = context.object(with: event.objectID) as! Task
+                updatedTask.taskTitle = updatedEvent.title
+                updatedTask.taskLabel = updatedEvent.calendar.title
+                updatedTask.color = UIColor(cgColor: updatedEvent.calendar.cgColor)
+                updatedTask.taskStartTime = updatedEvent.isAllDay ? calendar.startOfDay(for: updatedEvent.startDate) : updatedEvent.startDate
+                updatedTask.taskEndTime = updatedEvent.isAllDay ? calendar.date(bySettingHour: 23, minute: 59, second: 59, of: updatedEvent.startDate) : updatedEvent.endDate
+            }
         }
         
         try? context.save()
@@ -162,7 +184,7 @@ class EventViewModel: ObservableObject {
         
         // I extracted the second half of eventIdentifier string to use as the UUID
         // So the same event won't be mapped with random UUID everytime
-        mappedTask.id = UUID(uuidString: "\(self.generateUUIDFromEvent(from: event.eventIdentifier)!)")
+        mappedTask.id = self.generateUUIDFromEvent(from: event.eventIdentifier)
         mappedTask.taskTitle = event.title
         mappedTask.subtask = []
         mappedTask.taskLabel = event.calendar.title
@@ -185,10 +207,28 @@ class EventViewModel: ObservableObject {
         return EventViewModel.CalendarAccessor.event(withIdentifier: id)
     }
     
-    func generateUUIDFromEvent(from str: String) -> UUID? {
+    func generateUUIDFromEvent(from str: String) -> UUID {
         let indexStartOfText = str.index(str.startIndex, offsetBy: 37)
         let substr = String(str[indexStartOfText...])
         
-        return UUID(uuidString: substr)
+        return UUID(uuidString: substr) ?? UUID()
+    }
+    
+    func encodeSelectedCalendars(_ calendars: [EKCalendar]) -> String {
+        return calendars.map{$0.calendarIdentifier}.joined(separator: "&?")
+    }
+    
+    func decodeSelectedCalendars(_ code: String) -> [EKCalendar] {
+        var calendars: [EKCalendar] = []
+        let identifiers = code.components(separatedBy: "&?")
+        
+        identifiers.forEach { id in
+            guard let found = EventViewModel.CalendarAccessor.calendar(withIdentifier: id) else {
+                return
+            }
+            calendars.append(found)
+        }
+        
+        return calendars
     }
 }
