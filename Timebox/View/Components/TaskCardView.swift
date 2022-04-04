@@ -23,6 +23,18 @@ struct TaskCardView: View {
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
     
+    var canDelete: Bool {
+        get {
+            task.ekeventID == nil
+        }
+    }
+    
+    var canEdit: Bool {
+        get {
+            !taskModel.isOverdue(self.task)
+        }
+    }
+    
     var body: some View {
         ZStack {
             // Swipe to action buttons...
@@ -30,13 +42,15 @@ struct TaskCardView: View {
                 Spacer()
                 
                 // Edit...
+                self.canEdit ?
                 SwipeToButton(isDestructive: false, action: {
                     // Brings up edit modal...
                     taskModel.addNewTask.toggle()
                     taskModel.editTask = task
-                })
+                }) : nil
                 
                 // Delete...
+                self.canDelete ?
                 SwipeToButton(isDestructive: true, action: {
                     // Perform task deletion...
                     showDeleteDialog.toggle()
@@ -51,7 +65,7 @@ struct TaskCardView: View {
                             try? context.save()
                         }
                     }
-                }
+                } : nil
                 
             }
             

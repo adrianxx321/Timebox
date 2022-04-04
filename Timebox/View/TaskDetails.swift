@@ -20,6 +20,17 @@ struct TaskDetails: View {
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
     
+    var canDelete: Bool {
+        get {
+            selectedTask.ekeventID == nil
+        }
+    }
+    var canEdit: Bool {
+        get {
+            !taskModel.isOverdue(self.selectedTask)
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             NavBarView()
@@ -196,22 +207,25 @@ struct TaskDetails: View {
             Spacer()
             
             // More options button...
+            self.canEdit || self.canDelete ?
             Menu {
                 // Bring up the edit task modal...
+                self.canEdit ?
                 Button {
                     taskModel.addNewTask.toggle()
                     taskModel.editTask = selectedTask
                 } label: {
                     taskModel.isScheduledTask(selectedTask) ?
                     Label("Edit Task", image: "pencil") : Label("Add to Scheduled", image: "clock")
-                }.foregroundColor(.textPrimary)
+                }.foregroundColor(.textPrimary) : nil
                 
                 // Delete this task...
+                self.canDelete ?
                 Button(role: .destructive) {
                     showDeleteDialog.toggle()
                 } label: {
                     Label("Delete Task", image: "trash")
-                }
+                } : nil
             } label: {
                 Image("more-f")
                     .resizable()
@@ -228,7 +242,7 @@ struct TaskDetails: View {
                     // Go back to previous screen after deletion...
                     presentationMode.wrappedValue.dismiss()
                 }
-            }
+            } : nil
         }
         .foregroundColor(.textPrimary)
     }
