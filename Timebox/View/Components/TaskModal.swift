@@ -33,7 +33,7 @@ struct TaskModal: View {
     // A dictionary to keep track of changes in all fields
     @State private var isEdited: [String: Bool] = [
         "taskTitle" : false,
-        "subtasks": false,
+        "subtasks" : false,
         "taskLabel" : false,
         "color" : false,
         "isImportant" : false,
@@ -47,7 +47,6 @@ struct TaskModal: View {
     @State var id: UUID = UUID.init()
     @State var taskTitle: String = ""
     @State var subtasks: [Subtask] = []
-    @State var subtaskTitles: [String] = []
     @State var taskLabel: String = ""
     @State var color: UIColor = .purple
     @State var isImportant: Bool = false
@@ -120,13 +119,13 @@ struct TaskModal: View {
                         MyTextField("Task Title", $taskTitle)
                             .onAppear {
                                 if let task = taskModel.editTask {
-                                    if !isEdited.contains(where: { $0.value }) {
-                                        taskTitle = task.taskTitle ?? ""
+                                    if !self.isEdited.contains(where: { $0.value }) {
+                                        self.taskTitle = task.taskTitle ?? ""
                                     }
                                 }
                             }
                             .onChange(of: taskTitle, perform: { newValue in
-                                isEdited["taskTitle"] = taskTitle != taskModel.editTask?.taskTitle
+                                self.isEdited["taskTitle"] = self.taskTitle != taskModel.editTask?.taskTitle
                             })
                             .disabled(self.disableEditForImported)
                         
@@ -146,14 +145,14 @@ struct TaskModal: View {
                             }
                             .onDelete { index in
                                 withAnimation {
-                                    subtasks.remove(atOffsets: index)
+                                    self.subtasks.remove(atOffsets: index)
                                 }
                             }
                             
                             HStack(spacing: 16) {
                                 Button {
                                     withAnimation {
-                                        subtasks.append(taskModel.addSubtask(context: self.context))
+                                        self.subtasks.append(taskModel.addSubtask(context: self.context))
                                     }
                                 } label: {
                                     Image("add")
@@ -171,13 +170,13 @@ struct TaskModal: View {
                         .listRowSeparator(.hidden)
                         .onAppear {
                             if let task = taskModel.editTask {
-                                if !isEdited.contains(where: { $0.value }) {
-                                    subtasks = task.subtasks
+                                if !self.isEdited.contains(where: { $0.value }) {
+                                    self.subtasks = task.subtasks
                                 }
                             }
                         }
-                        .onChange(of: subtasks, perform: { newValue in
-                            isEdited["subtasks"] = subtasks != taskModel.editTask?.subtasks
+                        .onChange(of: self.subtasks, perform: { newValue in
+                            self.isEdited["subtasks"] = self.subtasks != taskModel.editTask?.subtasks
                         })
                     }
 
@@ -186,13 +185,13 @@ struct TaskModal: View {
                         MyTextField("Tag (optional)", $taskLabel)
                             .onAppear {
                                 if let task = taskModel.editTask {
-                                    if !isEdited.contains(where: { $0.value }) {
-                                        taskLabel = task.taskLabel ?? ""
+                                    if !self.isEdited.contains(where: { $0.value }) {
+                                        self.taskLabel = task.taskLabel ?? ""
                                     }
                                 }
                             }
                             .onChange(of: taskLabel, perform: { newValue in
-                                isEdited["taskLabel"] = taskLabel != taskModel.editTask?.taskLabel
+                                self.isEdited["taskLabel"] = self.taskLabel != taskModel.editTask?.taskLabel
                             })
                     } header: { SectionHeaderLabel(title: "Label") }
                         .disabled(disableEditForImported)
@@ -239,8 +238,8 @@ struct TaskModal: View {
                                 if !isEdited.contains(where: { $0.value }) {
                                     // Check if existing task's color is one of the predefined...
                                     guard let index = TaskModal.colors.firstIndex(where: { $0.value == existingTask.color }) else {
-                                        selectedCustomColor = ColorChoice(name: "Custom...", value: existingTask.color ?? .accent)
-                                        selectedColor = selectedCustomColor
+                                        self.selectedCustomColor = ColorChoice(name: "Custom...", value: existingTask.color ?? .accent)
+                                        self.selectedColor = selectedCustomColor
                                         return color = selectedColor.value
                                     }
                                     selectedColor = TaskModal.colors[index]
@@ -249,8 +248,8 @@ struct TaskModal: View {
                             }
                         }
                         .onChange(of: selectedColor, perform: { newColor in
-                            color = newColor.value
-                            isEdited["color"] = color != taskModel.editTask?.color
+                            self.color = newColor.value
+                            self.isEdited["color"] = color != taskModel.editTask?.color
                         })
                     } header: { SectionHeaderLabel(title: "Color") }
                         .disabled(disableEditForImported)
@@ -263,13 +262,13 @@ struct TaskModal: View {
                         .tint(.accent)
                         .onAppear {
                             if let task = taskModel.editTask {
-                                if !isEdited.contains(where: { $0.value }) {
-                                    isImportant = task.isImportant
+                                if !self.isEdited.contains(where: { $0.value }) {
+                                    self.isImportant = task.isImportant
                                 }
                             }
                         }
                         .onChange(of: isImportant, perform: { newValue in
-                            isEdited["isImportant"] = isImportant != taskModel.editTask?.isImportant
+                            self.isEdited["isImportant"] = isImportant != taskModel.editTask?.isImportant
                         })
                     } header: { SectionHeaderLabel(title: "Task Priority") }
 
@@ -292,8 +291,8 @@ struct TaskModal: View {
                             // Pre-selects duration from saved task BASED ON START & END TIME
                             if let task = taskModel.editTask {
                                 // Make sure pre-selection only done once
-                                if !isEdited.contains(where: { $0.value }) {
-                                    selectedDuration = !taskModel.isScheduledTask(task) ? .untimed
+                                if !self.isEdited.contains(where: { $0.value }) {
+                                    self.selectedDuration = !taskModel.isScheduledTask(task) ? .untimed
                                     : taskModel.isAllDayTask(task) ? .allDay
                                     : .timeboxed
                                 }
@@ -302,19 +301,19 @@ struct TaskModal: View {
                         .onChange(of: selectedDuration, perform: { newValue in
                             switch newValue {
                                 case .untimed:
-                                    taskStartTime = nil
-                                    taskEndTime = nil
+                                self.taskStartTime = nil
+                                self.taskEndTime = nil
                                 
                                 case .allDay:
                                     // Start & end time will always be 0000 & 2359
                                     guard let existingTask = taskModel.editTask else {
-                                        taskStartTime = Calendar.current.startOfDay(for: Date())
-                                        taskEndTime = taskModel.getOneMinToMidnight(taskStartTime!)
+                                        self.taskStartTime = Calendar.current.startOfDay(for: Date())
+                                        self.taskEndTime = taskModel.getOneMinToMidnight(taskStartTime!)
                                         
                                         return
                                     }
-                                    taskStartTime = taskModel.isAllDayTask(existingTask) ? existingTask.taskStartTime : Calendar.current.startOfDay(for: Date())
-                                    taskEndTime = taskModel.getOneMinToMidnight(taskStartTime!)
+                                self.taskStartTime = taskModel.isAllDayTask(existingTask) ? existingTask.taskStartTime : Calendar.current.startOfDay(for: Date())
+                                self.taskEndTime = taskModel.getOneMinToMidnight(taskStartTime!)
                                 
                                 case .timeboxed:
                                     guard let existingTask = taskModel.editTask else {
@@ -327,9 +326,9 @@ struct TaskModal: View {
                                     taskEndTime = taskModel.isTimeboxedTask(existingTask) ? existingTask.taskEndTime : Calendar.current.date(byAdding: .hour, value: 1, to: taskStartTime!)
                             }
                             // MARK: (EDIT MODE) Initial values unchanged
-                            isEdited["taskStartTime"]! = taskStartTime != taskModel.editTask?.taskStartTime
-                            isEdited["taskEndTime"]! = taskEndTime != taskModel.editTask?.taskEndTime
-                            isEdited["duration"]! = isEdited["taskStartTime"]! && isEdited["taskEndTime"]!
+                            self.isEdited["taskStartTime"]! = self.taskStartTime != taskModel.editTask?.taskStartTime
+                            self.isEdited["taskEndTime"]! = self.taskEndTime != taskModel.editTask?.taskEndTime
+                            self.isEdited["duration"]! = self.isEdited["taskStartTime"]! && self.isEdited["taskEndTime"]!
                         })
                         
                         // Then, present date & time picker only if it's time-constrained...
@@ -350,11 +349,11 @@ struct TaskModal: View {
                                         case .untimed:
                                             break
                                         case .allDay:
-                                            taskStartTime = Calendar.current.startOfDay(for: newValueUnwrapped)
-                                            taskEndTime = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: newValueUnwrapped)
+                                        self.taskStartTime = Calendar.current.startOfDay(for: newValueUnwrapped)
+                                        self.taskEndTime = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: newValueUnwrapped)
                                         case .timeboxed:
                                             guard let existingTask = taskModel.editTask else {
-                                                taskEndTime = Calendar.current.date(byAdding: .hour, value: 1, to: newValueUnwrapped)
+                                                self.taskEndTime = Calendar.current.date(byAdding: .hour, value: 1, to: newValueUnwrapped)
 
                                                 return
                                             }
@@ -366,13 +365,13 @@ struct TaskModal: View {
                                                                         end: isReversed ? existingTask.taskStartTime! : newValueUnwrapped)
                                             let dayDiff = isReversed ? interval.duration * -1 : interval.duration
                                             
-                                            taskEndTime = existingTask.taskEndTime!.addingTimeInterval(dayDiff)
+                                            self.taskEndTime = existingTask.taskEndTime!.addingTimeInterval(dayDiff)
                                         } else {
-                                            taskEndTime = Calendar.current.date(byAdding: .hour, value: 1, to: newValueUnwrapped)
+                                            self.taskEndTime = Calendar.current.date(byAdding: .hour, value: 1, to: newValueUnwrapped)
                                         }
                                     }
-                                    isEdited["taskStartTime"] = taskStartTime != taskModel.editTask?.taskStartTime
-                                    isEdited["taskEndTime"] = taskEndTime != taskModel.editTask?.taskEndTime
+                                    self.isEdited["taskStartTime"] = self.taskStartTime != taskModel.editTask?.taskStartTime
+                                    self.isEdited["taskEndTime"] = self.taskEndTime != taskModel.editTask?.taskEndTime
                                 })
 
                             selectedDuration == .timeboxed ?
@@ -390,9 +389,9 @@ struct TaskModal: View {
                         }
                         .onAppear {
                             if let task = taskModel.editTask {
-                                if !isEdited.contains(where: { $0.value }) {
-                                    taskStartTime = task.taskStartTime
-                                    taskEndTime = task.taskEndTime
+                                if !self.isEdited.contains(where: { $0.value }) {
+                                    self.taskStartTime = task.taskStartTime
+                                    self.taskEndTime = task.taskEndTime
                                 }
                             }
                         }
@@ -437,9 +436,9 @@ struct TaskModal: View {
                         // Dismiss view after completion
                         dismiss()
                     }
-                    .disabled(taskTitle == ""
-                              || !isEdited.contains(where: { $0.value })
-                              || subtasks.contains(where: {$0.subtaskTitle == ""}))
+                    .disabled((self.taskTitle == ""
+                               || self.subtasks.contains(where: {$0.subtaskTitle == ""}))
+                              || !isEdited.contains(where: { $0.value }))
                 }
 
                 ToolbarItem(placement: .navigationBarLeading) {

@@ -15,7 +15,6 @@ struct TimeboxApp: App {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                .environment(\.managedObjectContext, persistenceController.container.newBackgroundContext())
         }
     }
 }

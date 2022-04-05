@@ -77,8 +77,15 @@ struct ScheduledTasks: View {
             .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
-            .onReceive(eventModel.$eventStore) { events in
+            .onAppear {
                 withAnimation {
+                    eventModel.refreshEvents(context: self.context, persistentTaskStore: self.allTasks)
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
+                withAnimation {
+                    // As per the instruction, so we fetch the EKCalendar again.
+                    eventModel.loadCalendars()
                     eventModel.refreshEvents(context: self.context, persistentTaskStore: self.allTasks)
                 }
             }

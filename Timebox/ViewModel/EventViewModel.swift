@@ -54,7 +54,7 @@ class EventViewModel: ObservableObject {
         }
     }
     
-    private func loadCalendars() {
+    func loadCalendars() {
         if self.syncCalendarsAllowed {
             // Initialise calendar store...
             // selectedCalendars is a delimited string sequence that contains all the calendar IDs
@@ -90,7 +90,6 @@ class EventViewModel: ObservableObject {
         }
     }
     
-    /// Detects if new event(s) are added into calendar. Returns true for insertions, false for deletion..
     private func shouldAddNewEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from source of truth & persistent store
         let originEK = self.eventStore.map{self.EKEventMapper($0)}
@@ -100,7 +99,7 @@ class EventViewModel: ObservableObject {
                 existing.ekeventID == origin.ekeventID
             }
         }
-        print("\(originEK.count) - \(persistentEK.count) = \(addedEvents.count)")
+        print("\(originEK.count) (origin) - \(persistentEK.count) (persistent) = \(addedEvents.count) (added)")
         
         return addedEvents.isEmpty ? nil : addedEvents
     }
@@ -127,7 +126,6 @@ class EventViewModel: ObservableObject {
         try? context.save()
     }
     
-    /// Detects if some events are removed from calendar. Returns the mapped to-be-removed tasks if true, otherwise returns nil.
     private func shouldRemoveEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from persistent & source of truth
         let originEK = self.eventStore.map{self.EKEventMapper($0)}
@@ -138,7 +136,7 @@ class EventViewModel: ObservableObject {
             }
         }
         
-        print("\(removedEvents.count) = \(persistentEK.count) - \(originEK.count)")
+        print("\(persistentEK.count) (persistent) - \(originEK.count) (origin) = \(removedEvents.count) (removed)")
         
         return removedEvents.isEmpty ? nil : removedEvents
     }

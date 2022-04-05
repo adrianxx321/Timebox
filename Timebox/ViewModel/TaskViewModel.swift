@@ -112,6 +112,7 @@ class TaskViewModel: ObservableObject {
         newSubtask.timestamp = Date()
         newSubtask.isCompleted = false
         
+        newSubtask.objectWillChange.send()
         return newSubtask
     }
     
@@ -155,14 +156,14 @@ class TaskViewModel: ObservableObject {
         try? context.save()
     }
     
-    func completeSubtask(selectedTask: Task, subtask: Subtask, context: NSManagedObjectContext) {
+    func completeSubtask(parentTask: Task, subtask: Subtask, context: NSManagedObjectContext) {
         // We need this "magic" to overcome the fact that Core Data can't handle view update on to-many entities...
-        selectedTask.objectWillChange.send()
+        parentTask.objectWillChange.send()
         subtask.isCompleted.toggle()
         
         // Automatically check parent task as completed
         // When all subtasks are done...
-        selectedTask.isCompleted = !selectedTask.subtasks
+        parentTask.isCompleted = !parentTask.subtasks
             .contains(where: { !$0.isCompleted })
         
         // Save to Core Data...

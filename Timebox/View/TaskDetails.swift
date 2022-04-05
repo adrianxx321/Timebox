@@ -51,7 +51,7 @@ struct TaskDetails: View {
                                         // Checkbox for subtask completion...
                                         Button {
                                             withAnimation {
-                                                taskModel.completeSubtask(selectedTask: self.selectedTask, subtask: subtask, context: self.context)
+                                                taskModel.completeSubtask(parentTask: self.selectedTask, subtask: subtask, context: self.context)
                                             }
                                         } label: {
                                             Image(subtask.isCompleted ? "checked" : "unchecked")
@@ -273,7 +273,7 @@ struct TaskDetails: View {
                 let foundEvent = eventModel.lookupCalendarEvent(ekEventID)
                 let foundCalendarSource = foundEvent?.calendar.source.title ?? "Calendar"
                 
-                HStack(alignment: .top, spacing: 8) {
+                HStack(spacing: 8) {
                     Image("alert")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
