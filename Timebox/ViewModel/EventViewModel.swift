@@ -8,6 +8,7 @@
 import SwiftUI
 import EventKit
 import CoreData
+import BackgroundTasks
 
 class EventViewModel: ObservableObject {
     // This is the store for all calendar entities retrieved from your calendar
@@ -16,12 +17,46 @@ class EventViewModel: ObservableObject {
     @Published var eventStore: [EKEvent] = []
     // Singleton EventKit API accessor
     static let CalendarAccessor = EKEventStore()
+    // Calendar permission - Default to false as we haven't get user consent
     @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
+    // So does the list of selected calendar
     @AppStorage("selectedCalendars") var selectedCalendars = ""
     
     init() {
-        // Not sure if this check is needed...
-        if syncCalendarsAllowed {
+        loadCalendarsPermission()
+        loadCalendars()
+    }
+    
+    func loadCalendarsPermission() {
+        let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
+        
+        DispatchQueue.main.async {
+            self.syncCalendarsAllowed = EKAuthStatus == .authorized
+        }
+    }
+    
+    /// Request user's permission for calendars for once
+    func requestCalendarAccessPermission() {
+        let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
+        
+        if EKAuthStatus == .notDetermined {
+            EventViewModel.CalendarAccessor.requestAccess(to: .event) { granted, _ in
+                DispatchQueue.main.async {
+                    self.syncCalendarsAllowed = granted
+                    // After granted permission first time we need to load the calendars again.
+                    // So that the list isn't emptly selected
+                    self.loadCalendars()
+                }
+            }
+        } else if EKAuthStatus == .denied {
+            DispatchQueue.main.async {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+            }
+        }
+    }
+    
+    func loadCalendars() {
+        if self.syncCalendarsAllowed {
             // Initialise calendar store...
             // selectedCalendars is a delimited string sequence that contains all the calendar IDs
             self.calendarStore = self.selectedCalendars.count <= 0 ?
@@ -38,23 +73,6 @@ class EventViewModel: ObservableObject {
             let predicate = EventViewModel.CalendarAccessor.predicateForEvents(withStart: lastYear, end: oneYearLater, calendars: self.calendarStore)
             
             self.eventStore = EventViewModel.CalendarAccessor.events(matching: predicate)
-        }
-    }
-    
-    /// Request user's permission for calendars for once
-    func requestCalendarAccessPermission() {
-        let EKAuthStatus = EKEventStore.authorizationStatus(for: .event)
-        
-        if EKAuthStatus == .notDetermined {
-            EventViewModel.CalendarAccessor.requestAccess(to: .event) { granted, _ in
-                DispatchQueue.main.async {
-                    self.syncCalendarsAllowed = granted
-                }
-            }
-        } else if EKAuthStatus == .denied {
-            DispatchQueue.main.async {
-                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-            }
         }
     }
     
@@ -176,6 +194,57 @@ class EventViewModel: ObservableObject {
         }
         
         try? context.save()
+    }
+    
+    func refreshEvents(context: NSManagedObjectContext, allTasks: [Task]) {
+        DispatchQueue.main.async {
+            if let newEvents = self.shouldAddNewEvents(taskStore: allTasks) {
+                print("has new tasks")
+                self.addNewEventsToPersistent(context: context, events: newEvents)
+            }
+
+            if let removedEvents = self.shouldRemoveEvents(taskStore: allTasks) {
+                print("has removed tasks")
+                self.removeEventsFromPersistent(context: context, events: removedEvents)
+            }
+
+            if let updatedEvents = self.shouldUpdateEvents(taskStore: allTasks) {
+                print("has updated tasks")
+                self.updateEvents(context: context, events: updatedEvents)
+            }
+        }
+    }
+    
+    // MARK: Background app refresh methods
+    func registerBGCalendarRefresh(context: NSManagedObjectContext, taskStore: [Task]) {
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.lianghan321.Timebox.refreshCalendarEvents", using: nil) { task in
+            // Actual background app refresh methods... to be registered
+            self.handleCalendarRefresh(task as! BGAppRefreshTask, context, taskStore)
+            print("background task registered.")
+        }
+    }
+    func scheduleCalendarRefresh() {
+        let request = BGAppRefreshTaskRequest(identifier: "com.lianghan321.Timebox.refreshCalendarEvents")
+        request.earliestBeginDate = nil
+        
+        do {
+            try BGTaskScheduler.shared.submit(request)
+            print("background task scheduled.")
+        } catch {
+            print("Could not schedule background app refresh: \(error)")
+        }
+    }
+    // This background app refresh method is only callable from within (ViewModel) itself
+    private func handleCalendarRefresh(_ task: BGAppRefreshTask, _ context: NSManagedObjectContext, _ taskStore: [Task]) {
+        scheduleCalendarRefresh()
+        task.expirationHandler = {
+            print("expired")
+        }
+        
+        print("executing background tasks...")
+        // Perform any background tasks you want here...
+//        self.refreshCalendarEvents(context: context, taskStore: taskStore)
+        task.setTaskCompleted(success: true)
     }
 
     func EKEventMapper(_ event: EKEvent) -> Task {

@@ -108,8 +108,8 @@ struct SettingsScreen: View {
                                       entryTitle: "Notifications",
                                       hideDefaultNavigationBar: true,
                                       iconIsDestructive: false,
-                                      tagValue: settingsModel.getNotificationStatus()) {
-                            if settingsModel.notificationsAllowed {
+                                      tagValue: notificationModel.getNotificationStatus()) {
+                            if notificationModel.notificationsAllowed {
                                 NotificationsPage()
                             } else {
                                 NotificationsFallbackPage().padding(.horizontal)
@@ -123,7 +123,7 @@ struct SettingsScreen: View {
                                       hideDefaultNavigationBar: true,
                                       iconIsDestructive: false,
                                       tagValue: nil) {
-                            if settingsModel.syncCalendarsAllowed {
+                            if eventModel.syncCalendarsAllowed {
                                 CalendarsPage()
                             } else {
                                 CalendarsFallbackPage().padding(.horizontal)
@@ -251,19 +251,19 @@ struct SettingsScreen: View {
         List {
             Group {
                 ListSection {
-                    Toggle(isOn: settingsModel.$notifyAtStart) {
+                    Toggle(isOn: notificationModel.$notifyAtStart) {
                         Text("Notify me when task starts")
                     }
                 }
                 
                 ListSection {
-                    Toggle(isOn: settingsModel.$notifyAtEnd) {
+                    Toggle(isOn: notificationModel.$notifyAtEnd) {
                         Text("Notify me at the end of task")
                     }
                 }
                 
                 ListSection {
-                    Toggle(isOn: settingsModel.$notifyAllDay) {
+                    Toggle(isOn: notificationModel.$notifyAllDay) {
                         Text("All-Day Tasks Notifications")
                     }
                 }
