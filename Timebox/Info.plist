@@ -2,14 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.lianghan321.Timebox.refreshCalendarEvents</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Montserrat-Italic.ttf</string>
 		<string>Montserrat.ttf</string>
 	</array>
-	<key>NSCalendarsUsageDescription</key>
-	<string>By allowing us to access your personal calendar, we can help to integrate your existing routines/schedules into Timebox to get you more productive.</string>
 </dict>
 </plist>

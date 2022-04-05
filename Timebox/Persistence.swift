@@ -9,8 +9,6 @@ import SwiftUI
 import CoreData
 
 struct PersistenceController {
-    @ObservedObject var eventModel = EventViewModel()
-    
     static let shared = PersistenceController()
 
     static var preview: PersistenceController = {
