@@ -318,6 +318,9 @@ struct SettingsScreen: View {
                 Text("Tasks completed")
                     .fontWeight(.bold)
                     .foregroundColor(.textTertiary)
+            }.onChange(of: eventModel.calendarStore) { _ in
+                // Updated the completed tasks count...
+                
             }
             
             VStack(spacing: 4) {
@@ -328,7 +331,6 @@ struct SettingsScreen: View {
                 Text("Focused time")
                     .fontWeight(.bold)
                     .foregroundColor(.textTertiary)
-
             }
         }
         .font(.paragraphP1())

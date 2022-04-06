@@ -29,4 +29,12 @@ public extension UIColor {
     static var uiPurple: UIColor { UIColor(named: #function)! }
     static var uiRed: UIColor { UIColor(named: #function)! }
     static var uiWhite: UIColor { UIColor(named: #function)! }
+    
+    func isEqualWithConversion(_ color: UIColor) -> Bool {
+        guard let space = self.cgColor.colorSpace
+            else { return false }
+        guard let converted = color.cgColor.converted(to: space, intent: .absoluteColorimetric, options: nil)
+            else { return false }
+        return self.cgColor == converted
+    }
 }

@@ -13,7 +13,7 @@ class EventViewModel: ObservableObject {
     // This is the store for all calendar entities retrieved from your calendar
     @Published var calendarStore = [EKCalendar]()
     // This is the store for events from all calendars
-    @Published var eventStore: [EKEvent] = []
+    @Published var eventStore: [Task] = []
     // Singleton EventKit API accessor
     static let CalendarAccessor = EKEventStore()
     // Calendar permission - Default to false as we haven't get user consent
@@ -71,7 +71,9 @@ class EventViewModel: ObservableObject {
             let oneYearLater = calendar.date(byAdding: .year, value: 2, to: lastYear)!
             let predicate = EventViewModel.CalendarAccessor.predicateForEvents(withStart: lastYear, end: oneYearLater, calendars: self.calendarStore)
             
-            self.eventStore = EventViewModel.CalendarAccessor.events(matching: predicate)
+            self.eventStore = EventViewModel.CalendarAccessor
+                .events(matching: predicate)
+                .map{self.EKEventMapper($0)}
         }
     }
     
@@ -79,27 +81,24 @@ class EventViewModel: ObservableObject {
         if put {
             self.calendarStore.append(selected)
             self.selectedCalendars = self.encodeSelectedCalendars(self.calendarStore)
-            print("selected calendar: \(selected)")
         } else {
             guard let index = self.calendarStore.firstIndex(of: selected) else {
                 return
             }
             self.calendarStore.remove(at: index)
             self.selectedCalendars = self.encodeSelectedCalendars(self.calendarStore)
-            print("unselected calendar: \(selected)")
         }
     }
     
     private func shouldAddNewEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from source of truth & persistent store
-        let originEK = self.eventStore.map{self.EKEventMapper($0)}
-        let persistentEK = persistentTaskStore.filter{$0.ekeventID != nil}
-        let addedEvents = originEK.filter { (origin: Task) -> Bool in
-            !persistentEK.contains { (existing: Task) -> Bool in
+        let sourceOfTruth = self.eventStore
+        let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
+        let addedEvents = sourceOfTruth.filter { (origin: Task) -> Bool in
+            !persistent.contains { (existing: Task) -> Bool in
                 existing.ekeventID == origin.ekeventID
             }
         }
-        print("\(originEK.count) (origin) - \(persistentEK.count) (persistent) = \(addedEvents.count) (added)")
         
         return addedEvents.isEmpty ? nil : addedEvents
     }
@@ -128,15 +127,13 @@ class EventViewModel: ObservableObject {
     
     private func shouldRemoveEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from persistent & source of truth
-        let originEK = self.eventStore.map{self.EKEventMapper($0)}
-        let persistentEK = persistentTaskStore.filter{$0.ekeventID != nil}
-        let removedEvents = persistentEK.filter { (existing: Task) -> Bool in
-            !originEK.contains { (origin: Task) -> Bool in
+        let sourceOfTruth = self.eventStore
+        let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
+        let removedEvents = persistent.filter { (existing: Task) -> Bool in
+            !sourceOfTruth.contains { (origin: Task) -> Bool in
                 origin.ekeventID == existing.ekeventID
             }
         }
-        
-        print("\(persistentEK.count) (persistent) - \(originEK.count) (origin) = \(removedEvents.count) (removed)")
         
         return removedEvents.isEmpty ? nil : removedEvents
     }
@@ -153,33 +150,33 @@ class EventViewModel: ObservableObject {
     
     /// Detects if event(s) from calendar are modified (includes addition, deletion and/or update). Returns the updated tasks if true, otherwise returns nil.
     private func shouldUpdateEvents(_ persistentTaskStore: [Task]) -> [Task]? {
-        var updatedTasks = [Task]()
-        // Assumes both source of truth and persisted store have equal number of objects
-        let sourceOfTruth = self.eventStore.map{self.EKEventMapper($0)}
-        let persistentEvents = persistentTaskStore.filter{$0.ekeventID != nil}
-        
-        // Finding the differences between both arrays
-        sourceOfTruth.forEach { event in
-            persistentEvents.forEach { task in
-                if event.ekeventID == task.ekeventID {
-                    if task.taskTitle != event.taskTitle
-                        || task.taskLabel != event.taskLabel
-                        || task.color != event.color
-                        || task.taskStartTime != event.taskEndTime
-                        || task.taskEndTime != event.taskEndTime {
-                        updatedTasks.append(task)
-                    }
+        let sourceOfTruth = self.eventStore
+        let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
+        let editedEvents = persistent.filter { (existing: Task) -> Bool in
+            sourceOfTruth.contains { (origin: Task) -> Bool in
+                // First, get the same event/task instance
+                if origin.id == existing.id {
+                    // Then look for any of the attributes changes
+                    let hasModified = origin.taskTitle != existing.taskTitle
+                                        || origin.taskLabel != existing.taskLabel
+                                        || origin.color!.isEqualWithConversion(existing.color!)
+                                        || origin.taskStartTime != existing.taskStartTime
+                                        || origin.taskEndTime != existing.taskEndTime
+                    
+                    return hasModified
+                } else {
+                    return false
                 }
             }
         }
 
-        return updatedTasks.isEmpty ? nil : updatedTasks
+        return editedEvents.isEmpty ? nil : editedEvents
     }
 
     /// Includes updates due to insertion, deletion &/ edit done from source of truth (Calendar app)
     private func updateEvents(_ context: NSManagedObjectContext, _ events: [Task]) {
+        let calendar = Calendar.current
         events.forEach { event in
-            let calendar = Calendar.current
             if let updatedEvent = EventViewModel.CalendarAccessor.event(withIdentifier: event.ekeventID!) {
                 let updatedTask = context.object(with: event.objectID) as! Task
                 updatedTask.taskTitle = updatedEvent.title
@@ -222,6 +219,7 @@ class EventViewModel: ObservableObject {
         mappedTask.taskTitle = event.title
         mappedTask.subtask = []
         mappedTask.taskLabel = event.calendar.title
+        
         mappedTask.color = UIColor(cgColor: event.calendar.cgColor)
         mappedTask.isImportant = event.hasAlarms
         
@@ -241,6 +239,7 @@ class EventViewModel: ObservableObject {
         return EventViewModel.CalendarAccessor.event(withIdentifier: id)
     }
     
+    /// Attempts to convert EKEvent's taskIdentifier to UUID. Returns randomly generated UUID if fails.
     func generateUUIDFromEvent(from str: String) -> UUID {
         let indexStartOfText = str.index(str.startIndex, offsetBy: 37)
         let substr = String(str[indexStartOfText...])
