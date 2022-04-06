@@ -9,16 +9,31 @@
 /* Begin PBXBuildFile section */
 		4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E3F0396D75807726DEE01A /* Font+extension.swift */; };
 		A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E61FE11E9F3672F3851C898 /* Color+extension.swift */; };
-		B51B3C4D27C78EAC001CD692 /* OnboardTabModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4C27C78EAC001CD692 /* OnboardTabModel.swift */; };
+		B5057A9827CF279D0005512F /* View+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5057A9727CF279D0005512F /* View+extension.swift */; };
+		B51B3C4D27C78EAC001CD692 /* OnboardTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4C27C78EAC001CD692 /* OnboardTab.swift */; };
 		B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */; };
 		B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B551BD8327C685F1006FCB58 /* TimeboxApp.swift */; };
 		B551BD8627C685F1006FCB58 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B551BD8527C685F1006FCB58 /* ContentView.swift */; };
 		B551BD8827C685F2006FCB58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8727C685F2006FCB58 /* Assets.xcassets */; };
 		B551BD8B27C685F2006FCB58 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */; };
 		B551BD9827C69157006FCB58 /* figma-export.yaml in Resources */ = {isa = PBXBuildFile; fileRef = B551BD9727C69157006FCB58 /* figma-export.yaml */; };
+		B562123127E41E1C00A45AD7 /* TaskModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B562123027E41E1C00A45AD7 /* TaskModal.swift */; };
+		B58C531E27D7035B00A48AE8 /* TaskDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58C531D27D7035B00A48AE8 /* TaskDetails.swift */; };
+		B592B9FB27CE0A97009F079C /* ScheduledTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */; };
+		B592B9FD27CE0B77009F079C /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FC27CE0B77009F079C /* Task.swift */; };
+		B592B9FF27CE2079009F079C /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FE27CE2079009F079C /* TaskViewModel.swift */; };
 		B5A323AF27C750D500D9767C /* OnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A323AE27C750D500D9767C /* OnboardingScreen.swift */; };
 		B5A323B227C75CB300D9767C /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */; };
 		B5A323B327C75CB300D9767C /* Montserrat.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5A323B127C75CB300D9767C /* Montserrat.ttf */; };
+		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
+		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
+		B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152FA27D0A5620073421B /* BacklogTasks.swift */; };
+		B5D3081527E7071900959EF5 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D3081427E7071900959EF5 /* PickerView.swift */; };
+		B5DB8A2A27D4B2A7000D8B51 /* DynamicTaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */; };
+		B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */; };
+		B5DB8A3927D4B3C9000D8B51 /* Subtask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A3827D4B3C9000D8B51 /* Subtask.swift */; };
+		B5DB8A3B27D4B57B000D8B51 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */; };
+		B5DB8A6C27D50167000D8B51 /* Timebox.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */; };
 		B5F645DB27CB6E9900AF1716 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F645DA27CB6E9900AF1716 /* CloudKit.framework */; };
 		B5F645DD27CB837700AF1716 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F645DC27CB837700AF1716 /* AuthViewModel.swift */; };
 		B5F645DF27CB8D9000AF1716 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F645DE27CB8D9000AF1716 /* HomeScreen.swift */; };
@@ -28,7 +43,8 @@
 /* Begin PBXFileReference section */
 		1E61FE11E9F3672F3851C898 /* Color+extension.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = "Color+extension.swift"; sourceTree = "<group>"; };
 		39E3F0396D75807726DEE01A /* Font+extension.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; fileEncoding = 4; path = "Font+extension.swift"; sourceTree = "<group>"; };
-		B51B3C4C27C78EAC001CD692 /* OnboardTabModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardTabModel.swift; sourceTree = "<group>"; };
+		B5057A9727CF279D0005512F /* View+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+extension.swift"; sourceTree = "<group>"; };
+		B51B3C4C27C78EAC001CD692 /* OnboardTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardTab.swift; sourceTree = "<group>"; };
 		B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		B551BD8027C685F1006FCB58 /* Timebox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timebox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B551BD8327C685F1006FCB58 /* TimeboxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeboxApp.swift; sourceTree = "<group>"; };
@@ -36,10 +52,24 @@
 		B551BD8727C685F2006FCB58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B551BD8A27C685F2006FCB58 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B551BD9727C69157006FCB58 /* figma-export.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "figma-export.yaml"; sourceTree = "<group>"; };
+		B562123027E41E1C00A45AD7 /* TaskModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskModal.swift; sourceTree = "<group>"; };
+		B58C531D27D7035B00A48AE8 /* TaskDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetails.swift; sourceTree = "<group>"; };
+		B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledTasks.swift; sourceTree = "<group>"; };
+		B592B9FC27CE0B77009F079C /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		B592B9FE27CE2079009F079C /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
 		B5A323AE27C750D500D9767C /* OnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingScreen.swift; sourceTree = "<group>"; };
 		B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Italic.ttf"; sourceTree = "<group>"; };
 		B5A323B127C75CB300D9767C /* Montserrat.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Montserrat.ttf; sourceTree = "<group>"; };
 		B5A323B427C7639F00D9767C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
+		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
+		B5D152FA27D0A5620073421B /* BacklogTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogTasks.swift; sourceTree = "<group>"; };
+		B5D3081427E7071900959EF5 /* PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
+		B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DynamicTaskList.swift; sourceTree = "<group>"; };
+		B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorTransformer.swift; sourceTree = "<group>"; };
+		B5DB8A3827D4B3C9000D8B51 /* Subtask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subtask.swift; sourceTree = "<group>"; };
+		B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		B5DB8A6B27D50167000D8B51 /* TimeboxCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TimeboxCoreData.xcdatamodel; sourceTree = "<group>"; };
 		B5F645D827CB6E9400AF1716 /* Timebox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Timebox.entitlements; sourceTree = "<group>"; };
 		B5F645DA27CB6E9900AF1716 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B5F645DC27CB837700AF1716 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
@@ -88,6 +118,9 @@
 				B551BD9327C6860D006FCB58 /* ViewModel */,
 				B551BD8327C685F1006FCB58 /* TimeboxApp.swift */,
 				B551BD8527C685F1006FCB58 /* ContentView.swift */,
+				B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */,
+				B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */,
+				B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */,
 				B551BD8927C685F2006FCB58 /* Preview Content */,
 			);
 			path = Timebox;
@@ -104,7 +137,9 @@
 		B551BD9227C68609006FCB58 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B51B3C4C27C78EAC001CD692 /* OnboardTabModel.swift */,
+				B51B3C4C27C78EAC001CD692 /* OnboardTab.swift */,
+				B592B9FC27CE0B77009F079C /* Task.swift */,
+				B5DB8A3827D4B3C9000D8B51 /* Subtask.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -113,6 +148,7 @@
 			isa = PBXGroup;
 			children = (
 				B5F645DC27CB837700AF1716 /* AuthViewModel.swift */,
+				B592B9FE27CE2079009F079C /* TaskViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -120,10 +156,15 @@
 		B551BD9427C6862C006FCB58 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				B5D152F727D082C40073421B /* Components */,
 				B551BD9627C68886006FCB58 /* Extension */,
 				B5A323AE27C750D500D9767C /* OnboardingScreen.swift */,
 				B51B3C4E27C79CD1001CD692 /* LoginScreen.swift */,
 				B5F645DE27CB8D9000AF1716 /* HomeScreen.swift */,
+				B592B9FA27CE0A97009F079C /* ScheduledTasks.swift */,
+				B5D152FA27D0A5620073421B /* BacklogTasks.swift */,
+				B58C531D27D7035B00A48AE8 /* TaskDetails.swift */,
+				B562123027E41E1C00A45AD7 /* TaskModal.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -144,8 +185,20 @@
 				E7E9F2C409FF0EF09FFE6374 /* UIColor+extension.swift */,
 				1E61FE11E9F3672F3851C898 /* Color+extension.swift */,
 				39E3F0396D75807726DEE01A /* Font+extension.swift */,
+				B5057A9727CF279D0005512F /* View+extension.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		B5D152F727D082C40073421B /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B5D152F827D082E10073421B /* TaskCardView.swift */,
+				B5DB8A2927D4B2A7000D8B51 /* DynamicTaskList.swift */,
+				B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */,
+				B5D3081427E7071900959EF5 /* PickerView.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		B5F645D927CB6E9900AF1716 /* Frameworks */ = {
@@ -231,13 +284,28 @@
 			files = (
 				B5A323AF27C750D500D9767C /* OnboardingScreen.swift in Sources */,
 				B551BD8627C685F1006FCB58 /* ContentView.swift in Sources */,
+				B562123127E41E1C00A45AD7 /* TaskModal.swift in Sources */,
+				B5057A9827CF279D0005512F /* View+extension.swift in Sources */,
+				B58C531E27D7035B00A48AE8 /* TaskDetails.swift in Sources */,
+				B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */,
 				B51B3C4F27C79CD1001CD692 /* LoginScreen.swift in Sources */,
 				B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */,
+				B5DB8A6C27D50167000D8B51 /* Timebox.xcdatamodeld in Sources */,
+				B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */,
+				B5D152FB27D0A5620073421B /* BacklogTasks.swift in Sources */,
+				B592B9FD27CE0B77009F079C /* Task.swift in Sources */,
+				B5DB8A2A27D4B2A7000D8B51 /* DynamicTaskList.swift in Sources */,
+				B5DB8A3B27D4B57B000D8B51 /* Persistence.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
-				B51B3C4D27C78EAC001CD692 /* OnboardTabModel.swift in Sources */,
+				B592B9FF27CE2079009F079C /* TaskViewModel.swift in Sources */,
+				B51B3C4D27C78EAC001CD692 /* OnboardTab.swift in Sources */,
 				B5F645DF27CB8D9000AF1716 /* HomeScreen.swift in Sources */,
+				B5D152F927D082E10073421B /* TaskCardView.swift in Sources */,
+				B5DB8A3927D4B3C9000D8B51 /* Subtask.swift in Sources */,
+				B5D3081527E7071900959EF5 /* PickerView.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
 				4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */,
+				B592B9FB27CE0A97009F079C /* ScheduledTasks.swift in Sources */,
 				B5F645DD27CB837700AF1716 /* AuthViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -449,6 +517,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				B5DB8A6B27D50167000D8B51 /* TimeboxCoreData.xcdatamodel */,
+			);
+			currentVersion = B5DB8A6B27D50167000D8B51 /* TimeboxCoreData.xcdatamodel */;
+			path = Timebox.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = B551BD7827C685F1006FCB58 /* Project object */;
 }

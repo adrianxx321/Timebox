@@ -36,21 +36,11 @@ struct OnboardingScreen: View {
                 }
             }
             
-            Button {
+            CTAButton(btnLabel: "Get Started", btnAction: {
                 withAnimation {
                     viewDismissed = true
                 }
-            } label: {
-                Text("Get Started")
-                    .font(.subheading1())
-                    .bold()
-                    .foregroundColor(.backgroundPrimary)
-                    .padding(.vertical, 20)
-                    .padding(.horizontal, 40)
-                    .background(Capsule()
-                                    .foregroundColor(.accent)
-                                    .shadow(radius: 12, x: 0, y: 3))
-            }
+            }, btnFullSize: false)
             
             Spacer()
             Spacer()
