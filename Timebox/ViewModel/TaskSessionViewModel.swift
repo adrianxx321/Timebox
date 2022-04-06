@@ -6,9 +6,14 @@
 //
 
 import SwiftUI
+import CoreData
 
 class TaskSessionViewModel: ObservableObject {
     // Some properties to be used by timer
+    
+    func getAllTaskSessions(query: FetchedResults<TaskSession>) -> [TaskSession] {
+        return query.map{$0 as TaskSession}
+    }
     
     func getTotalTimeboxedHours(data: [TaskSession]) -> String {
         let total = data.reduce(0) { $0 + $1.focusedDuration }

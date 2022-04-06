@@ -44,6 +44,14 @@ class TaskViewModel: ObservableObject {
         currentWeek[currentWeek.count - 1] = lastWeekDay
     }
     
+    func getAllTasks(query: FetchedResults<Task>) -> [Task] {
+        return query.map{$0 as Task}
+    }
+    
+    func filterAllCompletedTasks(data: [Task]) -> [Task] {
+        return data.filter{ $0.isCompleted }
+    }
+    
     func filterScheduledTasks(data: [Task], hideCompleted: Bool) -> [Task] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: self.currentDay)

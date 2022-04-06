@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ScheduledTasks: View {
-    // MARK: Core Data synchronisation for imported events from EventKit
+    // MARK: Core Data injected environment context
     @Environment(\.managedObjectContext) var context
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
@@ -18,19 +18,19 @@ struct ScheduledTasks: View {
     @State private var hideCompletedTasks = false
     
     // MARK: Tasks prepared from CD fetch
-    var allTasks: [Task] {
+    private var allTasks: [Task] {
         get {
-            fetchedTasks.map { $0 as Task }
+            taskModel.getAllTasks(query: self.fetchedTasks)
         }
     }
-    var timeboxedTasks: [Task] {
+    private var timeboxedTasks: [Task] {
         get {
             // Get scheduled task
             let filtered = taskModel.filterScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
             return filtered.filter { taskModel.isTimeboxedTask($0) }
         }
     }
-    var allDayTasks: [Task] {
+    private var allDayTasks: [Task] {
         get {
             // Get scheduled task
             let filtered = taskModel.filterScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
@@ -79,14 +79,15 @@ struct ScheduledTasks: View {
             .navigationBarHidden(true)
             .onAppear {
                 withAnimation {
-                    eventModel.refreshEvents(context: self.context, persistentTaskStore: self.allTasks)
+                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
                 withAnimation {
                     // As per the instruction, so we fetch the EKCalendar again.
                     eventModel.loadCalendars()
-                    eventModel.refreshEvents(context: self.context, persistentTaskStore: self.allTasks)
+                    eventModel.loadEvents()
+                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
                 }
             }
         }

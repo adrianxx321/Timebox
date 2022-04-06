@@ -11,8 +11,10 @@ import MessageUI
 import EventKit
 
 struct SettingsScreen: View {
+    // MARK: Core Data injected environment context
+    @Environment(\.managedObjectContext) var context
     // MARK: Core Data fetch requests
-    @FetchRequest private var fetchedCompletedTasks: FetchedResults<Task>
+    @FetchRequest private var fetchedTasks: FetchedResults<Task>
     @FetchRequest private var fetchedSessions: FetchedResults<TaskSession>
 
     // MARK: ViewModels used (@ObservedObject are dependencies)
@@ -30,19 +32,34 @@ struct SettingsScreen: View {
     @State private var result: Result<MFMailComposeResult, Error>? = nil
     
     // MARK: Data prepared from CD fetch
-    var totalCompleted: Int {
+    private var allTasks: [Task] {
         get {
-            return fetchedCompletedTasks.count
+            taskModel.getAllTasks(query: self.fetchedTasks)
         }
     }
-    var totalHours: String {
+    private var allTaskSession: [TaskSession] {
         get {
-            return sessionModel.getTotalTimeboxedHours(data: fetchedSessions.map { $0 as TaskSession })
+            return sessionModel.getAllTaskSessions(query: self.fetchedSessions)
+        }
+    }
+    private var completedTasks: [Task] {
+        get {
+            return taskModel.filterAllCompletedTasks(data: self.allTasks)
+        }
+    }
+    private var totalCompleted: Int {
+        get {
+            return self.taskModel.getCompletedTaskCount(self.completedTasks)
+        }
+    }
+    private var totalHours: String {
+        get {
+            return sessionModel.getTotalTimeboxedHours(data: self.allTaskSession)
         }
     }
     
     // MARK: Calendars aggregated by sources
-    var allCalendarsOnDevice: [(sourceName: String, calendars: [EKCalendar])] {
+    private var allCalendarsOnDevice: [(sourceName: String, calendars: [EKCalendar])] {
         get {
             return Dictionary(grouping: EventViewModel.CalendarAccessor.calendars(for: .event), by: {
                 $0.source.title
@@ -55,9 +72,7 @@ struct SettingsScreen: View {
     }
     
     init() {
-        let predicate = NSPredicate(format: "isCompleted == true", [])
-        
-        _fetchedCompletedTasks = FetchRequest(entity: Task.entity(), sortDescriptors: [], predicate: predicate)
+        _fetchedTasks = FetchRequest(entity: Task.entity(), sortDescriptors: [])
         _fetchedSessions = FetchRequest(entity: TaskSession.entity(), sortDescriptors: [])
     }
     
@@ -122,7 +137,7 @@ struct SettingsScreen: View {
                                       entryTitle: "Calendars",
                                       hideDefaultNavigationBar: true,
                                       iconIsDestructive: false,
-                                      tagValue: nil) {
+                                      tagValue: eventModel.calendarStore.isEmpty ? "" : "\(eventModel.calendarStore.count) selected") {
                             if eventModel.syncCalendarsAllowed {
                                 CalendarsPage()
                             } else {
@@ -286,7 +301,14 @@ struct SettingsScreen: View {
                             Button {
                                 withAnimation {
                                     check.toggle()
+                                    
+                                    // Maintaining data integrity
+                                    // Update calendar & event store accordingly
+                                    // Each time after selecting/deselecting a calendar.
                                     eventModel.updateCalendarStore(put: check, selected: calendar)
+                                    eventModel.loadCalendars()
+                                    eventModel.loadEvents()
+                                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
                                 }
                             } label: {
                                 icon
@@ -302,7 +324,7 @@ struct SettingsScreen: View {
                                 .foregroundColor(.textPrimary)
                         }.listRowSeparator(.hidden)
                     }
-                } header: {SectionHeaderLabel(title: source.sourceName)}
+                } header: { SectionHeaderLabel(title: source.sourceName) }
             }
         }
     }
@@ -318,9 +340,6 @@ struct SettingsScreen: View {
                 Text("Tasks completed")
                     .fontWeight(.bold)
                     .foregroundColor(.textTertiary)
-            }.onChange(of: eventModel.calendarStore) { _ in
-                // Updated the completed tasks count...
-                
             }
             
             VStack(spacing: 4) {

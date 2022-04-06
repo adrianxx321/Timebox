@@ -47,8 +47,8 @@ struct ListEntryView<Content: View>: View {
             Spacer()
             
             Text(tag ?? "")
-                .fontWeight(.semibold)
-                .foregroundColor(.textTertiary)
+                .fontWeight(.medium)
+                .foregroundColor(.textSecondary)
         }.font(.paragraphP1())
     }
 }

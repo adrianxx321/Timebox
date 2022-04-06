@@ -20,10 +20,14 @@ class EventViewModel: ObservableObject {
     @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
     // So does the list of selected calendar
     @AppStorage("selectedCalendars") var selectedCalendars = ""
+    // A one-way toggle that allows first-time user to have all calendars selected
+    // After first granted calendar pemrission
+    @AppStorage("isfirstTimeSelect") private var isFirstTimeSelect = true
     
     init() {
         loadCalendarsPermission()
         loadCalendars()
+        loadEvents()
     }
     
     private func loadCalendarsPermission() {
@@ -58,22 +62,41 @@ class EventViewModel: ObservableObject {
         if self.syncCalendarsAllowed {
             // Initialise calendar store...
             // selectedCalendars is a delimited string sequence that contains all the calendar IDs
-            self.calendarStore = self.selectedCalendars.count <= 0 ?
-            EventViewModel.CalendarAccessor.calendars(for: .event) : self.decodeSelectedCalendars(self.selectedCalendars)
+            self.calendarStore = self.isFirstTimeSelect ?
+            EventViewModel.CalendarAccessor.calendars(for: .event) :  self.decodeSelectedCalendars(self.selectedCalendars)
+            
+            // One-time tripping the toggle. Since the auth status will never be notDetermined again after permission granted
+            self.isFirstTimeSelect = false
             
             // Remember the selected calendars...
             self.selectedCalendars = self.encodeSelectedCalendars(self.calendarStore)
-            
+        } else {
+            // If user revokes calendar permission in the middle
+            self.calendarStore = []
+            self.selectedCalendars = ""
+        }
+    }
+    
+    func loadEvents() {
+        if self.syncCalendarsAllowed && !self.calendarStore.isEmpty {
             // Initialise event store...
             let calendar = Calendar.current
-            // Limit range from 1 year ago to a year after
-            let lastYear = calendar.date(byAdding: .year, value: -1, to: Date())!
-            let oneYearLater = calendar.date(byAdding: .year, value: 2, to: lastYear)!
-            let predicate = EventViewModel.CalendarAccessor.predicateForEvents(withStart: lastYear, end: oneYearLater, calendars: self.calendarStore)
+            
+            // Limit range to within this year
+            var dateComponents = DateComponents()
+            dateComponents.year = calendar.component(.year, from: Date())
+            dateComponents.month = 1
+            dateComponents.day = 1
+
+            let currentYear = calendar.date(from: dateComponents)!
+            let endOfYear = calendar.date(byAdding: .year, value: 1, to: currentYear)!
+            let predicate = EventViewModel.CalendarAccessor.predicateForEvents(withStart: currentYear, end: endOfYear, calendars: self.calendarStore)
             
             self.eventStore = EventViewModel.CalendarAccessor
                 .events(matching: predicate)
                 .map{self.EKEventMapper($0)}
+        } else {
+            self.eventStore = []
         }
     }
     
@@ -90,7 +113,23 @@ class EventViewModel: ObservableObject {
         }
     }
     
-    private func shouldAddNewEvents(_ persistentTaskStore: [Task]) -> [Task]? {
+    func updateEventStore(context: NSManagedObjectContext, persistentTaskStore: [Task]) {
+        DispatchQueue.main.async {
+            if let newEvents = self.shouldAddNewEvents(persistentTaskStore) {
+                self.addNewEventsToPersistent(context, newEvents)
+            }
+
+            if let removedEvents = self.shouldRemoveEvents(persistentTaskStore) {
+                self.removeEventsFromPersistent(context, removedEvents)
+            }
+
+            if let updatedEvents = self.shouldUpdateEvents(persistentTaskStore) {
+                self.updateEvents(context, updatedEvents)
+            }
+        }
+    }
+    
+    func shouldAddNewEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from source of truth & persistent store
         let sourceOfTruth = self.eventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
@@ -103,7 +142,7 @@ class EventViewModel: ObservableObject {
         return addedEvents.isEmpty ? nil : addedEvents
     }
     
-    private func addNewEventsToPersistent(_ context: NSManagedObjectContext, _ events: [Task]) {
+    func addNewEventsToPersistent(_ context: NSManagedObjectContext, _ events: [Task]) {
         events.forEach { event in
             let newTask = Task(context: context)
             
@@ -125,7 +164,7 @@ class EventViewModel: ObservableObject {
         try? context.save()
     }
     
-    private func shouldRemoveEvents(_ persistentTaskStore: [Task]) -> [Task]? {
+    func shouldRemoveEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from persistent & source of truth
         let sourceOfTruth = self.eventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
@@ -138,7 +177,7 @@ class EventViewModel: ObservableObject {
         return removedEvents.isEmpty ? nil : removedEvents
     }
 
-    private func removeEventsFromPersistent(_ context: NSManagedObjectContext, _ events: [Task]) {
+    func removeEventsFromPersistent(_ context: NSManagedObjectContext, _ events: [Task]) {
         events.forEach { event in
             var removedTask = context.object(with: event.objectID) as! Task
             removedTask = event
@@ -149,7 +188,7 @@ class EventViewModel: ObservableObject {
     }
     
     /// Detects if event(s) from calendar are modified (includes addition, deletion and/or update). Returns the updated tasks if true, otherwise returns nil.
-    private func shouldUpdateEvents(_ persistentTaskStore: [Task]) -> [Task]? {
+    func shouldUpdateEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         let sourceOfTruth = self.eventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
         let editedEvents = persistent.filter { (existing: Task) -> Bool in
@@ -157,6 +196,8 @@ class EventViewModel: ObservableObject {
                 // First, get the same event/task instance
                 if origin.id == existing.id {
                     // Then look for any of the attributes changes
+                    // Note: Need to use calendar granularity to check for two same dates with diferent years
+                    // Because our calendar import ranges from 1 year before and after from current year ( 2 years
                     let hasModified = origin.taskTitle != existing.taskTitle
                                         || origin.taskLabel != existing.taskLabel
                                         || origin.color!.isEqualWithConversion(existing.color!)
@@ -174,7 +215,7 @@ class EventViewModel: ObservableObject {
     }
 
     /// Includes updates due to insertion, deletion &/ edit done from source of truth (Calendar app)
-    private func updateEvents(_ context: NSManagedObjectContext, _ events: [Task]) {
+    func updateEvents(_ context: NSManagedObjectContext, _ events: [Task]) {
         let calendar = Calendar.current
         events.forEach { event in
             if let updatedEvent = EventViewModel.CalendarAccessor.event(withIdentifier: event.ekeventID!) {
@@ -189,25 +230,6 @@ class EventViewModel: ObservableObject {
         
         try? context.save()
     }
-    
-    func refreshEvents(context: NSManagedObjectContext, persistentTaskStore: [Task]) {
-        DispatchQueue.main.async {
-            if let newEvents = self.shouldAddNewEvents(persistentTaskStore) {
-                print("has new tasks")
-                self.addNewEventsToPersistent(context, newEvents)
-            }
-
-            if let removedEvents = self.shouldRemoveEvents(persistentTaskStore) {
-                print("has removed tasks")
-                self.removeEventsFromPersistent(context, removedEvents)
-            }
-
-            if let updatedEvents = self.shouldUpdateEvents(persistentTaskStore) {
-                print("has updated tasks")
-                self.updateEvents(context, updatedEvents)
-            }
-        }
-    }
 
     func EKEventMapper(_ event: EKEvent) -> Task {
         let mappedTask = Task(entity: Task.entity(), insertInto: nil)
@@ -215,6 +237,7 @@ class EventViewModel: ObservableObject {
         
         // I extracted the second half of eventIdentifier string to use as the UUID
         // So the same event won't be mapped with random UUID everytime
+        // Because my goal is to maintain the integrity between EK API & Core Data
         mappedTask.id = self.generateUUIDFromEvent(from: event.eventIdentifier)
         mappedTask.taskTitle = event.title
         mappedTask.subtask = []
@@ -223,9 +246,6 @@ class EventViewModel: ObservableObject {
         mappedTask.color = UIColor(cgColor: event.calendar.cgColor)
         mappedTask.isImportant = event.hasAlarms
         
-        // MARK: This guy is probably causing the trouble
-        // Because original calendar allows event to be spanned across days
-        // But our app design doesn't allow that
         mappedTask.taskStartTime = event.isAllDay ? calendar.startOfDay(for: event.startDate) : event.startDate
         mappedTask.taskEndTime = event.isAllDay ? calendar.date(bySettingHour: 23, minute: 59, second: 59, of: event.startDate) : event.endDate
         
