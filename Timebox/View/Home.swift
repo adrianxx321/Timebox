@@ -183,12 +183,12 @@ struct Home: View {
     private func AchievementCardView(medal: Achievement, userPts: Int32) -> some View {
         VStack(alignment: .center) {
             // TODO: Medal icon
-            Image("144083514_3832508416843992_8153494803557931190_n")
+            Image(medal.iconName)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 72)
                 .cornerRadius(16)
-                .grayscale(achievementModel.isUnlocked(medal, userPoints: userPts) ? 0 : 1.0)
+                .grayscale(achievementModel.isUnlocked(medal, userPoints: userPts) ? 0 : 0.9)
             
             Text(medal.title)
                 .font(.caption())
