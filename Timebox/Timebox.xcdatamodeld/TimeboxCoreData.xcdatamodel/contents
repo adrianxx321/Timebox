@@ -2,30 +2,33 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Subtask" representedClassName="Subtask" syncable="YES">
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="order" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="subtaskTitle" attributeType="String" defaultValueString=""/>
+        <attribute name="subtaskTitle" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="parentTask" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Task" inverseName="subtask" inverseEntity="Task"/>
     </entity>
     <entity name="Task" representedClassName="Task" syncable="YES">
-        <attribute name="color" attributeType="Transformable" valueTransformerName="UIColorTransformer" customClassName=" UIColor"/>
-        <attribute name="completedTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="color" optional="YES" attributeType="Transformable" valueTransformerName="UIColorTransformer" customClassName=" UIColor"/>
+        <attribute name="ekeventID" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isImportant" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="isImported" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="taskEndTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="taskLabel" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="taskLabel" optional="YES" attributeType="String"/>
         <attribute name="taskStartTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="taskTitle" attributeType="String" defaultValueString=""/>
-        <relationship name="subtask" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Subtask" inverseName="parentTask" inverseEntity="Subtask"/>
-        <uniquenessConstraints>
-            <uniquenessConstraint>
-                <constraint value="id"/>
-            </uniquenessConstraint>
-        </uniquenessConstraints>
+        <attribute name="taskTitle" optional="YES" attributeType="String"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TaskSession" inverseName="task" inverseEntity="TaskSession"/>
+        <relationship name="subtask" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Subtask" inverseName="parentTask" inverseEntity="Subtask"/>
+    </entity>
+    <entity name="TaskSession" representedClassName="TaskSession" syncable="YES">
+        <attribute name="focusedDuration" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="ptsAwarded" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Task" inverseName="session" inverseEntity="Task"/>
     </entity>
     <elements>
-        <element name="Subtask" positionX="-54" positionY="63" width="128" height="89"/>
-        <element name="Task" positionX="-242.78125" positionY="97.515625" width="128" height="194"/>
+        <element name="Subtask" positionX="-253.4375" positionY="-26.25" width="128" height="103"/>
+        <element name="Task" positionX="-59.15625" positionY="-93.86328125" width="128" height="194"/>
+        <element name="TaskSession" positionX="176.73046875" positionY="-70.23828125" width="128" height="118"/>
     </elements>
 </model>

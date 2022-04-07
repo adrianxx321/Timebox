@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Ticking.mp3</key>
+	<string>Ticking.mp3</string>
+	<key>Room Tone.mp3</key>
+	<string>Room Tone.mp3</string>
+	<key>Hissing.mp3</key>
+	<string>Hissing.mp3</string>
+	<key>Fire Crackling.mp3</key>
+	<string>Fire Crackling.mp3</string>
+</dict>
+</plist>

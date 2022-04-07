@@ -1,0 +1,36 @@
+[
+    {
+        "iconName": "Tin",
+        "title": "Tin Medal",
+        "description": "Reach 100 points to unlock this medal.",
+        "unlockedAt": 100
+    },
+
+    {
+        "iconName": "Bronze",
+        "title": "Bronze Medal",
+        "description": "Reach 200 points to unlock this medal.",
+        "unlockedAt": 200
+    },
+
+    {
+        "iconName": "Silver",
+        "title": "Silver Medal",
+        "description": "Reach 400 points to unlock this medal.",
+        "unlockedAt": 400
+    },
+
+    {
+        "iconName": "Gold",
+        "title": "Gold Medal",
+        "description": "Reach 800 points to unlock this medal.",
+        "unlockedAt": 800
+    },
+
+    {
+        "iconName": "Platinum",
+        "title": "Platinum Medal",
+        "description": "Reach 1000 points to unlock this medal.",
+        "unlockedAt": 1000
+    }
+]

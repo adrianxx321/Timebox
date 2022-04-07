@@ -5,6 +5,7 @@
 //  Created by Lianghan Siew on 05/03/2022.
 //
 
+import SwiftUI
 import CoreData
 
 struct PersistenceController {
@@ -13,10 +14,9 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-//        for _ in 0..<10 {
-//            let newItem = Item(context: viewContext)
-//            newItem.timestamp = Date()
-//        }
+        
+        // Put whatever of your test data here...
+
         do {
             try viewContext.save()
         } catch {

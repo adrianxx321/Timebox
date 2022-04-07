@@ -7,16 +7,29 @@
 
 import SwiftUI
 import CoreData
+import EventKit
 
 struct TaskDetails: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @ObservedObject var selectedTask: Task
-    @StateObject var taskModel = TaskViewModel()
+    @ObservedObject private var eventModel = EventViewModel()
+    @StateObject private var taskModel = TaskViewModel()
     @State var showMoreOptions = false
     @State var showDeleteDialog = false
     
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
+    
+    var canDelete: Bool {
+        get {
+            selectedTask.ekeventID == nil
+        }
+    }
+    var canEdit: Bool {
+        get {
+            !taskModel.isOverdue(self.selectedTask)
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -38,23 +51,19 @@ struct TaskDetails: View {
                                         // Checkbox for subtask completion...
                                         Button {
                                             withAnimation {
-                                                // We need this "magic" to overcome the fact that Core Data can't handle view update on to-many entities...
-                                                selectedTask.objectWillChange.send()
-                                                subtask.isCompleted.toggle()
-                                                
-                                                // TODO: Save to Core Data
+                                                taskModel.completeSubtask(parentTask: self.selectedTask, subtask: subtask, context: self.context)
                                             }
                                         } label: {
                                             Image(subtask.isCompleted ? "checked" : "unchecked")
                                                 .resizable()
                                                 .aspectRatio(contentMode: .fit)
                                                 .frame(width: 28)
-                                                .foregroundColor(subtask.isCompleted ? .accent : .backgroundTertiary)
+                                                .foregroundColor(.accent)
                                                 .padding(.trailing, 8)
                                         }
                                         
                                         // Subtask title...
-                                        Text(subtask.subtaskTitle)
+                                        Text(subtask.subtaskTitle ?? "")
                                             .font(.paragraphP1())
                                             .fontWeight(.bold)
                                             .foregroundColor(subtask.isCompleted ? .textSecondary : .textPrimary)
@@ -145,26 +154,17 @@ struct TaskDetails: View {
             }
             .padding(.horizontal, 24)
             
+            // TODO: Move this to task card instead
             // Button for start timeboxing for ongoing task...
             if taskModel.isScheduledTask(selectedTask) {
                 if selectedTask.taskStartTime! >= Date() && selectedTask.taskEndTime! < Date() {
-                    CTAButton(btnLabel: "Start Timeboxing", btnAction: {
+                    CTAButton(btnLabel: "Start Timeboxing", btnFullSize: true, btnAction: {
                         
-                    }, btnFullSize: true)
+                    })
                     .frame(maxWidth: .infinity)
                     .padding(.bottom, isNotched ? 0 : 15)
                 }
-            } else {
-                // Button for adding backlog task to scheduled
-                CTAButton(btnLabel: "Add to Scheduled", btnAction: {
-                    // Bring up the edit task modal...
-                    taskModel.addNewTask.toggle()
-                    taskModel.editTask = selectedTask
-                }, btnFullSize: true)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, isNotched ? 0 : 15)
             }
-            
         }
         .background(Color.backgroundPrimary)
         .navigationBarHidden(true)
@@ -178,7 +178,6 @@ struct TaskDetails: View {
     
     private func NavBarView() -> some View {
         HStack {
-            
             // Back button leading to previous screen...
             Button {
                 presentationMode.wrappedValue.dismiss()
@@ -199,23 +198,27 @@ struct TaskDetails: View {
             Spacer()
             
             // More options button...
+            self.canEdit || self.canDelete ?
             Menu {
                 // Bring up the edit task modal...
+                self.canEdit ?
                 Button {
                     taskModel.addNewTask.toggle()
                     taskModel.editTask = selectedTask
                 } label: {
-                    Label("Edit Task", image: "pencil")
-                }.foregroundColor(.textPrimary)
+                    taskModel.isScheduledTask(selectedTask) ?
+                    Label("Edit Task", image: "pencil") : Label("Add to Scheduled", image: "clock")
+                }.foregroundColor(.textPrimary) : nil
                 
                 // Delete this task...
+                self.canDelete ?
                 Button(role: .destructive) {
                     showDeleteDialog.toggle()
                 } label: {
                     Label("Delete Task", image: "trash")
-                }
+                } : nil
             } label: {
-                Image("more-horizontal-f")
+                Image("more-f")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 32)
@@ -225,12 +228,11 @@ struct TaskDetails: View {
                                 isPresented: $showDeleteDialog,
                                 titleVisibility: .visible) {
                 Button("Delete Task", role: .destructive) {
-                    context.delete(selectedTask)
-                    try? context.save()
+                    taskModel.deleteTask(context: self.context, task: selectedTask)
                     // Go back to previous screen after deletion...
                     presentationMode.wrappedValue.dismiss()
                 }
-            }
+            } : nil
         }
         .foregroundColor(.textPrimary)
     }
@@ -247,7 +249,7 @@ struct TaskDetails: View {
             : nil
             
             // Task name...
-            Text(selectedTask.taskTitle)
+            Text(selectedTask.taskTitle ?? "")
                 .font(.headingH2())
                 .fontWeight(.heavy)
                 .foregroundColor(.textPrimary)
@@ -262,32 +264,35 @@ struct TaskDetails: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(Capsule()
-                    .foregroundColor(Color(selectedTask.color)))
+                    .foregroundColor(Color(selectedTask.color ?? .accent)))
                 .padding(.top, 4)
             : nil
             
             // Indicate if task comes from imported calendar...
-            selectedTask.isImported ?
-            HStack(alignment: .top, spacing: 8) {
-                Image("alert")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 28)
-                    .foregroundColor(.textSecondary)
-                    .rotationEffect(Angle(degrees: 180))
+            if let ekEventID = selectedTask.ekeventID {
+                let foundEvent = eventModel.lookupCalendarEvent(ekEventID)
+                let foundCalendarSource = foundEvent?.calendar.source.title ?? "Calendar"
                 
-                Group {
-                    Text("This task/event comes from your")
-                    .fontWeight(.semibold)
-                    .foregroundColor(.textSecondary) +
-                    Text(" Google Calendar")
-                        .fontWeight(.bold)
-                        .foregroundColor(Color(selectedTask.color))
-                }
-                .font(.paragraphP1())
-                .lineSpacing(4)
-            }.padding(.top, 8)
-            : nil
+                HStack(spacing: 8) {
+                    Image("alert")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 28)
+                        .foregroundColor(.textSecondary)
+                        .rotationEffect(Angle(degrees: 180))
+                    
+                    Group {
+                        Text("This task/event comes from: ")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.textSecondary) +
+                        Text(foundCalendarSource.uppercased())
+                            .fontWeight(.bold)
+                            .foregroundColor(Color(selectedTask.color ?? .accent))
+                    }
+                    .font(.paragraphP1())
+                    .lineSpacing(4)
+                }.padding(.top, 8)
+            }
         }
     }
     

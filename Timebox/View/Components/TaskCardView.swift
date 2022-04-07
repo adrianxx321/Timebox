@@ -14,14 +14,26 @@ struct FlatLinkStyle: ButtonStyle {
 }
 
 struct TaskCardView: View {
-    @StateObject var taskModel = TaskViewModel()
     @ObservedObject var task: Task
-    @GestureState private var isDragging = false
+    @StateObject var taskModel = TaskViewModel()
     @State private var dragOffset: CGFloat = 0
     @State private var showDeleteDialog = false
+    @GestureState private var isDragging = false
     
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
+    
+    // Determines if this task can be edited and/or deleted
+    var canDelete: Bool {
+        get {
+            task.ekeventID == nil
+        }
+    }
+    var canEdit: Bool {
+        get {
+            !taskModel.isOverdue(self.task)
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -30,13 +42,15 @@ struct TaskCardView: View {
                 Spacer()
                 
                 // Edit...
+                self.canEdit ?
                 SwipeToButton(isDestructive: false, action: {
                     // Brings up edit modal...
                     taskModel.addNewTask.toggle()
                     taskModel.editTask = task
-                })
+                }) : nil
                 
                 // Delete...
+                self.canDelete ?
                 SwipeToButton(isDestructive: true, action: {
                     // Perform task deletion...
                     showDeleteDialog.toggle()
@@ -47,11 +61,10 @@ struct TaskCardView: View {
                     Button("Delete Task", role: .destructive) {
                         withAnimation {
                             dragOffset = 0
-                            context.delete(task)
-                            try? context.save()
+                            taskModel.deleteTask(context: self.context, task: self.task)
                         }
                     }
-                }
+                } : nil
                 
             }
             
@@ -60,12 +73,12 @@ struct TaskCardView: View {
                 HStack(spacing: 16) {
                     // Task label color...
                     Capsule()
-                        .fill(Color(task.color))
+                        .fill(Color(task.color ?? .accent))
                         .frame(width: 6)
                         .frame(minHeight: 32)
                     
                     // Task information...
-                    VStack(alignment: .leading ,spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
                         // Show the important label only if it's marked so...
                         task.isImportant ?
                         Text("!!! IMPORTANT")
@@ -75,11 +88,11 @@ struct TaskCardView: View {
                         : nil
                         
                         // Task title...
-                        Text(task.taskTitle)
+                        // Overdue task's title will be greyed out
+                        Text(task.taskTitle ?? "")
                             .font(.paragraphP1())
                             .fontWeight(.semibold)
-                            .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task)
-                                                                   && Date() > task.taskEndTime!)) ? .textTertiary : .textPrimary)
+                            .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textPrimary)
                             .if(task.isCompleted) { text in
                                 text.strikethrough()
                             }
@@ -99,8 +112,7 @@ struct TaskCardView: View {
                                 .fontWeight(.semibold)
                         }
                         // Text color varies depending on overdue and/or completion status...
-                        .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task)
-                                                               && Date() > task.taskEndTime!)) ? .textTertiary : .textSecondary)
+                        .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textSecondary)
                         : nil
                         
                         // Show the task duration if
@@ -111,8 +123,7 @@ struct TaskCardView: View {
                             .font(.caption())
                             .fontWeight(.semibold)
                             // Text color varies depending on overdue and/or completion status...
-                            .foregroundColor((task.isCompleted || (taskModel.isScheduledTask(task)
-                                                                   && Date() > task.taskEndTime!)) ? .textTertiary : .textSecondary)
+                            .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textSecondary)
                         : nil
                     }
                     
@@ -123,7 +134,7 @@ struct TaskCardView: View {
                     Button {
                         withAnimation() {
                             // Perform update onto Core Data...
-                            task.isCompleted.toggle()
+                            taskModel.completeTask(self.task, context: self.context)
                         }
                     } label: {
                         Image(task.isCompleted ? "checked" : "unchecked")
@@ -161,8 +172,7 @@ struct TaskCardView: View {
                 dragOffset = 0
             }
         } content: {
-            TaskModal()
-                .environmentObject(taskModel)
+            TaskModal().environmentObject(taskModel)
         }
     }
     
