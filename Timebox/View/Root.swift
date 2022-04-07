@@ -11,6 +11,7 @@ struct Root: View {
     // Using icon name to identify tab...
     @State var currentTab = "home"
     @StateObject var taskModel = TaskViewModel()
+    @EnvironmentObject var GLOBAL: GlobalVariables
     
     // Hiding native one...
     init() {
@@ -37,7 +38,7 @@ struct Root: View {
             // Custom Tab Bar...
             TabBarView()
         }
-        .padding(.bottom, isNotched ? 32 : 8)
+        .padding(.bottom, GLOBAL.isNotched ? 32 : 8)
         .ignoresSafeArea(edges: .bottom)
     }
     

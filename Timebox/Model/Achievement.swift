@@ -13,6 +13,7 @@ struct Achievement: Identifiable, Codable {
         case title
         case description
         case unlockedAt
+        case unlockedDescription
     }
     
     var id = UUID().uuidString
@@ -20,4 +21,5 @@ struct Achievement: Identifiable, Codable {
     var title: String
     var description: String
     var unlockedAt: Int32
+    var unlockedDescription: String
 }

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct Scheduled: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
     // MARK: Core Data injected environment context
     @Environment(\.managedObjectContext) var context
     @FetchRequest var fetchedTasks: FetchedResults<Task>
@@ -55,7 +57,7 @@ struct Scheduled: View {
                     CalendarView()
                         .padding(.vertical)
                 }
-                .padding(.top, isNotched ? 47: 20)
+                .padding(.top, GLOBAL.isNotched ? 47: 20)
                 .background(Color.uiWhite)
                 .cornerRadius(40, corners: [.bottomLeft, .bottomRight])
                 .shadow(radius: 12, x: 0, y: 3)

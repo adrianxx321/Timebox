@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ScreenFallbackView: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
     var title: String
     var image: Image
     var caption1: String
@@ -19,7 +21,7 @@ struct ScreenFallbackView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: UIScreen.main.bounds.width - 64,
-                       maxHeight: isSmallDevice ? 240 : 360)
+                       maxHeight: GLOBAL.isSmallDevice ? 240 : 360)
 
             VStack(spacing: 16) {
                 Text("\(title)")

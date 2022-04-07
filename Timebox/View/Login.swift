@@ -10,6 +10,8 @@ import AuthenticationServices
 import CloudKit
 
 struct Login: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
     @StateObject private var loginData = LoginViewModel()
     
     var body: some View {
@@ -61,7 +63,7 @@ struct Login: View {
                 }
             )
             .signInWithAppleButtonStyle(.black)
-            .frame(height: isSmallDevice ? 50 : 56)
+            .frame(height: GLOBAL.isSmallDevice ? 50 : 56)
             .clipShape(Capsule())
             .padding(.horizontal, 32)
             

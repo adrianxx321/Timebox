@@ -15,6 +15,8 @@ import EventKit
 // Calendar syncing, loading preset white noises, notification permission etc.
 // Tthrough corresponding ViewModels
 struct Settings: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
     // MARK: Core Data injected environment context
     @Environment(\.managedObjectContext) var context
     // MARK: Core Data fetch requests
@@ -102,7 +104,7 @@ struct Settings: View {
                                 // Avatar...
                                 AvatarView(size: 48, avatar: Image(settingsModel.avatar))
                                 
-                                Text("Change Your Avatar")
+                                Text("Change Avatar")
                                     .font(.subheading1())
                                     .fontWeight(.bold)
                                     .foregroundColor(.textPrimary)
@@ -189,7 +191,7 @@ struct Settings: View {
             let grids: [GridItem] = Array(repeating: .init(.adaptive(minimum: 128)), count: 5)
             
             // Navigation bar
-            UniversalCustomNavigationBar(screenTitle: "Change Your Avatar")
+            UniversalCustomNavigationBar(screenTitle: "Change Avatar")
             
             // Avatar selection panel
             VStack(spacing: 48) {
@@ -271,7 +273,7 @@ struct Settings: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: UIScreen.main.bounds.width - 64,
-                       maxHeight: isSmallDevice ? 240 : 360)
+                       maxHeight: GLOBAL.isSmallDevice ? 240 : 360)
 
             VStack(spacing: 16) {
                 Text("We need your permission.")
@@ -290,7 +292,7 @@ struct Settings: View {
                 .multilineTextAlignment(.center)
             }
             
-            CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
+            CTAButton(btnLabel: "Allow Access", btnFullSize: false, action: {
                 withAnimation {
                     notificationModel.requestNotificationsPermission()
                 }
@@ -305,7 +307,7 @@ struct Settings: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: UIScreen.main.bounds.width - 64,
-                       maxHeight: isSmallDevice ? 240 : 360)
+                       maxHeight: GLOBAL.isSmallDevice ? 240 : 360)
 
             VStack(spacing: 16) {
                 Text("We need your permission.")
@@ -324,7 +326,7 @@ struct Settings: View {
                 .multilineTextAlignment(.center)
             }
             
-            CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
+            CTAButton(btnLabel: "Allow Access", btnFullSize: false, action: {
                 withAnimation {
                     eventModel.requestCalendarAccessPermission()
                 }

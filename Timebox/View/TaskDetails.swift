@@ -10,7 +10,10 @@ import CoreData
 import EventKit
 
 struct TaskDetails: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
     @ObservedObject var selectedTask: Task
     @ObservedObject private var eventModel = EventViewModel()
     @StateObject private var taskModel = TaskViewModel()
@@ -158,11 +161,11 @@ struct TaskDetails: View {
             // Button for start timeboxing for ongoing task...
             if taskModel.isScheduledTask(selectedTask) {
                 if selectedTask.taskStartTime! >= Date() && selectedTask.taskEndTime! < Date() {
-                    CTAButton(btnLabel: "Start Timeboxing", btnFullSize: true, btnAction: {
+                    CTAButton(btnLabel: "Start Timeboxing", btnFullSize: true, action: {
                         
                     })
                     .frame(maxWidth: .infinity)
-                    .padding(.bottom, isNotched ? 0 : 15)
+                    .padding(.bottom, GLOBAL.isNotched ? 0 : 15)
                 }
             }
         }

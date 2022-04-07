@@ -232,13 +232,10 @@
 		B551BD9527C68647006FCB58 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B55CC17827FF513000A947C4 /* Static Model */,
 				B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */,
 				B5A323B127C75CB300D9767C /* Montserrat.ttf */,
-				B5B43B3527F0425800136E73 /* Achievements.json */,
-				B599749227F49E5B00C188E2 /* WhiteNoise.plist */,
 				B551BD8727C685F2006FCB58 /* Assets.xcassets */,
-				B5D668EC27FDEFCA00F4B46A /* Onboarding.plist */,
-				B5D668F327FDFB5A00F4B46A /* Avatar.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -256,6 +253,17 @@
 				B567D3FE27F340B200BB469F /* UIViewController+extension.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		B55CC17827FF513000A947C4 /* Static Model */ = {
+			isa = PBXGroup;
+			children = (
+				B5D668EC27FDEFCA00F4B46A /* Onboarding.plist */,
+				B5B43B3527F0425800136E73 /* Achievements.json */,
+				B5D668F327FDFB5A00F4B46A /* Avatar.plist */,
+				B599749227F49E5B00C188E2 /* WhiteNoise.plist */,
+			);
+			path = "Static Model";
 			sourceTree = "<group>";
 		};
 		B5D152F727D082C40073421B /* Components */ = {
@@ -555,7 +563,6 @@
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "By allowing us to access your personal calendar, we can help to integrate your existing routines/schedules into Timebox to get you more productive.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -591,7 +598,6 @@
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "By allowing us to access your personal calendar, we can help to integrate your existing routines/schedules into Timebox to get you more productive.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

@@ -25,12 +25,18 @@ enum GraphRange {
 }
 
 struct Home: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
+    // MARK: Core Data fetch requests
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @FetchRequest var timeboxSessions: FetchedResults<TaskSession>
+    
     @StateObject var achievementModel = AchievementsViewModel()
     @StateObject var taskModel = TaskViewModel()
     @State var selectedRange: GraphRange = .week
-    @State private var showMedalInfo = false
+    @State private var showMedalUnlockTips = false
+    @State private var showUnlockedMedal = false
+    @State private var selectedMedal: Achievement?
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @AppStorage("avatar") private var avatar = "Avatar-1"
@@ -40,6 +46,17 @@ struct Home: View {
         get {
             let allTasks = self.fetchedTasks.map { $0 as Task }
             return taskModel.filterOngoingTasks(data: allTasks).map { $0 }
+        }
+    }
+    var totalPts: Int32 {
+        get {
+            timeboxSessions.reduce(0) { $0 + $1.ptsAwarded }
+        }
+    }
+    var percent: CGFloat {
+        get {
+            // Make progress bar show at least 1%
+            max(0.01, CGFloat(self.totalPts / achievementModel.getPtsToNextRank(userPoints: self.totalPts)))
         }
     }
     
@@ -55,12 +72,9 @@ struct Home: View {
     
     var body: some View {
         NavigationView {
-            // Total points obtained by user...
-            let totalPts = timeboxSessions.reduce(0) { $0 + $1.ptsAwarded }
-            
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
-                    HeaderView(points: totalPts)
+                    HeaderView(points: self.totalPts)
                     
                     VStack(spacing: 40) {
                         // Ongoing Tasks...
@@ -93,23 +107,31 @@ struct Home: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(alignment: .top, spacing: 24) {
                                     ForEach(achievementModel.achievements, id: \.id) { medal in
-                                        AchievementCardView(medal: medal, userPts: totalPts)
+                                        AchievementCardView(medal: medal, userPts: self.totalPts)
                                             .onTapGesture {
-                                                showMedalInfo.toggle()
-                                                alertTitle = medal.title
-                                                alertMessage = medal.description
+                                                if achievementModel.isUnlocked(medal, userPoints: self.totalPts) {
+                                                    self.selectedMedal = medal
+                                                    self.showUnlockedMedal.toggle()
+                                                } else {
+                                                    self.alertTitle = medal.title
+                                                    self.alertMessage = medal.description
+                                                    self.showMedalUnlockTips.toggle()
+                                                }
                                             }
                                     }
                                 }
                                 .alert(alertTitle,
-                                       isPresented: $showMedalInfo,
+                                       isPresented: $showMedalUnlockTips,
                                        actions: {}, message: {
                                     Text(alertMessage)
                                 })
+                                .sheet(item: self.$selectedMedal) { medal in
+                                    UnlockedMedalModal(medal: medal)
+                                }
                             }
                         }
                     }
-                    .padding(.horizontal, isSmallDevice ? 16 : 24)
+                    .padding(.horizontal, GLOBAL.isSmallDevice ? 16 : 24)
                     .padding(.bottom, 32)
                 }
             }
@@ -122,20 +144,18 @@ struct Home: View {
     
     private func HeaderView(points: Int32) -> some View {
         VStack(spacing: 12) {
-            // Make progress bar show at least 1%
-            let percent = max(0.01, CGFloat(points / achievementModel.getPtsToNextRank(userPoints: points)))
-            
             // Profile picture
             ZStack {
                 AvatarView(size: 78, avatar: Image(self.avatar))
                     .padding(6)
                 
+                // Will show at least 1%
                 Circle()
-                    .trim(from: 0.0, to: CGFloat(min(percent, 1.0)))
+                    .trim(from: 0.0, to: CGFloat(min(self.percent, 1.0)))
                     .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
                     .foregroundColor(.uiPurple)
                     .rotationEffect(Angle(degrees: 270.0))
-                    .animation(.linear, value: percent)
+                    .animation(.linear, value: self.percent)
             }
             
             VStack(spacing: 4) {
@@ -159,7 +179,7 @@ struct Home: View {
         .padding(.vertical, 32)
         // Double padding
         // Latter one is to offset the ignore top safe area
-        .padding(.top, isNotched ? 47: 20)
+        .padding(.top, GLOBAL.isNotched ? 47: 20)
         .background(Color.uiWhite)
         .cornerRadius(40, corners: [.bottomLeft, .bottomRight])
         .shadow(radius: 12, x: 0, y: 3)
@@ -182,19 +202,55 @@ struct Home: View {
 
     private func AchievementCardView(medal: Achievement, userPts: Int32) -> some View {
         VStack(alignment: .center) {
-            // TODO: Medal icon
+            // Medal icon
             Image(medal.iconName)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 72)
                 .cornerRadius(16)
                 .grayscale(achievementModel.isUnlocked(medal, userPoints: userPts) ? 0 : 0.9)
+                .overlay(
+                    achievementModel.isUnlocked(medal, userPoints: userPts) ? nil :
+                    Image("padlock-f")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 32)
+                    .foregroundColor(.textSecondary)
+                )
             
             Text(medal.title)
                 .font(.caption())
                 .fontWeight(.semibold)
                 .foregroundColor(achievementModel.isUnlocked(medal, userPoints: userPts) ? .textPrimary : .textTertiary)
                 .multilineTextAlignment(.center)
+        }
+    }
+    
+    private func UnlockedMedalModal(medal: Achievement) -> some View {
+        VStack(spacing: 32) {
+            VStack {
+                Image(medal.iconName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 384)
+                
+                VStack(spacing: 16) {
+                    Text(medal.title)
+                        .font(.headingH2())
+                        .fontWeight(.bold)
+                        .foregroundColor(.textPrimary)
+                    
+                    Text(medal.unlockedDescription)
+                        .font(.paragraphP1())
+                        .fontWeight(.semibold)
+                        .foregroundColor(.textSecondary)
+                        .multilineTextAlignment(.leading)
+                }.padding(.horizontal)
+            }
+            
+            CTAButton(btnLabel: "Dismiss", btnFullSize: true, action: {
+                self.selectedMedal = nil
+            })
         }
     }
     

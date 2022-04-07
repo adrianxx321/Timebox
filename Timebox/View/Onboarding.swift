@@ -40,8 +40,13 @@ struct Onboarding: View {
                         }
                     }
                     
-                    // Go to login page...
-                    CTAButton(btnLabel: "Get Started", btnFullSize: false, btnAction: {
+                    self.currentIndex < (onboardingModel.carousels.count - 1) ?
+                    // Next tab button
+                    CTAButton(btnLabel: "Next", btnFullSize: false, action: {
+                        withAnimation { self.currentIndex += 1 }
+                    }) :
+                    // Go to login page
+                    CTAButton(btnLabel: "Get Started", btnFullSize: false, action: {
                         withAnimation { viewDismissed = true }
                     })
                 }

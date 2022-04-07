@@ -3,34 +3,39 @@
         "iconName": "Tin",
         "title": "Tin Medal",
         "description": "Reach 100 points to unlock this medal.",
-        "unlockedAt": 100
+        "unlockedAt": 100,
+        "unlockedDescription": "You unlocked this medal by reaching 100 points from timeboxing."
     },
 
     {
         "iconName": "Bronze",
         "title": "Bronze Medal",
         "description": "Reach 200 points to unlock this medal.",
-        "unlockedAt": 200
+        "unlockedAt": 200,
+        "unlockedDescription": "You unlocked this medal by reaching 200 points from timeboxing."
     },
 
     {
         "iconName": "Silver",
         "title": "Silver Medal",
         "description": "Reach 400 points to unlock this medal.",
-        "unlockedAt": 400
+        "unlockedAt": 400,
+        "unlockedDescription": "You unlocked this medal by reaching 400 points from timeboxing."
     },
 
     {
         "iconName": "Gold",
         "title": "Gold Medal",
         "description": "Reach 800 points to unlock this medal.",
-        "unlockedAt": 800
+        "unlockedAt": 800,
+        "unlockedDescription": "You unlocked this medal by reaching 800 points from timeboxing."
     },
 
     {
         "iconName": "Platinum",
         "title": "Platinum Medal",
         "description": "Reach 1000 points to unlock this medal.",
-        "unlockedAt": 1000
+        "unlockedAt": 1000,
+        "unlockedDescription": "You unlocked this medal by reaching 1000 points from timeboxing."
     }
 ]
