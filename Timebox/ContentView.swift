@@ -40,7 +40,7 @@ public var isSmallDevice: Bool {
 }
 
 struct ContentView: View {
-    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @Environment(\.managedObjectContext) var context
     @ObservedObject var eventModel = EventViewModel()
     
@@ -54,9 +54,9 @@ struct ContentView: View {
     
     var body: some View {
         if isLoggedIn {
-            RootView()
+            Root()
         } else {
-            OnboardingScreen()
+            Onboarding()
                 .transition(.move(edge: .trailing))
         }
     }

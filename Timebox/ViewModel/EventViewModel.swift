@@ -19,7 +19,7 @@ class EventViewModel: ObservableObject {
     // Calendar permission - Default to false as we haven't get user consent
     @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
     // So does the list of selected calendar
-    @AppStorage("selectedCalendars") var selectedCalendars = ""
+    @AppStorage("selectedCalendars") private var selectedCalendars = ""
     // A one-way toggle that allows first-time user to have all calendars selected
     // After first granted calendar pemrission
     @AppStorage("isfirstTimeSelect") private var isFirstTimeSelect = true
@@ -129,7 +129,7 @@ class EventViewModel: ObservableObject {
         }
     }
     
-    func shouldAddNewEvents(_ persistentTaskStore: [Task]) -> [Task]? {
+    private func shouldAddNewEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from source of truth & persistent store
         let sourceOfTruth = self.eventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
@@ -142,7 +142,7 @@ class EventViewModel: ObservableObject {
         return addedEvents.isEmpty ? nil : addedEvents
     }
     
-    func addNewEventsToPersistent(_ context: NSManagedObjectContext, _ events: [Task]) {
+    private func addNewEventsToPersistent(_ context: NSManagedObjectContext, _ events: [Task]) {
         events.forEach { event in
             let newTask = Task(context: context)
             
@@ -164,7 +164,7 @@ class EventViewModel: ObservableObject {
         try? context.save()
     }
     
-    func shouldRemoveEvents(_ persistentTaskStore: [Task]) -> [Task]? {
+    private func shouldRemoveEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from persistent & source of truth
         let sourceOfTruth = self.eventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
@@ -177,7 +177,7 @@ class EventViewModel: ObservableObject {
         return removedEvents.isEmpty ? nil : removedEvents
     }
 
-    func removeEventsFromPersistent(_ context: NSManagedObjectContext, _ events: [Task]) {
+    private func removeEventsFromPersistent(_ context: NSManagedObjectContext, _ events: [Task]) {
         events.forEach { event in
             var removedTask = context.object(with: event.objectID) as! Task
             removedTask = event
@@ -188,7 +188,7 @@ class EventViewModel: ObservableObject {
     }
     
     /// Detects if event(s) from calendar are modified (includes addition, deletion and/or update). Returns the updated tasks if true, otherwise returns nil.
-    func shouldUpdateEvents(_ persistentTaskStore: [Task]) -> [Task]? {
+    private func shouldUpdateEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         let sourceOfTruth = self.eventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
         let editedEvents = persistent.filter { (existing: Task) -> Bool in
@@ -215,7 +215,7 @@ class EventViewModel: ObservableObject {
     }
 
     /// Includes updates due to insertion, deletion &/ edit done from source of truth (Calendar app)
-    func updateEvents(_ context: NSManagedObjectContext, _ events: [Task]) {
+    private func updateEvents(_ context: NSManagedObjectContext, _ events: [Task]) {
         let calendar = Calendar.current
         events.forEach { event in
             if let updatedEvent = EventViewModel.CalendarAccessor.event(withIdentifier: event.ekeventID!) {
@@ -231,7 +231,7 @@ class EventViewModel: ObservableObject {
         try? context.save()
     }
 
-    func EKEventMapper(_ event: EKEvent) -> Task {
+    private func EKEventMapper(_ event: EKEvent) -> Task {
         let mappedTask = Task(entity: Task.entity(), insertInto: nil)
         let calendar = Calendar.current
         
@@ -260,18 +260,18 @@ class EventViewModel: ObservableObject {
     }
     
     /// Attempts to convert EKEvent's taskIdentifier to UUID. Returns randomly generated UUID if fails.
-    func generateUUIDFromEvent(from str: String) -> UUID {
+    private func generateUUIDFromEvent(from str: String) -> UUID {
         let indexStartOfText = str.index(str.startIndex, offsetBy: 37)
         let substr = String(str[indexStartOfText...])
         
         return UUID(uuidString: substr) ?? UUID()
     }
     
-    func encodeSelectedCalendars(_ calendars: [EKCalendar]) -> String {
+    private func encodeSelectedCalendars(_ calendars: [EKCalendar]) -> String {
         return calendars.map{$0.calendarIdentifier}.joined(separator: "&?")
     }
     
-    func decodeSelectedCalendars(_ code: String) -> [EKCalendar] {
+    private func decodeSelectedCalendars(_ code: String) -> [EKCalendar] {
         var calendars: [EKCalendar] = []
         let identifiers = code.components(separatedBy: "&?")
         

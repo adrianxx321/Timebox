@@ -163,7 +163,7 @@ struct DynamicAnalyticsView: View {
                 .foregroundColor(percentage >= 0 ? .uiGreen : .uiRed)
             }
             
-            Image("line-graph")
+            Image("lineGraph")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(maxWidth: 80)
