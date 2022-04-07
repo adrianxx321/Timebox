@@ -40,7 +40,7 @@ public var isSmallDevice: Bool {
 }
 
 struct ContentView: View {
-    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
     @Environment(\.managedObjectContext) var context
     @ObservedObject var eventModel = EventViewModel()
     
@@ -65,5 +65,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environment(\.managedObjectContext, CoreDataStack.context)
     }
 }

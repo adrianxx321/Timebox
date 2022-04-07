@@ -41,14 +41,9 @@ struct Onboarding: View {
                     }
                     
                     // Go to login page...
-//                    self.currentIndex == onboardingModel.carousels.count - 1 ?
-//                    CTAButton(btnLabel: "Get Started", btnFullSize: false, btnAction: {
-//                        withAnimation { viewDismissed = true }
-//                    }) : nil
-                    
                     CTAButton(btnLabel: "Get Started", btnFullSize: false, btnAction: {
                         withAnimation { viewDismissed = true }
-                    }).opacity(self.currentIndex == onboardingModel.carousels.count - 1 ? 1 : 0)
+                    })
                 }
                 .frame(maxHeight: .infinity)
             }

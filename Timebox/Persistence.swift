@@ -14,6 +14,8 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
+        
+        // Put whatever of your test data here...
 
         do {
             try viewContext.save()

@@ -8,8 +8,8 @@
 import SwiftUI
 
 class SettingsViewModel: ObservableObject {
-    @Published var whiteNoises: [String] = []
-    @Published var avatars: [String] = []
+    @Published var whiteNoiseList: [String] = []
+    @Published var avatarList: [String] = []
     
     // UserDefaults persistent store...
     @AppStorage("whiteNoise") var selectedWhiteNoise = "Ticking"
@@ -17,6 +17,7 @@ class SettingsViewModel: ObservableObject {
     
     init() {
         loadWhiteNoises()
+        loadAvatars()
     }
     
     func loadWhiteNoises() {
@@ -28,10 +29,10 @@ class SettingsViewModel: ObservableObject {
         
         let data = NSDictionary(contentsOf: path) as? [String: String] ?? [:]
         // Sorting array since dictionary/plist is originally unsorted
-        self.whiteNoises = Array(data.keys).sorted { $0 < $1 }
+        self.whiteNoiseList = Array(data.keys).sorted { $0 < $1 }
     }
     
-    func loadAvatar() {
+    func loadAvatars() {
         guard let path = Bundle.main.url(forResource: "Avatar", withExtension: "plist")
             else {
                 print("Error loading assets: Avatar.plist not found")
@@ -40,8 +41,6 @@ class SettingsViewModel: ObservableObject {
         
         let data = NSDictionary(contentsOf: path) as? [String: String] ?? [:]
         // Sorting array since dictionary/plist is originally unsorted
-        self.whiteNoises = Array(data.values).sorted { $0 < $1 }
+        self.avatarList = Array(data.keys).sorted { $0 < $1 }
     }
-    
 }
-

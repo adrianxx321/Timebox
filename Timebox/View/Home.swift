@@ -33,6 +33,7 @@ struct Home: View {
     @State private var showMedalInfo = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
+    @AppStorage("avatar") private var avatar = "Avatar-1"
     
     // MARK: Ongoing tsks prepared from CD fetch
     var ongoingTasks: [Task] {
@@ -124,22 +125,18 @@ struct Home: View {
             // Make progress bar show at least 1%
             let percent = max(0.01, CGFloat(points / achievementModel.getPtsToNextRank(userPoints: points)))
             
-            // TODO: Profile picture
+            // Profile picture
             ZStack {
-                Image("144083514_3832508416843992_8153494803557931190_n")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 78)
-                    .clipShape(Circle())
+                AvatarView(size: 78, avatar: Image(self.avatar))
                     .padding(6)
-                    .overlay(Circle()
-                        .trim(from: 0.0, to: CGFloat(min(percent, 1.0)))
-                        .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                        .foregroundColor(.uiPurple)
-                        .rotationEffect(Angle(degrees: 270.0))
-                        .animation(.linear, value: percent))
-            }
                 
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(min(percent, 1.0)))
+                    .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .foregroundColor(.uiPurple)
+                    .rotationEffect(Angle(degrees: 270.0))
+                    .animation(.linear, value: percent)
+            }
             
             VStack(spacing: 4) {
                 // Greetings message

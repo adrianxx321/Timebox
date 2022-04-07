@@ -35,6 +35,7 @@ struct Settings: View {
     @State private var showCantSendEmail = false
     @State private var result: Result<MFMailComposeResult, Error>? = nil
     
+    
     // MARK: Data prepared from CD fetch
     private var allTasks: [Task] {
         get {
@@ -61,7 +62,6 @@ struct Settings: View {
             return sessionModel.getTotalTimeboxedHours(data: self.allTaskSession)
         }
     }
-    
     // MARK: Calendars aggregated by sources
     private var allCalendarsOnDevice: [(sourceName: String, calendars: [EKCalendar])] {
         get {
@@ -94,33 +94,25 @@ struct Settings: View {
                 
                 List {
                     ListSection {
-                        // Profile Picture page...
+                        // Link to avatar page...
                         NavigationLink(isActive: $showProfilePref) {
-                            VStack(spacing: 24) {
-                                UniversalCustomNavigationBar(screenTitle: "Avatar")
-                                Text("Display Picture").frame(maxHeight: .infinity)
-                            }
-                            .navigationBarHidden(true)
-                            .background(Color.backgroundPrimary)
+                            AvatarPage()
                         } label: {
                             HStack(spacing: 32) {
-                                // TODO: Replace dummy
-                                Image("144083514_3832508416843992_8153494803557931190_n")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 48)
-                                    .clipShape(Circle())
+                                // Avatar...
+                                AvatarView(size: 48, avatar: Image(settingsModel.avatar))
                                 
-                                Text("Display Picture")
+                                Text("Change Your Avatar")
                                     .font(.subheading1())
                                     .fontWeight(.bold)
                                     .foregroundColor(.textPrimary)
                             }
                         }.listRowSeparator(.hidden)
                         
-                        TotalView().frame(maxWidth: .infinity)
+                        AllTimeStatsView().frame(maxWidth: .infinity)
                     }
                     
+                    // Notifications, Calendars & White Noise
                     ListSection {
                         // Notifications page...
                         ListEntryView(selector: $showNotificationsPref, icon: Image("bell-f"),
@@ -151,7 +143,7 @@ struct Settings: View {
                         
                         // White noise page...
                         ListItemPickerView(selectedItem: settingsModel.$selectedWhiteNoise,
-                                   items: settingsModel.whiteNoises,
+                                   items: settingsModel.whiteNoiseList,
                                    screenTitle: "White Noise",
                                    hideDefaultNavigationBar: true,
                                    mainIcon: Image("volume-circle-f"),
@@ -190,6 +182,80 @@ struct Settings: View {
             .navigationBarHidden(true)
         }
         .navigationBarHidden(true)
+    }
+    
+    private func AvatarPage() -> some View {
+        VStack(spacing: 32) {
+            let grids: [GridItem] = Array(repeating: .init(.adaptive(minimum: 128)), count: 5)
+            
+            // Navigation bar
+            UniversalCustomNavigationBar(screenTitle: "Change Your Avatar")
+            
+            // Avatar selection panel
+            VStack(spacing: 48) {
+                AvatarView(size: 196, avatar: Image(settingsModel.avatar))
+                
+                LazyVGrid(columns: grids) {
+                    ForEach(self.settingsModel.avatarList, id: \.self) { avatar in
+                        // Each grid item is clickable/selectable avatar
+                        Button {
+                            withAnimation {
+                                self.settingsModel.avatar = avatar
+                            }
+                        } label: {
+                            Image(avatar)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 96)
+                                .overlay(Rectangle()
+                                    .stroke(style: StrokeStyle(lineWidth: 8, lineCap: .round, lineJoin: .round))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.accent)
+                                    .opacity(self.settingsModel.avatar == avatar ? 1 : 0)
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 80))
+                        }
+                    }
+                }
+            }.padding(.horizontal)
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
+        .navigationBarHidden(true)
+        .background(Color.backgroundPrimary)
+    }
+    
+    private func AllTimeStatsView() -> some View {
+        HStack(spacing: 32) {
+            VStack(spacing: 4) {
+                // Total tasks completed...
+                Text("\(self.totalCompleted)")
+                    .fontWeight(.semibold)
+                    .foregroundColor(.textSecondary)
+                
+                Text("Tasks completed")
+                    .fontWeight(.bold)
+                    .foregroundColor(.textTertiary)
+            }
+            
+            VStack(spacing: 4) {
+                Text(self.totalHours)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.textSecondary)
+                
+                Text("Focused time")
+                    .fontWeight(.bold)
+                    .foregroundColor(.textTertiary)
+            }
+        }
+        .font(.paragraphP1())
+    }
+    
+    private func SectionHeaderLabel(title: String) -> some View {
+        Text(title)
+            .font(.paragraphP1())
+            .fontWeight(.semibold)
+            .foregroundColor(.textTertiary)
+            .textCase(.uppercase)
     }
 
     private func ListSection<Content: View>(@ViewBuilder content: () -> Content) -> some View {
@@ -331,40 +397,6 @@ struct Settings: View {
                 } header: { SectionHeaderLabel(title: source.sourceName) }
             }
         }
-    }
-    
-    private func TotalView() -> some View {
-        HStack(spacing: 32) {
-            VStack(spacing: 4) {
-                // Total tasks completed...
-                Text("\(self.totalCompleted)")
-                    .fontWeight(.semibold)
-                    .foregroundColor(.textSecondary)
-                
-                Text("Tasks completed")
-                    .fontWeight(.bold)
-                    .foregroundColor(.textTertiary)
-            }
-            
-            VStack(spacing: 4) {
-                Text(self.totalHours)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.textSecondary)
-                
-                Text("Focused time")
-                    .fontWeight(.bold)
-                    .foregroundColor(.textTertiary)
-            }
-        }
-        .font(.paragraphP1())
-    }
-    
-    private func SectionHeaderLabel(title: String) -> some View {
-        Text(title)
-            .font(.paragraphP1())
-            .fontWeight(.semibold)
-            .foregroundColor(.textTertiary)
-            .textCase(.uppercase)
     }
 }
 
