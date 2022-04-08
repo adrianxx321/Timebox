@@ -45,7 +45,10 @@
 		B5B43B4027F068CB00136E73 /* TaskSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B3F27F068CB00136E73 /* TaskSessionViewModel.swift */; };
 		B5B43B4227F0B2E500136E73 /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4127F0B2E500136E73 /* Root.swift */; };
 		B5B43B4427F0BB7D00136E73 /* HexagonShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */; };
+		B5B957E728002E6500263721 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5B957E628002E6500263721 /* LaunchScreen.storyboard */; };
 		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
+		B5C26FE1280086F1002CADDD /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C26FE0280086F1002CADDD /* Timer.swift */; };
+		B5C26FE32800BCE8002CADDD /* GlobalVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C26FE22800BCE8002CADDD /* GlobalVariables.swift */; };
 		B5CD0AEB27F9D5A100D33D87 /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */; };
 		B5CD0AED27F9DC4100D33D87 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */; };
 		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
@@ -107,7 +110,10 @@
 		B5B43B3F27F068CB00136E73 /* TaskSessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSessionViewModel.swift; sourceTree = "<group>"; };
 		B5B43B4127F0B2E500136E73 /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
 		B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexagonShape.swift; sourceTree = "<group>"; };
+		B5B957E628002E6500263721 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
+		B5C26FE0280086F1002CADDD /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		B5C26FE22800BCE8002CADDD /* GlobalVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariables.swift; sourceTree = "<group>"; };
 		B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
 		B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
@@ -170,8 +176,9 @@
 				B551BD9327C6860D006FCB58 /* ViewModel */,
 				B551BD8327C685F1006FCB58 /* TimeboxApp.swift */,
 				B551BD8527C685F1006FCB58 /* ContentView.swift */,
-				B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */,
 				B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */,
+				B5C26FE22800BCE8002CADDD /* GlobalVariables.swift */,
+				B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */,
 				B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */,
 				B551BD9627C68886006FCB58 /* Extension */,
 				B551BD8927C685F2006FCB58 /* Preview Content */,
@@ -217,14 +224,16 @@
 			isa = PBXGroup;
 			children = (
 				B5D152F727D082C40073421B /* Components */,
+				B5B957E628002E6500263721 /* LaunchScreen.storyboard */,
 				B5A323AE27C750D500D9767C /* Onboarding.swift */,
+				B5B43B4127F0B2E500136E73 /* Root.swift */,
 				B51B3C4E27C79CD1001CD692 /* Login.swift */,
 				B5F645DE27CB8D9000AF1716 /* Home.swift */,
 				B592B9FA27CE0A97009F079C /* Scheduled.swift */,
 				B5D152FA27D0A5620073421B /* Backlog.swift */,
 				B58C531D27D7035B00A48AE8 /* TaskDetails.swift */,
-				B5B43B4127F0B2E500136E73 /* Root.swift */,
 				B569230A27F1BBEB0010A04C /* Settings.swift */,
+				B5C26FE0280086F1002CADDD /* Timer.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -361,6 +370,7 @@
 				B551BD9827C69157006FCB58 /* figma-export.yaml in Resources */,
 				B5A323B327C75CB300D9767C /* Montserrat.ttf in Resources */,
 				B5D668F427FDFB5A00F4B46A /* Avatar.plist in Resources */,
+				B5B957E728002E6500263721 /* LaunchScreen.storyboard in Resources */,
 				B5D668ED27FDEFCA00F4B46A /* Onboarding.plist in Resources */,
 				B551BD8B27C685F2006FCB58 /* Preview Assets.xcassets in Resources */,
 				B599749327F49E5B00C188E2 /* WhiteNoise.plist in Resources */,
@@ -388,6 +398,7 @@
 				B5D9B60927EDF11700B541AA /* DynamicAnalyticsView.swift in Sources */,
 				B50E896C27EDA84E005DBD59 /* Achievement.swift in Sources */,
 				B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */,
+				B5C26FE32800BCE8002CADDD /* GlobalVariables.swift in Sources */,
 				B5CD0AED27F9DC4100D33D87 /* NotificationViewModel.swift in Sources */,
 				B5B43B4227F0B2E500136E73 /* Root.swift in Sources */,
 				B5B43B3D27F0677500136E73 /* Task.swift in Sources */,
@@ -416,6 +427,7 @@
 				B5D152F927D082E10073421B /* TaskCardView.swift in Sources */,
 				B5D668EF27FDF1EE00F4B46A /* OnboardingViewModel.swift in Sources */,
 				B569230B27F1BBEB0010A04C /* Settings.swift in Sources */,
+				B5C26FE1280086F1002CADDD /* Timer.swift in Sources */,
 				B50E895C27EDA570005DBD59 /* Subtask.swift in Sources */,
 				B5D3081527E7071900959EF5 /* ListItemPickerView.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
@@ -551,6 +563,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Timebox/Timebox.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -563,6 +576,7 @@
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "By allowing us to access your personal calendar, we can help to integrate your existing routines/schedules into Timebox to get you more productive.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -586,6 +600,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Timebox/Timebox.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -598,6 +613,7 @@
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "By allowing us to access your personal calendar, we can help to integrate your existing routines/schedules into Timebox to get you more productive.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

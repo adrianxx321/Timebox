@@ -28,7 +28,7 @@ struct Root: View {
                 Scheduled()
                     .tag("tasks")
                 
-                Text("Timer")
+                Timer()
                     .tag("timer")
                 
                 Settings()

@@ -8,12 +8,7 @@
 		<string>Montserrat.ttf</string>
 	</array>
 	<key>UILaunchScreen</key>
-	<dict>
-		<key>UIColorName</key>
-		<string>backgroundPrimary</string>
-		<key>UIImageName</key>
-		<string>AppIcon-alt</string>
-	</dict>
+	<dict/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 </dict>

@@ -66,7 +66,7 @@ struct OngoingCardView: View {
             : nil
         }
         .fixedSize(horizontal: false, vertical: true)
-        .frame(maxHeight: 128)
+        .frame(minWidth: 144, maxHeight: 128, alignment: .leading)
         .padding(16)
         .background(Color.uiWhite)
         .cornerRadius(16)
