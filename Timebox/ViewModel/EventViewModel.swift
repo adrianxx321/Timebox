@@ -135,7 +135,7 @@ class EventViewModel: ObservableObject {
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
         let addedEvents = sourceOfTruth.filter { (origin: Task) -> Bool in
             !persistent.contains { (existing: Task) -> Bool in
-                existing.ekeventID == origin.ekeventID
+                existing.ekeventID == origin.ekeventID && existing.id == origin.id
             }
         }
         
