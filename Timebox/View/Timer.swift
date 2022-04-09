@@ -15,6 +15,8 @@ private enum TimerMode: String, CaseIterable {
 struct Timer: View {
     // MARK: Core Data stuff
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    // MARK: Core Data request
+    @FetchRequest var fetchedTasks: FetchedResults<Task>
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
     // MARK: ViewModels
@@ -22,72 +24,95 @@ struct Timer: View {
     @StateObject private var sessionModel = TaskSessionViewModel()
     // MARK: UI States
     @State private var start = false // Timer start toggle
-    @State private var percent : CGFloat = 0 // Percentage that fills the inner stroke
+    @State private var percent : CGFloat = 0.67 // Percentage that fills the inner stroke
     @State private var currentCounter: Int64 = 0 // Timer counter (in seconds, to match with data model's)
     @State private var isMuted = false
     @State private var selectedMode: TimerMode = .normal
     @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
+    // MARk: Current task
+    var currentTask: Task? {
+        get {
+            let allTasks = self.taskModel.getAllTasks(query: self.fetchedTasks)
+            
+            return allTasks.filter{self.taskModel.isTimeboxedTask($0)}.filter{self.taskModel.isOngoing($0)}.first
+        }
+    }
+    
+    init() {
+        _fetchedTasks = FetchRequest(
+            entity: Task.entity(),
+            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: false)])
+    }
+    
     var body: some View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 48) {
-                    // Task information...
-                    VStack(spacing: 20) {
-                        VStack(spacing: 10) {
-                            Text("Get started on learning WordPress development")
-                                .font(.headingH2())
-                                .fontWeight(.heavy)
-                                .foregroundColor(.textPrimary)
-                                .multilineTextAlignment(.center)
-                            
-                            Label(title: {
-                                Text("11:15 AM - 12:15 PM")
-                                    .font(.paragraphP1())
-                                    .fontWeight(.semibold)
+                if let currentTask = self.currentTask {
+                    VStack(spacing: 48) {
+                        // Task information...
+                        VStack(spacing: 20) {
+                            VStack(spacing: 10) {
+                                Text(currentTask.taskTitle!)
+                                    .font(.headingH2())
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.textPrimary)
+                                    .multilineTextAlignment(.center)
                                 
-                            }, icon: {
-                                Image("clock")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 24)
-                            })
-                            .foregroundColor(.textSecondary)
+                                Label(title: {
+                                    Text("\(self.taskModel.formatDate(date: currentTask.taskStartTime!, format: "hh:mm a")) - \(self.taskModel.formatDate(date: currentTask.taskEndTime!, format: "hh:mm a"))")
+                                        .font(.paragraphP1())
+                                        .fontWeight(.semibold)
+                                    
+                                }, icon: {
+                                    Image("clock")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 24)
+                                })
+                                .foregroundColor(.textSecondary)
+                            }
+                            
+                            // Show timer mode selection if haven't started
+                            // Otherwise show caption of the day
+                            VStack(spacing: 24) {
+                                if self.start {
+                                    Text("Get your toughest work done now!")
+                                        .font(.paragraphP1())
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.textSecondary)
+                                } else {
+                                    self.TimerModeSelector()
+                                }
+                                
+                                // TODO: For task with subtasks...
+                                if currentTask.subtasks.count > 0 {
+                                    Group {
+                                        // Horizontal progress bar... (with subtasks)
+                                        
+                                        // Subtasks checklist...
+                                        SubtasksChecklist(selectedTask: currentTask)
+                                    }
+                                } else {
+                                    // TODO: For singleton task
+                                }
+                            }
                         }
                         
-                        // Show timer mode selection if haven't started
-                        // Otherwise show caption of the day
-                        VStack(spacing: 24) {
-                            if self.start {
-                                Text("Get your toughest work done now!")
-                                    .font(.paragraphP1())
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.textSecondary)
-                            } else {
-                                self.TimerModeSelector()
-                            }
-                            
-                            // TODO: For task with subtasks...
-                            Group {
-                                // Horizontal progress bar... (with subtasks)
-                                
-                                // Subtasks checklist...
-                            }
-                            
-                            // TODO: For singleton task
-                        }
+                        // Timer clock view
+                        self.TimerClock(currentTask)
+                        
+                        // Timer controller buttons
+                        self.TimerControls()
+                        
+                        self.start ? nil : UserGuideCaptions()
                     }
-                    
-                    // Timer clock view
-                    self.TimerClock()
-                    
-                    // Timer controller buttons
-                    self.TimerControls()
-                    
-                    self.start ? nil : UserGuideCaptions()
+                    .padding(.horizontal, GLOBAL.isSmallDevice ? 16 : 32)
+                    .padding(.vertical, 24)
+                } else {
+                    ScreenFallbackView(title: "No task for now", image: Image("no-timebox"), caption1: "You don’t have any timeboxed task right now.", caption2: "Tap the plus button to create a new one.")
+                        .padding(.top, 48)
+                        
                 }
-                .padding(.horizontal, GLOBAL.isSmallDevice ? 16 : 32)
-                .padding(.vertical, 24)
             }
             .navigationBarHidden(true)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -119,7 +144,7 @@ struct Timer: View {
         .clipShape(Capsule())
     }
     
-    private func TimerClock() -> some View {
+    private func TimerClock(_ task: Task) -> some View {
         VStack{
             // Timer circle
             ZStack{
@@ -133,7 +158,7 @@ struct Timer: View {
                 Circle()
                 .trim(from: 0, to: self.percent)
                 // TODO: Use task's color
-                .stroke(Color.red, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 20, lineCap: .round))
                 .frame(width: 224, height: 224)
                 .rotationEffect(.init(degrees: -90))
                 

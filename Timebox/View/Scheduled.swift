@@ -12,10 +12,12 @@ struct Scheduled: View {
     @EnvironmentObject var GLOBAL: GlobalVariables
     // MARK: Core Data injected environment context
     @Environment(\.managedObjectContext) var context
+    // MARK: Core Data fetch request
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
     // MARK: ViewModels
     @ObservedObject var eventModel = EventViewModel()
+    @ObservedObject var sessionModel = TaskSessionViewModel()
     @StateObject var taskModel = TaskViewModel()
     // MARK: UI States
     @State private var currentWeek = 0
@@ -81,11 +83,11 @@ struct Scheduled: View {
             .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
-            .onAppear {
-                withAnimation {
-                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
-                }
-            }
+//            .onAppear {
+//                withAnimation {
+//                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
+//                }
+//            }
             .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
                 withAnimation {
                     // As per the instruction, so we fetch the EKCalendar again.

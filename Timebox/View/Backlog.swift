@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct Backlog: View {
-    // MARK: Core Data stuff
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    // MARK: Core Data fetch request
     @FetchRequest var fetchedBacklog: FetchedResults<Task>
     // MARK: ViewModels
     @StateObject var taskModel = TaskViewModel()

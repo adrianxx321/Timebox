@@ -27,9 +27,12 @@ enum GraphRange {
 struct Home: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
+    // MARK: Core Data injected environment context
+    @Environment(\.managedObjectContext) var context
     // MARK: ViewModels
     @StateObject var achievementModel = AchievementsViewModel()
-    @StateObject var taskModel = TaskViewModel()
+    @ObservedObject var taskModel = TaskViewModel()
+    @ObservedObject var eventModel = EventViewModel()
     // MARK: Core Data fetch requests
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @FetchRequest var timeboxSessions: FetchedResults<TaskSession>
@@ -42,10 +45,14 @@ struct Home: View {
     @State private var alertMessage = ""
     @AppStorage("avatar") private var avatar = "Avatar-1"
     // MARK: Data prepared from CD fetch
+    var allTasks: [Task] {
+        get {
+            self.fetchedTasks.map { $0 as Task }
+        }
+    }
     var ongoingTasks: [Task] {
         get {
-            let allTasks = self.fetchedTasks.map { $0 as Task }
-            return taskModel.filterOngoingTasks(data: allTasks).map { $0 }
+            return taskModel.filterOngoingTasks(data: self.allTasks)
         }
     }
     var totalPts: Int32 {
@@ -90,7 +97,21 @@ struct Home: View {
                                     }
                                 }
                             }
-                        }.frame(maxHeight: 128)
+                        }
+                        .frame(maxHeight: 128)
+//                        .onAppear {
+//                            withAnimation {
+//                                eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
+//                            }
+//                        }
+                        .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
+                            withAnimation {
+                                // As per the instruction, so we fetch the EKCalendar again.
+                                eventModel.loadCalendars()
+                                eventModel.loadEvents()
+                                eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
+                            }
+                        }
                         
                         // Analytics...
                         SectionView(title: "Statistics") {

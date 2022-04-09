@@ -48,41 +48,8 @@ struct TaskDetails: View {
                         // Subtasks section...
                         TaskSectionView(sectionTitle: "Subtasks") {
                             // Subtasks breakdown, if any...
-                            VStack(alignment: .leading, spacing: 16) {
-                                ForEach(selectedTask.subtasks, id: \.id) { subtask in
-                                    HStack(spacing: 12) {
-                                        // Checkbox for subtask completion...
-                                        Button {
-                                            withAnimation {
-                                                taskModel.completeSubtask(parentTask: self.selectedTask, subtask: subtask, context: self.context)
-                                            }
-                                        } label: {
-                                            Image(subtask.isCompleted ? "checked" : "unchecked")
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: 28)
-                                                .foregroundColor(.accent)
-                                                .padding(.trailing, 8)
-                                        }
-                                        
-                                        // Subtask title...
-                                        Text(subtask.subtaskTitle ?? "")
-                                            .font(.paragraphP1())
-                                            .fontWeight(.bold)
-                                            .foregroundColor(subtask.isCompleted ? .textSecondary : .textPrimary)
-                                            .if(subtask.isCompleted) { text in
-                                                text.strikethrough()
-                                            }
-                                    }
-                                }
-                                
-                                // Indicator for no subtask...
-                                selectedTask.subtasks.count <= 0 ?
-                                Text("This task doesn't have any subtask.")
-                                    .font(.paragraphP1())
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.textPrimary) : nil
-                            }
+                            self.selectedTask.subtasks.count > 0 ?
+                            SubtasksChecklist(selectedTask: self.selectedTask) : nil
                         }
                         
                         // Date & Time section...

@@ -47,6 +47,7 @@
 		B5B43B4427F0BB7D00136E73 /* HexagonShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */; };
 		B5B957E728002E6500263721 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5B957E628002E6500263721 /* LaunchScreen.storyboard */; };
 		B5BE6CD4280150000016E75A /* GlobalVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5BE6CD3280150000016E75A /* GlobalVariables.swift */; };
+		B5BE6CD6280156B20016E75A /* SubtasksChecklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5BE6CD5280156B20016E75A /* SubtasksChecklist.swift */; };
 		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
 		B5C26FE1280086F1002CADDD /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C26FE0280086F1002CADDD /* Timer.swift */; };
 		B5CD0AEB27F9D5A100D33D87 /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */; };
@@ -112,6 +113,7 @@
 		B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexagonShape.swift; sourceTree = "<group>"; };
 		B5B957E628002E6500263721 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B5BE6CD3280150000016E75A /* GlobalVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariables.swift; sourceTree = "<group>"; };
+		B5BE6CD5280156B20016E75A /* SubtasksChecklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtasksChecklist.swift; sourceTree = "<group>"; };
 		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
 		B5C26FE0280086F1002CADDD /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 		B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
@@ -292,6 +294,7 @@
 				B5015D2127F6107200D01DB6 /* MailView.swift */,
 				B569429327F81CAB00A6E701 /* ScreenFallbackView.swift */,
 				B53B0F0F27FEE56C00688D49 /* AvatarView.swift */,
+				B5BE6CD5280156B20016E75A /* SubtasksChecklist.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -427,6 +430,7 @@
 				B5D152F927D082E10073421B /* TaskCardView.swift in Sources */,
 				B5D668EF27FDF1EE00F4B46A /* OnboardingViewModel.swift in Sources */,
 				B569230B27F1BBEB0010A04C /* Settings.swift in Sources */,
+				B5BE6CD6280156B20016E75A /* SubtasksChecklist.swift in Sources */,
 				B5C26FE1280086F1002CADDD /* Timer.swift in Sources */,
 				B50E895C27EDA570005DBD59 /* Subtask.swift in Sources */,
 				B5D3081527E7071900959EF5 /* ListItemPickerView.swift in Sources */,
