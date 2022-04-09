@@ -13,16 +13,16 @@ struct SubtasksChecklist: View {
     // MARK: ViewModels
     @ObservedObject private var taskModel = TaskViewModel()
     // MARK: Dependency (CD Object)
-    @ObservedObject var selectedTask: Task
+    @ObservedObject var parentTask: Task
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            ForEach(selectedTask.subtasks, id: \.id) { subtask in
+            ForEach(self.parentTask.subtasks, id: \.id) { subtask in
                 HStack(spacing: 12) {
                     // Checkbox for subtask completion...
                     Button {
                         withAnimation {
-                            taskModel.completeSubtask(parentTask: self.selectedTask, subtask: subtask, context: self.context)
+                            taskModel.completeSubtask(parentTask: self.parentTask, subtask: subtask, context: self.context)
                         }
                     } label: {
                         Image(subtask.isCompleted ? "checked" : "unchecked")
@@ -45,7 +45,7 @@ struct SubtasksChecklist: View {
             }
             
             // Indicator for no subtask...
-            selectedTask.subtasks.count <= 0 ?
+            self.parentTask.subtasks.count <= 0 ?
             Text("This task doesn't have any subtask.")
                 .font(.paragraphP1())
                 .fontWeight(.bold)

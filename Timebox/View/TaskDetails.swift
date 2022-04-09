@@ -49,7 +49,7 @@ struct TaskDetails: View {
                         TaskSectionView(sectionTitle: "Subtasks") {
                             // Subtasks breakdown, if any...
                             self.selectedTask.subtasks.count > 0 ?
-                            SubtasksChecklist(selectedTask: self.selectedTask) : nil
+                            SubtasksChecklist(parentTask: self.selectedTask) : nil
                         }
                         
                         // Date & Time section...

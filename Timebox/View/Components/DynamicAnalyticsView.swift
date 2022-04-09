@@ -24,13 +24,13 @@ struct DynamicAnalyticsView: View {
         }
     }
     // Graph columns and values presented in array of tuples
-    var data: [(String, Int64)] {
+    var data: [(String, Double)] {
         get {
             self.selectedRange == .week ? sessionModel.presentGraphByWeek(data: currentDoneTasks)
             : self.sessionModel.presentGraphByMonth(data: currentDoneTasks)
         }
     }
-    var maxBarHeight: Int64 {
+    var maxBarHeight: Double {
         get {
             self.data.max { first, second in
                 return second.1 > first.1
@@ -177,7 +177,7 @@ struct DynamicAnalyticsView: View {
         .cornerRadius(16)
     }
     
-    private func GraphView(data: [(String, Int64)]) -> some View {
+    private func GraphView(data: [(String, Double)]) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Timeboxed Duration")
                 .font(.subheading1())
@@ -249,7 +249,7 @@ struct DynamicAnalyticsView: View {
         .cornerRadius(24)
     }
     
-    private func GraphRenderer(data: [(String, Int64)], max: Int) -> some View {
+    private func GraphRenderer(data: [(String, Double)], max: Int) -> some View {
         GeometryReader { proxy in
             HStack {
                 ForEach(data, id: \.0) { item in

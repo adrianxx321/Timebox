@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
     @StateObject var globalModel = GlobalVariables()
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
     
     init() {
         // Globally define UIKit appearances that suits my app's theme
@@ -25,6 +25,7 @@ struct ContentView: View {
         } else {
             Onboarding()
                 .transition(.move(edge: .trailing))
+                .environmentObject(self.globalModel)
         }
     }
 }

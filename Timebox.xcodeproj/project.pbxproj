@@ -17,6 +17,7 @@
 		B50E895C27EDA570005DBD59 /* Subtask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50E895027EDA570005DBD59 /* Subtask.swift */; };
 		B50E896C27EDA84E005DBD59 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50E896427EDA84E005DBD59 /* Achievement.swift */; };
 		B51B3C4F27C79CD1001CD692 /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B3C4E27C79CD1001CD692 /* Login.swift */; };
+		B5257926280200CF00B7B005 /* Date+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5257925280200CF00B7B005 /* Date+extension.swift */; };
 		B53B0F1027FEE56C00688D49 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53B0F0F27FEE56C00688D49 /* AvatarView.swift */; };
 		B551BD8427C685F1006FCB58 /* TimeboxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B551BD8327C685F1006FCB58 /* TimeboxApp.swift */; };
 		B551BD8627C685F1006FCB58 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B551BD8527C685F1006FCB58 /* ContentView.swift */; };
@@ -81,6 +82,7 @@
 		B50E895027EDA570005DBD59 /* Subtask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subtask.swift; sourceTree = "<group>"; };
 		B50E896427EDA84E005DBD59 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
 		B51B3C4E27C79CD1001CD692 /* Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login.swift; sourceTree = "<group>"; };
+		B5257925280200CF00B7B005 /* Date+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+extension.swift"; sourceTree = "<group>"; };
 		B53B0F0F27FEE56C00688D49 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		B551BD8027C685F1006FCB58 /* Timebox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timebox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B551BD8327C685F1006FCB58 /* TimeboxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeboxApp.swift; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 				B5A0822B27EF1C92000F7BE3 /* String+extension.swift */,
 				B5F39DA727F1EA6D00878579 /* Binding+extension.swift */,
 				B567D3FE27F340B200BB469F /* UIViewController+extension.swift */,
+				B5257925280200CF00B7B005 /* Date+extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -433,6 +436,7 @@
 				B5BE6CD6280156B20016E75A /* SubtasksChecklist.swift in Sources */,
 				B5C26FE1280086F1002CADDD /* Timer.swift in Sources */,
 				B50E895C27EDA570005DBD59 /* Subtask.swift in Sources */,
+				B5257926280200CF00B7B005 /* Date+extension.swift in Sources */,
 				B5D3081527E7071900959EF5 /* ListItemPickerView.swift in Sources */,
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
 				B5B43B4427F0BB7D00136E73 /* HexagonShape.swift in Sources */,

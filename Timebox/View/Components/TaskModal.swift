@@ -308,21 +308,21 @@ struct TaskModal: View {
                                     // Start & end time will always be 0000 & 2359
                                     guard let existingTask = taskModel.editTask else {
                                         self.taskStartTime = Calendar.current.startOfDay(for: Date())
-                                        self.taskEndTime = taskModel.getOneMinToMidnight(taskStartTime!)
+                                        self.taskEndTime = Date().getOneMinToMidnight(taskEndTime!)
                                         
                                         return
                                     }
                                 self.taskStartTime = taskModel.isAllDayTask(existingTask) ? existingTask.taskStartTime : Calendar.current.startOfDay(for: Date())
-                                self.taskEndTime = taskModel.getOneMinToMidnight(taskStartTime!)
+                                self.taskEndTime = Date().getOneMinToMidnight(taskStartTime!)
                                 
                                 case .timeboxed:
                                     guard let existingTask = taskModel.editTask else {
-                                        taskStartTime = taskModel.getNearestHour(Date())
+                                        taskStartTime = Date().getNearestHour(Date())
                                         taskEndTime = Calendar.current.date(byAdding: .hour, value: 1, to: taskStartTime!)
 
                                         return
                                     }
-                                    taskStartTime = taskModel.isTimeboxedTask(existingTask) ? existingTask.taskStartTime : taskModel.getNearestHour(Date())
+                                    taskStartTime = taskModel.isTimeboxedTask(existingTask) ? existingTask.taskStartTime : Date().getNearestHour(Date())
                                     taskEndTime = taskModel.isTimeboxedTask(existingTask) ? existingTask.taskEndTime : Calendar.current.date(byAdding: .hour, value: 1, to: taskStartTime!)
                             }
                             // MARK: (EDIT MODE) Initial values unchanged

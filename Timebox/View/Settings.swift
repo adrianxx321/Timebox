@@ -191,7 +191,7 @@ struct Settings: View {
             let grids: [GridItem] = Array(repeating: .init(.adaptive(minimum: 128)), count: 5)
             
             // Navigation bar
-            UniversalCustomNavigationBar(screenTitle: "Change Avatar")
+            UniversalCustomNavigationBar(screenTitle: "Change Avatar", hasBackButton: true)
             
             // Avatar selection panel
             VStack(spacing: 48) {

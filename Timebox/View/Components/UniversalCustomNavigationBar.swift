@@ -10,17 +10,20 @@ import SwiftUI
 struct UniversalCustomNavigationBar: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var screenTitle: String
+    var hasBackButton: Bool
     
     var body: some View {
         HStack {
             // Back button leading to previous screen...
-            Button {
-                self.presentationMode.wrappedValue.dismiss()
-            } label: {
-                Image("chevron-left")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 36)
+            if self.hasBackButton {
+                Button {
+                    self.presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Image("chevron-left")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 36)
+                }
             }
             
             Spacer()
@@ -29,7 +32,8 @@ struct UniversalCustomNavigationBar: View {
             Text(screenTitle)
                 .font(.headingH2())
                 .fontWeight(.heavy)
-                .padding(.trailing, 36)
+                // Offset the navbar title due to absence/presence of back button...
+                .padding(.trailing, hasBackButton ? 36 : 0)
                 
             Spacer()
         }

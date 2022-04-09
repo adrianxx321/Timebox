@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct Onboarding: View {
+    // MARK: ViewModels
     @StateObject private var onboardingModel = OnboardingViewModel()
-    // Current page of carousels
+    // MARK: UI States
     @State private var currentIndex = 0
     @State private var viewDismissed = false
     
@@ -57,7 +58,8 @@ struct Onboarding: View {
         .overlay(
             Group {
                 if viewDismissed {
-                    Login().transition(.move(edge: .trailing))
+                    Login()
+                        .transition(.move(edge: .trailing))
                 }
             }
         )

@@ -44,6 +44,7 @@ struct Home: View {
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @AppStorage("avatar") private var avatar = "Avatar-1"
+    
     // MARK: Data prepared from CD fetch
     var allTasks: [Task] {
         get {

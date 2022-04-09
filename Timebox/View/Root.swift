@@ -42,15 +42,19 @@ struct Root: View {
             TabView(selection: $currentTab) {
                 Home()
                     .tag("home")
+                    .environmentObject(self.GLOBAL)
                 
                 Scheduled()
                     .tag("tasks")
+                    .environmentObject(self.GLOBAL)
                 
                 Timer()
                     .tag("timer")
+                    .environmentObject(self.GLOBAL)
                 
                 Settings()
                     .tag("more")
+                    .environmentObject(self.GLOBAL)
             }
             .onChange(of: self.eventModel.mappedEventStore) { _ in
                 withAnimation {

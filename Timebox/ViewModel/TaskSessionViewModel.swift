@@ -19,8 +19,8 @@ class TaskSessionViewModel: ObservableObject {
         return self.formatTimeInterval(interval: TimeInterval(total), unitsStyle: .abbreviated, units: [.hour, .minute])
     }
     
-    func presentGraphByWeek(data: [TaskSession]) -> [(String, Int64)] {
-        let defaultData: [(String, Int64)] = [("Mon", 0), ("Tue", 0), ("Wed", 0),
+    func presentGraphByWeek(data: [TaskSession]) -> [(String, Double)] {
+        let defaultData: [(String, Double)] = [("Mon", 0), ("Tue", 0), ("Wed", 0),
                                               ("Thu", 0), ("Fri", 0), ("Sat", 0),
                                               ("Sun", 0)]
         
@@ -36,7 +36,7 @@ class TaskSessionViewModel: ObservableObject {
                 })
             }
             
-            return defaultData.map { (key, value) -> (String, Int64) in
+            return defaultData.map { (key, value) -> (String, Double) in
                 var temp = (key, value)
                 subset.forEach { k, v in
                     temp = (key == k) ? (k, v) : temp
@@ -47,12 +47,12 @@ class TaskSessionViewModel: ObservableObject {
         }
     }
     
-    func presentGraphByMonth(data: [TaskSession]) -> [(String, Int64)] {
+    func presentGraphByMonth(data: [TaskSession]) -> [(String, Double)] {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.month, .year], from: Date())
         let currentYear = components.year!
         let currentMonth = components.month!
-        let defaultData: [(Int, Int64)] = [(1, 0), (2, 0), (3, 0), (4, 0), (5, 0)]
+        let defaultData: [(Int, Double)] = [(1, 0), (2, 0), (3, 0), (4, 0), (5, 0)]
         
         // Aggregate by the week number of current month
         // given the completion date
@@ -64,7 +64,7 @@ class TaskSessionViewModel: ObservableObject {
             })
         }
         
-        let secondPass = defaultData.map { (key, value) -> (Int, Int64)  in
+        let secondPass = defaultData.map { (key, value) -> (Int, Double)  in
             var temp = (key, value)
             subset.forEach { k, v in
                 temp = (key == k) ? (k, v) : temp
@@ -74,7 +74,7 @@ class TaskSessionViewModel: ObservableObject {
         }
         
         
-        return secondPass.map { (key, value) -> (String, Int64) in
+        return secondPass.map { (key, value) -> (String, Double) in
             // Use weekday = 2 to tell use Monday as first weekday
             let newComponents = DateComponents(year: currentYear, month: currentMonth, weekday: 2, weekOfMonth: key) // nth week of March
             // Getting first & last day given weekOfMonth
