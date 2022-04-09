@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct DynamicAnalyticsView: View {
+    // MARK: ViewModels
+    @ObservedObject var sessionModel = TaskSessionViewModel()
+    // MARK: UI States
     @Binding private var selectedRange: GraphRange
     @State private var currentDoneTasks: [TaskSession]
     @State private var previousDoneTasks: [TaskSession]
     @State private var showProductivityAlert: Bool = false
-    @StateObject var sessionModel = TaskSessionViewModel()
-    
+
     // MARK: Data needed for analytics presentation
     // Percentage of productivity improvement for display in summary card view
     var percentage: Int {

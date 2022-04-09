@@ -14,15 +14,18 @@ struct FlatLinkStyle: ButtonStyle {
 }
 
 struct TaskCardView: View {
+    // MARK: Core Data environment
+    @Environment(\.managedObjectContext) var context
+    // MARK: Dependencies (CD object)
     @ObservedObject var task: Task
-    @StateObject var taskModel = TaskViewModel()
+    // MARK: ViewModels
+    @ObservedObject var taskModel = TaskViewModel()
+    // MARK: UI States
     @State private var dragOffset: CGFloat = 0
     @State private var showDeleteDialog = false
     @GestureState private var isDragging = false
     
-    // MARK: Core Data environment
-    @Environment(\.managedObjectContext) var context
-    
+    // MARK: Derived properties
     // Determines if this task can be edited and/or deleted
     var canDelete: Bool {
         get {

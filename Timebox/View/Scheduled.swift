@@ -14,8 +14,10 @@ struct Scheduled: View {
     @Environment(\.managedObjectContext) var context
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
+    // MARK: ViewModels
     @ObservedObject var eventModel = EventViewModel()
     @StateObject var taskModel = TaskViewModel()
+    // MARK: UI States
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
     

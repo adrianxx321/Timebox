@@ -46,9 +46,9 @@
 		B5B43B4227F0B2E500136E73 /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4127F0B2E500136E73 /* Root.swift */; };
 		B5B43B4427F0BB7D00136E73 /* HexagonShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */; };
 		B5B957E728002E6500263721 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5B957E628002E6500263721 /* LaunchScreen.storyboard */; };
+		B5BE6CD4280150000016E75A /* GlobalVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5BE6CD3280150000016E75A /* GlobalVariables.swift */; };
 		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
 		B5C26FE1280086F1002CADDD /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C26FE0280086F1002CADDD /* Timer.swift */; };
-		B5C26FE32800BCE8002CADDD /* GlobalVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C26FE22800BCE8002CADDD /* GlobalVariables.swift */; };
 		B5CD0AEB27F9D5A100D33D87 /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */; };
 		B5CD0AED27F9DC4100D33D87 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */; };
 		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
@@ -111,9 +111,9 @@
 		B5B43B4127F0B2E500136E73 /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
 		B5B43B4327F0BB7D00136E73 /* HexagonShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexagonShape.swift; sourceTree = "<group>"; };
 		B5B957E628002E6500263721 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B5BE6CD3280150000016E75A /* GlobalVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariables.swift; sourceTree = "<group>"; };
 		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
 		B5C26FE0280086F1002CADDD /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
-		B5C26FE22800BCE8002CADDD /* GlobalVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariables.swift; sourceTree = "<group>"; };
 		B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
 		B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
@@ -177,8 +177,8 @@
 				B551BD8327C685F1006FCB58 /* TimeboxApp.swift */,
 				B551BD8527C685F1006FCB58 /* ContentView.swift */,
 				B5DB8A3A27D4B57B000D8B51 /* Persistence.swift */,
-				B5C26FE22800BCE8002CADDD /* GlobalVariables.swift */,
 				B5DB8A2E27D4B31D000D8B51 /* UIColorTransformer.swift */,
+				B5BE6CD3280150000016E75A /* GlobalVariables.swift */,
 				B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */,
 				B551BD9627C68886006FCB58 /* Extension */,
 				B551BD8927C685F2006FCB58 /* Preview Content */,
@@ -334,7 +334,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1320;
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 1330;
 				TargetAttributes = {
 					B551BD7F27C685F1006FCB58 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -398,7 +398,7 @@
 				B5D9B60927EDF11700B541AA /* DynamicAnalyticsView.swift in Sources */,
 				B50E896C27EDA84E005DBD59 /* Achievement.swift in Sources */,
 				B5DB8A2F27D4B31D000D8B51 /* UIColorTransformer.swift in Sources */,
-				B5C26FE32800BCE8002CADDD /* GlobalVariables.swift in Sources */,
+				B5BE6CD4280150000016E75A /* GlobalVariables.swift in Sources */,
 				B5CD0AED27F9DC4100D33D87 /* NotificationViewModel.swift in Sources */,
 				B5B43B4227F0B2E500136E73 /* Root.swift in Sources */,
 				B5B43B3D27F0677500136E73 /* Task.swift in Sources */,

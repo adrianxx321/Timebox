@@ -10,7 +10,7 @@ import AuthenticationServices
 import CloudKit
 
 struct Login: View {
-    // MARK: GLOBAL VARIABLES
+    // MARK: ViewModels & global variables
     @EnvironmentObject var GLOBAL: GlobalVariables
     @StateObject private var loginData = LoginViewModel()
     

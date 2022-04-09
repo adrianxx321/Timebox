@@ -10,6 +10,7 @@ import SwiftUI
 struct Root: View {
     // Using icon name to identify tab...
     @State var currentTab = "home"
+    // MARK: ViewModels & global variables
     @StateObject var taskModel = TaskViewModel()
     @EnvironmentObject var GLOBAL: GlobalVariables
     

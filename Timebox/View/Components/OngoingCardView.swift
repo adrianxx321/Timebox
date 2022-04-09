@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct OngoingCardView: View {
-    @StateObject var taskModel = TaskViewModel()
+    // MARK: Dependencies (CD object)
     @ObservedObject var task: Task
+    // MARK: ViewModels
+    @StateObject var taskModel = TaskViewModel()
     
+    // MARK: Derived properties
     // Numbers needed for circular progress bar presentation
     var percentage: Float {
         get {

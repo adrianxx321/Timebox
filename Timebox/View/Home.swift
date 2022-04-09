@@ -27,12 +27,13 @@ enum GraphRange {
 struct Home: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
+    // MARK: ViewModels
+    @StateObject var achievementModel = AchievementsViewModel()
+    @StateObject var taskModel = TaskViewModel()
     // MARK: Core Data fetch requests
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @FetchRequest var timeboxSessions: FetchedResults<TaskSession>
-    
-    @StateObject var achievementModel = AchievementsViewModel()
-    @StateObject var taskModel = TaskViewModel()
+    // MARK: UI States
     @State var selectedRange: GraphRange = .week
     @State private var showMedalUnlockTips = false
     @State private var showUnlockedMedal = false
@@ -40,8 +41,7 @@ struct Home: View {
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @AppStorage("avatar") private var avatar = "Avatar-1"
-    
-    // MARK: Ongoing tsks prepared from CD fetch
+    // MARK: Data prepared from CD fetch
     var ongoingTasks: [Task] {
         get {
             let allTasks = self.fetchedTasks.map { $0 as Task }

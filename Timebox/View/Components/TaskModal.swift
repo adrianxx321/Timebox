@@ -26,11 +26,15 @@ private enum TaskDuration: String, CaseIterable, Identifiable {
 }
 
 struct TaskModal: View {
+    // MARK: Core Data Context
+    @Environment(\.managedObjectContext) var context
+    // MARK: ViewModels
+    @EnvironmentObject var taskModel: TaskViewModel
     // MARK: Dismissal action for modal pop up
     @Environment(\.dismiss) var dismiss
+    // MARK: UI States
     @State private var isModalActive = false
     @State private var showColorPicker = false
-    // A dictionary to keep track of changes in all fields
     @State private var isEdited: [String: Bool] = [
         "taskTitle" : false,
         "subtasks" : false,
@@ -43,7 +47,7 @@ struct TaskModal: View {
     ]
     @State private var showDiscardConfirm = false
     
-    // Task properties that will be directly saved to Core Data...
+    // MARK: Task properties to be saved to Core Data...
     @State var id: UUID = UUID.init()
     @State var taskTitle: String = ""
     @State var subtasks: [Subtask] = []
@@ -82,12 +86,7 @@ struct TaskModal: View {
             return task.ekeventID != nil
         }
     }
-    
-    // MARK: Core Data Context
-    @Environment(\.managedObjectContext) var context
-    @EnvironmentObject var taskModel: TaskViewModel
-    
-    // MARK: Predefined color list
+    // Predefined color list
     static private let colors = [
         ColorChoice(name: "Red", value: UIColor.red),
         ColorChoice(name: "Blue", value: UIColor.blue),
@@ -96,6 +95,7 @@ struct TaskModal: View {
         ColorChoice(name: "Green", value: UIColor.green),
     ]
     
+    // MARK: UI States
     @State private var selectedColor: ColorChoice = ColorChoice(name: "Purple", value: UIColor.purple)
     @State private var selectedCustomColor: ColorChoice = ColorChoice(name: "Custom...", value: UIColor.purple)
     @State private var selectedDuration: TaskDuration = .untimed

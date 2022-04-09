@@ -11,7 +11,9 @@ struct Backlog: View {
     // MARK: Core Data stuff
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @FetchRequest var fetchedBacklog: FetchedResults<Task>
+    // MARK: ViewModels
     @StateObject var taskModel = TaskViewModel()
+    // MARK: UI States
     @State private var hideCompletedTasks = false
     
     // MARK: Tasks prepared from CD fetch

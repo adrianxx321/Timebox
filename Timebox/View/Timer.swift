@@ -13,18 +13,20 @@ private enum TimerMode: String, CaseIterable {
 }
 
 struct Timer: View {
+    // MARK: Core Data stuff
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
+    // MARK: ViewModels
     @ObservedObject private var taskModel = TaskViewModel()
     @StateObject private var sessionModel = TaskSessionViewModel()
-    // Timer start toggle
-    @State private var start = false
-    // Percentage that fills the inner stroke
-    @State private var percent : CGFloat = 0
-    // Timer counter (in seconds, to match with data model's)
-    @State private var currentCounter: Int64 = 0
+    // MARK: UI States
+    @State private var start = false // Timer start toggle
+    @State private var percent : CGFloat = 0 // Percentage that fills the inner stroke
+    @State private var currentCounter: Int64 = 0 // Timer counter (in seconds, to match with data model's)
     @State private var isMuted = false
-    @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var selectedMode: TimerMode = .normal
+    @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         NavigationView {
