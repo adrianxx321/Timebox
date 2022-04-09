@@ -13,7 +13,7 @@ class EventViewModel: ObservableObject {
     // This is the store for all calendar entities retrieved from your calendar
     @Published var calendarStore = [EKCalendar]()
     // This is the store for events from all calendars
-    @Published var eventStore: [Task] = []
+    @Published var mappedEventStore: [Task] = []
     // Singleton EventKit API accessor
     static let CalendarAccessor = EKEventStore()
     // Calendar permission - Default to false as we haven't get user consent
@@ -49,6 +49,7 @@ class EventViewModel: ObservableObject {
                     // After granted permission first time we need to load the calendars again.
                     // So that the list isn't emptly selected
                     self.loadCalendars()
+                    self.loadEvents()
                 }
             }
         } else if EKAuthStatus == .denied {
@@ -92,11 +93,11 @@ class EventViewModel: ObservableObject {
             let endOfYear = calendar.date(byAdding: .year, value: 1, to: currentYear)!
             let predicate = EventViewModel.CalendarAccessor.predicateForEvents(withStart: currentYear, end: endOfYear, calendars: self.calendarStore)
             
-            self.eventStore = EventViewModel.CalendarAccessor
+            self.mappedEventStore = EventViewModel.CalendarAccessor
                 .events(matching: predicate)
                 .map{self.EKEventMapper($0)}
         } else {
-            self.eventStore = []
+            self.mappedEventStore = []
         }
     }
     
@@ -131,7 +132,7 @@ class EventViewModel: ObservableObject {
     
     private func shouldAddNewEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from source of truth & persistent store
-        let sourceOfTruth = self.eventStore
+        let sourceOfTruth = self.mappedEventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
         let addedEvents = sourceOfTruth.filter { (origin: Task) -> Bool in
             !persistent.contains { (existing: Task) -> Bool in
@@ -166,7 +167,7 @@ class EventViewModel: ObservableObject {
     
     private func shouldRemoveEvents(_ persistentTaskStore: [Task]) -> [Task]? {
         // Finding the difference between sets from persistent & source of truth
-        let sourceOfTruth = self.eventStore
+        let sourceOfTruth = self.mappedEventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
         let removedEvents = persistent.filter { (existing: Task) -> Bool in
             !sourceOfTruth.contains { (origin: Task) -> Bool in
@@ -189,7 +190,7 @@ class EventViewModel: ObservableObject {
     
     /// Detects if event(s) from calendar are modified (includes addition, deletion and/or update). Returns the updated tasks if true, otherwise returns nil.
     private func shouldUpdateEvents(_ persistentTaskStore: [Task]) -> [Task]? {
-        let sourceOfTruth = self.eventStore
+        let sourceOfTruth = self.mappedEventStore
         let persistent = persistentTaskStore.filter{$0.ekeventID != nil}
         let editedEvents = persistent.filter { (existing: Task) -> Bool in
             sourceOfTruth.contains { (origin: Task) -> Bool in

@@ -109,9 +109,8 @@ struct Timer: View {
                     .padding(.horizontal, GLOBAL.isSmallDevice ? 16 : 32)
                     .padding(.vertical, 24)
                 } else {
-                    ScreenFallbackView(title: "No task for now", image: Image("no-timebox"), caption1: "You don’t have any timeboxed task right now.", caption2: "Tap the plus button to create a new one.")
-                        .padding(.top, 48)
-                        
+                    ScreenFallbackView(title: "No task for now", image: Image("no-timebox"), caption1: "You don’t have any ongoing task right now.", caption2: "Tap the plus button to create a new one.")
+                        .padding(.vertical, UIScreen.main.bounds.height / 8)
                 }
             }
             .navigationBarHidden(true)

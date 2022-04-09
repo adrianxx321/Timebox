@@ -8,15 +8,32 @@
 import SwiftUI
 
 struct Root: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
+    // MARK: Core Data injected environment context
+    @Environment(\.managedObjectContext) var context
+    // MARK: Core Data fetch request
+    @FetchRequest var fetchedTasks: FetchedResults<Task>
+    // MARK: ViewModels & global variables
+    @ObservedObject var taskModel = TaskViewModel()
+    @ObservedObject var eventModel = EventViewModel()
     // Using icon name to identify tab...
     @State var currentTab = "home"
-    // MARK: ViewModels & global variables
-    @StateObject var taskModel = TaskViewModel()
-    @EnvironmentObject var GLOBAL: GlobalVariables
+    @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
     
     // Hiding native one...
     init() {
+        _fetchedTasks = FetchRequest(
+            entity: Task.entity(),
+            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: true)])
+        
         UITabBar.appearance().isHidden = true
+    }
+    
+    private var allTasks: [Task] {
+        get {
+            taskModel.getAllTasks(query: self.fetchedTasks)
+        }
     }
     
     var body: some View {
@@ -34,6 +51,19 @@ struct Root: View {
                 
                 Settings()
                     .tag("more")
+            }
+            .onChange(of: self.eventModel.mappedEventStore) { _ in
+                withAnimation {
+                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
+                withAnimation {
+                    // As per the instruction, so we fetch the EKCalendar again.
+                    eventModel.loadCalendars()
+                    eventModel.loadEvents()
+                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
+                }
             }
             
             // Custom Tab Bar...
