@@ -24,12 +24,14 @@ struct Timer: View {
     @ObservedObject private var taskModel = TaskViewModel()
     @StateObject private var sessionModel = TaskSessionViewModel()
     // MARK: UI States
-    @State private var start = true // Start/Pause button
-    @State private var abort = false // Stop button
-    @State private var percent : CGFloat = 0 // Circular progress bar percentage
-    @State private var countedSeconds: Int64 = 0 // Timer counter (in seconds, to match with data model's)
-    @State private var isMuted = false
     @State private var selectedMode: TimerMode = .normal
+    @State private var start = false
+    @State private var pause = false
+    @State private var abort = false
+    @State private var timerProgress : CGFloat = 0 // Circular progress bar percentage
+    @State private var subtaskProgress: CGFloat = 0
+    @State private var countedSeconds: Double = 0 // Timer counter (in seconds, to match with data model's)
+    @State private var isMuted = false
     @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect() // Publish something every 1 second
     
     init() {
@@ -38,7 +40,7 @@ struct Timer: View {
             sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: false)])
     }
     
-    // MARK: Conveninent values (so that I don't need to type so long in views)
+    // MARK: Convenient derived properties
     var currentTask: Task? {
         get {
             let allTasks = self.taskModel.getAllTasks(query: self.fetchedTasks)
@@ -82,9 +84,9 @@ struct Timer: View {
         NavigationView {
             if let currentTask = self.currentTask {
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 48) {
+                    VStack(spacing: 32) {
                         // Task information...
-                        self.TaskInfoView(currentTask)
+                        self.TaskHeader(currentTask)
                         
                         // Timer clock view
                         self.TimerClock(currentTask)
@@ -92,9 +94,15 @@ struct Timer: View {
                         // Timer controller buttons
                         self.TimerControls()
                         
-                        self.start ? nil : UserGuideCaptions()
+                        // User guide captions if not already started
+                        // Show task ongoing info (subtasks & some captions etc.) if started
+                        if self.start {
+                            TaskOngoingProgress(currentTask)
+                        }  else {
+                            UserGuideCaptions()
+                        }
                     }
-                    .padding(.horizontal, GLOBAL.isSmallDevice ? 16 : 32)
+                    .padding(.horizontal, 16)
                     .padding(.vertical, 24)
                 }
                 .navigationBarHidden(true)
@@ -117,7 +125,7 @@ struct Timer: View {
         }.navigationBarHidden(true)
     }
     
-    private func TaskInfoView(_ currentTask: Task) -> some View {
+    private func TaskHeader(_ currentTask: Task) -> some View {
         VStack(spacing: 20) {
             VStack(spacing: 10) {
                 // Task Title...
@@ -129,8 +137,8 @@ struct Timer: View {
                 
                 // Task duration information...
                 Label(title: {
-                    let startTime = self.taskModel.formatDate(date: currentTask.taskStartTime!, format: "hh:mm a")
-                    let endTime = self.taskModel.formatDate(date: currentTask.taskEndTime!, format: "hh:mm a")
+                    let startTime = currentTask.taskStartTime!.formatDateTime(format: "hh:mm a")
+                    let endTime = currentTask.taskEndTime!.formatDateTime(format: "hh:mm a")
                     
                     Text("\(startTime) - \(endTime)")
                         .font(.paragraphP1())
@@ -146,33 +154,8 @@ struct Timer: View {
             }
             
             // Show timer mode selection if haven't started
-            // Otherwise show caption of the day
-            VStack(spacing: 24) {
-                if self.start {
-                    Text("Get your toughest work done now!")
-                        .font(.paragraphP1())
-                        .fontWeight(.semibold)
-                        .foregroundColor(.textSecondary)
-                    
-                    // Subtasks breakdown if any...
-                    if currentTask.subtasks.count > 0 {
-                        VStack(alignment: .leading, spacing: 24) {
-                            // Horizontal progress bar... (with subtasks)
-                            HorizontalProgressBar(currentTask)
-                            
-                            // Subtasks checklist...
-                            SubtasksChecklist(parentTask: currentTask)
-                        }.frame(maxWidth: .infinity)
-                    } else {
-                        // TODO: For singleton task
-                        CTAButton(btnLabel: "Complete Task", btnFullSize: true) {
-                            self.taskModel.completeTask(currentTask, context: self.context)
-                        }
-                    }
-                    
-                } else {
-                    self.TimerModeSelector()
-                }
+            if !self.start {
+                self.TimerModeSelector()
             }
         }
     }
@@ -191,26 +174,54 @@ struct Timer: View {
         }
     }
     
+    private func TaskOngoingProgress(_ currentTask: Task) -> some View {
+        VStack(spacing: 24) {
+            Text("Get your toughest work done now!")
+                .font(.paragraphP1())
+                .fontWeight(.semibold)
+                .foregroundColor(.textSecondary)
+            
+            // Subtasks breakdown if any...
+            if currentTask.subtasks.count > 0 {
+                VStack(alignment: .leading, spacing: 24) {
+                    // Horizontal progress bar... (with subtasks)
+                    HorizontalProgressBar(currentTask)
+                    
+                    // Subtasks checklist...
+                    ScrollView(.vertical, showsIndicators: false) {
+                        SubtasksChecklist(parentTask: currentTask)
+                    }
+                    .frame(height: 128)
+                }.frame(maxWidth: .infinity)
+            } else {
+                // For singleton task
+                CTAButton(btnLabel: "Complete Task", btnFullSize: true) {
+                    self.taskModel.completeTask(currentTask, context: self.context)
+                }
+            }
+        }
+    }
+    
     private func HorizontalProgressBar(_ task: Task) -> some View {
         HStack(spacing: 8) {
-            let completedCount = self.taskModel.countCompletedSubtask(task.subtasks)
-            let percentage: CGFloat = CGFloat(completedCount != 0 ? (completedCount / task.subtasks.count) : 0)
+            let totalSubtasksCount: CGFloat = CGFloat(task.subtasks.count)
+            let completedSubtasksCount: CGFloat = CGFloat(self.taskModel.countCompletedSubtask(task.subtasks))
+            let percentage: CGFloat = totalSubtasksCount != 0 ? (completedSubtasksCount / totalSubtasksCount) : 0
             
-            ZStack {
+            ZStack(alignment: .leading) {
                 Rectangle()
                     .frame(height: 8)
-                    .frame(maxWidth: 280)
+                    .frame(maxWidth: 256)
                     .foregroundColor(.backgroundQuarternary)
                     .cornerRadius(8)
                 
                 Rectangle()
-                    .frame(height: 8)
-                    .frame(width: 280 * CGFloat(percentage))
+                    .frame(width: 256 * CGFloat(percentage), height: 8)
                     .foregroundColor(Color(task.color!))
                     .cornerRadius(8)
             }
             
-            Text("\(percentage)%")
+            Text("\(Int(percentage * 100))%")
                 .font(.caption())
                 .fontWeight(.heavy)
                 .foregroundColor(.textSecondary)
@@ -242,7 +253,7 @@ struct Timer: View {
     }
     
     private func TimerClock(_ task: Task) -> some View {
-        VStack{
+        VStack {
             // Timer circle
             ZStack{
                 // Outer stroke
@@ -253,7 +264,7 @@ struct Timer: View {
                 
                 // Inner stroke
                 Circle()
-                .trim(from: 0, to: self.percent)
+                .trim(from: 0, to: self.timerProgress)
                 // TODO: Use task's color
                 .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 20, lineCap: .round))
                 .frame(width: 224, height: 224)
@@ -280,7 +291,7 @@ struct Timer: View {
         HStack(spacing: 32) {
             // TODO: Mute/unmute button...
             Button {
-                
+                self.isMuted.toggle()
             } label: {
                 ControllerButtonLabel(icon: Image(self.isMuted ? "volume-up-f" : "volume-mute-f"),
                                       padding: 16, cornerRadius: 24, customColor: nil)
@@ -288,15 +299,24 @@ struct Timer: View {
             
             // TODO: Play button...
             Button {
-                
+                withAnimation {
+                    if !self.start {
+                        self.start.toggle()
+                        self.pause.toggle()
+                    } else {
+                        self.pause.toggle()
+                    }
+                }
             } label: {
-                ControllerButtonLabel(icon: Image("play-f"), padding: 24,
-                                      cornerRadius: 32, customColor: .accent)
+                ControllerButtonLabel(icon: self.pause ? Image("pause-f") : Image("play-f"),
+                                      padding: 24, cornerRadius: 32, customColor: .accent)
             }
             
             // TODO: Stop button...
             Button {
-                
+                withAnimation {
+                    self.abort.toggle()
+                }
             } label: {
                 ControllerButtonLabel(icon: Image("stop-f"), padding: 16,
                                       cornerRadius: 24, customColor: nil)
