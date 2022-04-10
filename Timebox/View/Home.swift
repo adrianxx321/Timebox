@@ -110,7 +110,7 @@ struct Home: View {
                                 // As per the instruction, so we fetch the EKCalendar again.
                                 eventModel.loadCalendars()
                                 eventModel.loadEvents()
-                                eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
+                                eventModel.updatePersistedEventStore(context: self.context, persistentTaskStore: self.allTasks)
                             }
                         }
                         

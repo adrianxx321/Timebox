@@ -9,6 +9,8 @@ import SwiftUI
 import CoreData
 
 class TaskSessionViewModel: ObservableObject {
+    @Published var currentSession: TaskSession?
+    
     func getAllTaskSessions(query: FetchedResults<TaskSession>) -> [TaskSession] {
         return query.map{$0 as TaskSession}
     }

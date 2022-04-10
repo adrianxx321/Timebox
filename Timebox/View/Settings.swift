@@ -380,7 +380,7 @@ struct Settings: View {
                                     eventModel.updateCalendarStore(put: check, selected: calendar)
                                     eventModel.loadCalendars()
                                     eventModel.loadEvents()
-                                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
+                                    eventModel.updatePersistedEventStore(context: self.context, persistentTaskStore: self.allTasks)
                                 }
                             } label: {
                                 icon

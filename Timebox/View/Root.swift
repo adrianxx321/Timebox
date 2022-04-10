@@ -14,9 +14,10 @@ struct Root: View {
     @Environment(\.managedObjectContext) var context
     // MARK: Core Data fetch request
     @FetchRequest var fetchedTasks: FetchedResults<Task>
-    // MARK: ViewModels & global variables
+    // MARK: ViewModels
     @ObservedObject var taskModel = TaskViewModel()
     @ObservedObject var eventModel = EventViewModel()
+    @ObservedObject var sessionModel = TaskSessionViewModel()
     // Using icon name to identify tab...
     @State var currentTab = "home"
     @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
@@ -56,17 +57,12 @@ struct Root: View {
                     .tag("more")
                     .environmentObject(self.GLOBAL)
             }
-            .onChange(of: self.eventModel.mappedEventStore) { _ in
-                withAnimation {
-                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
-                }
-            }
+            // Detect any changes made to the default Calendar app
             .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
                 withAnimation {
                     // As per the instruction, so we fetch the EKCalendar again.
                     eventModel.loadCalendars()
                     eventModel.loadEvents()
-                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
                 }
             }
             

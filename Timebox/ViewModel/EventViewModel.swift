@@ -8,21 +8,22 @@
 import SwiftUI
 import EventKit
 import CoreData
+import Combine
 
 class EventViewModel: ObservableObject {
     // This is the store for all calendar entities retrieved from your calendar
     @Published var calendarStore = [EKCalendar]()
     // This is the store for events from all calendars
     @Published var mappedEventStore: [Task] = []
-    // Singleton EventKit API accessor
-    static let CalendarAccessor = EKEventStore()
     // Calendar permission - Default to false as we haven't get user consent
-    @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
+    @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed: Bool = false
     // So does the list of selected calendar
-    @AppStorage("selectedCalendars") private var selectedCalendars = ""
+    @AppStorage("selectedCalendars") private var selectedCalendars: String = ""
     // A one-way toggle that allows first-time user to have all calendars selected
     // After first granted calendar pemrission
     @AppStorage("isfirstTimeSelect") private var isFirstTimeSelect = true
+    // Singleton EventKit API accessor
+    static let CalendarAccessor = EKEventStore()
     
     init() {
         loadCalendarsPermission()
@@ -114,7 +115,7 @@ class EventViewModel: ObservableObject {
         }
     }
     
-    func updateEventStore(context: NSManagedObjectContext, persistentTaskStore: [Task]) {
+    func updatePersistedEventStore(context: NSManagedObjectContext, persistentTaskStore: [Task]) {
         DispatchQueue.main.async {
             if let newEvents = self.shouldAddNewEvents(persistentTaskStore) {
                 self.addNewEventsToPersistent(context, newEvents)
