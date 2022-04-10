@@ -133,8 +133,7 @@ struct Scheduled: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 32)
                 }
-                
-                Text("\(taskModel.formatDate(date: taskModel.currentDay, format: "MMMM y"))")
+                Text(taskModel.currentDay.formatDateTime(format: "MMMM y"))
                     .font(.headingH2())
                     .fontWeight(.bold)
                 
@@ -165,8 +164,7 @@ struct Scheduled: View {
                     VStack(spacing: 8) {
                         // MARK: Day label
                         // EEEEE returns day as M,T,W ...
-                        Text(taskModel.formatDate(date: day,
-                                                  format: "EEEEE"))
+                        Text(day.formatDateTime(format: "EEEEE"))
                             .font(.paragraphP1())
                             .fontWeight(.bold)
                             .textCase(.uppercase)
@@ -176,7 +174,7 @@ struct Scheduled: View {
                         
                         // MARK: Date label
                         // dd will return date as 01,02 ...
-                        Text(taskModel.formatDate(date: day, format: "dd"))
+                        Text(day.formatDateTime(format: "dd"))
                             .font(.subheading1())
                             .fontWeight(.bold)
                             .textCase(.uppercase)

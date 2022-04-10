@@ -25,8 +25,7 @@ struct TaskCardView: View {
     @State private var showDeleteDialog = false
     @GestureState private var isDragging = false
     
-    // MARK: Derived properties
-    // Determines if this task can be edited and/or deleted
+    // MARK: Convenient derived properties
     var canDelete: Bool {
         get {
             task.ekeventID == nil
@@ -35,6 +34,22 @@ struct TaskCardView: View {
     var canEdit: Bool {
         get {
             !taskModel.isOverdue(self.task)
+        }
+    }
+    var interval: String? {
+        get {
+            guard let startTime = self.task.taskStartTime, let endTime = self.task.taskEndTime else {
+                return nil
+            }
+            
+            if taskModel.isAllDayTask(self.task) {
+                return nil
+            } else {
+                let startTimeFormatted = startTime.formatDateTime(format: "h:mm a")
+                let endTimeFormatted = endTime.formatDateTime(format: "h:mm a")
+                
+                return "\(startTimeFormatted) - \(endTimeFormatted)"
+            }
         }
     }
     
@@ -121,13 +136,13 @@ struct TaskCardView: View {
                         // Show the task duration if
                         // 1. It has time constaint
                         // 2. It is not all-day long
-                        taskModel.isScheduledTask(task) && !taskModel.isAllDayTask(task) ?
-                        Text("\(taskModel.formatDate(date: task.taskStartTime!, format: "h:mm a")) - \(taskModel.formatDate(date: task.taskEndTime!, format: "h:mm a"))")
-                            .font(.caption())
-                            .fontWeight(.semibold)
-                            // Text color varies depending on overdue and/or completion status...
-                            .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textSecondary)
-                        : nil
+                        if let interval = self.interval {
+                            Text(interval)
+                                .font(.caption())
+                                .fontWeight(.semibold)
+                                // Text color varies depending on overdue and/or completion status...
+                                .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textSecondary)
+                        }
                     }
                     
                     Spacer()

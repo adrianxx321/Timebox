@@ -23,6 +23,7 @@ struct TaskDetails: View {
     // MARK: Core Data environment
     @Environment(\.managedObjectContext) var context
     
+    // MARK: Convenient derived properties
     var canDelete: Bool {
         get {
             selectedTask.ekeventID == nil
@@ -31,6 +32,33 @@ struct TaskDetails: View {
     var canEdit: Bool {
         get {
             !taskModel.isOverdue(self.selectedTask)
+        }
+    }
+    var taskDateFormatted: String {
+        get {
+            guard let startTime = self.selectedTask.taskStartTime else {
+                return "None"
+            }
+            
+            return "\(startTime.formatDateTime(format: "EEEE, d MMMM yyyy"))"
+        }
+    }
+    var intervalDuration: String {
+        get {
+            guard let startTime = self.selectedTask.taskStartTime, let endTime = self.selectedTask.taskEndTime else {
+                return "None"
+            }
+            
+            if taskModel.isAllDayTask(self.selectedTask) {
+                return "All-day"
+            } else {
+                let startTimeFormatted = startTime.formatDateTime(format: "hh:mm a")
+                let endTimeFormatted = endTime.formatDateTime(format: "hh:mm a")
+                let duration = endTime - startTime
+                let intervalFormated = Date.formatTimeInterval(duration, unitStyle: .full, units: [.hour, .minute])
+                
+                return "\(startTimeFormatted) - \(endTimeFormatted) (\(intervalFormated))"
+            }
         }
     }
     
@@ -48,8 +76,14 @@ struct TaskDetails: View {
                         // Subtasks section...
                         TaskSectionView(sectionTitle: "Subtasks") {
                             // Subtasks breakdown, if any...
-                            self.selectedTask.subtasks.count > 0 ?
-                            SubtasksChecklist(parentTask: self.selectedTask) : nil
+                            if self.selectedTask.subtasks.count > 0 {
+                                SubtasksChecklist(parentTask: self.selectedTask)
+                            } else {
+                                Text("This task doesn't have contain any subtask.")
+                                    .font(.paragraphP1())
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.textPrimary)
+                            }
                         }
                         
                         // Date & Time section...
@@ -67,13 +101,7 @@ struct TaskDetails: View {
                                         .background(Circle()
                                             .foregroundColor(.uiLightPurple))
                                     
-                                    taskModel.isScheduledTask(selectedTask) ?
-                                    Text(taskModel.formatDate(date: selectedTask.taskStartTime!,
-                                                              format: "EEEE, d MMMM yyyy"))
-                                        .font(.paragraphP1())
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.textPrimary)
-                                    : Text("None")
+                                    Text(self.taskDateFormatted)
                                         .font(.paragraphP1())
                                         .fontWeight(.bold)
                                         .foregroundColor(.textPrimary)
@@ -90,29 +118,7 @@ struct TaskDetails: View {
                                         .background(Circle()
                                             .foregroundColor(.uiLightPurple))
                                     
-                                    // Complicated task duration calculation...
-                                    let startTime = taskModel.formatDate(date: selectedTask.taskStartTime ?? Date(),
-                                                                         format: "hh:mm a")
-                                    
-                                    let endTime = taskModel.formatDate(date: selectedTask.taskEndTime ?? Date(),
-                                                                       format: "hh:mm a")
-                                    
-                                    let interval = taskModel.formatTimeInterval(startTime: selectedTask.taskStartTime ?? Date(),
-                                                                                endTime: selectedTask.taskEndTime ?? Date(),
-                                                                                unitStyle: .full,
-                                                                                units: [.hour, .minute])
-                                    
-                                    taskModel.isScheduledTask(selectedTask) ?
-                                        taskModel.isAllDayTask(selectedTask) ?
-                                        Text("All-day")
-                                            .font(.paragraphP1())
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.textPrimary)
-                                        : Text("\(startTime) - \(endTime) (\(interval))")
-                                            .font(.paragraphP1())
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.textPrimary)
-                                    : Text("None")
+                                    Text("\(self.intervalDuration)")
                                         .font(.paragraphP1())
                                         .fontWeight(.bold)
                                         .foregroundColor(.textPrimary)
@@ -255,7 +261,7 @@ struct TaskDetails: View {
                         Text("This task/event comes from: ")
                         .fontWeight(.semibold)
                         .foregroundColor(.textSecondary) +
-                        Text(foundCalendarSource.uppercased())
+                        Text(foundCalendarSource)
                             .fontWeight(.bold)
                             .foregroundColor(Color(selectedTask.color ?? .accent))
                     }

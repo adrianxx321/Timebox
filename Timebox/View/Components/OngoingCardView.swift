@@ -52,7 +52,7 @@ struct OngoingCardView: View {
                         
                     // Task time remaining...
                     // If it's not timeboxed then show how many tasks left instead
-                    Text(taskModel.getTimeRemaining(task: task))
+                    Text(taskModel.getTaskTimeRemaining(task: task))
                         .font(.caption())
                         .fontWeight(.semibold)
                         .foregroundColor(.textTertiary)

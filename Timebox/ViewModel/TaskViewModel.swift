@@ -44,6 +44,14 @@ class TaskViewModel: ObservableObject {
         currentWeek[currentWeek.count - 1] = lastWeekDay
     }
     
+    func updateWeek(offset: Int) {
+        let calendar = Calendar.current
+
+        currentWeek = currentWeek.map {
+            calendar.date(byAdding: .weekOfMonth, value: offset, to: $0)!
+        }
+    }
+    
     func getAllTasks(query: FetchedResults<Task>) -> [Task] {
         return query.map{$0 as Task}
     }
@@ -178,44 +186,14 @@ class TaskViewModel: ObservableObject {
         try? context.save()
     }
 
-    func updateWeek(offset: Int) {
-        let calendar = Calendar.current
-
-        currentWeek = currentWeek.map {
-            calendar.date(byAdding: .weekOfMonth, value: offset, to: $0)!
-        }
-    }
-    
-    func formatDate(date: Date, format: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = format
-        
-        return formatter.string(from: date)
-    }
-    
-    func formatTimeInterval(startTime: Date,
-                            endTime: Date,
-                            unitStyle: DateComponentsFormatter.UnitsStyle,
-                            units: NSCalendar.Unit) -> String {
-        let formatter = DateComponentsFormatter()
-        let interval = DateInterval(start: startTime, end: endTime).duration
-        
-        formatter.unitsStyle = unitStyle
-        formatter.allowedUnits = units
-        
-        return formatter.string(from: interval) ?? ""
-    }
-    
-    func getTimeRemaining(task: Task) -> String {
+    func getTaskTimeRemaining(task: Task) -> String {
         var finalResult = ""
         
         if isTimeboxedTask(task) {
-            let interval = formatTimeInterval(startTime: task.taskStartTime!,
-                                             endTime: task.taskEndTime!,
-                                             unitStyle: .full,
-                                             units: [.hour, .minute])
+            let interval = (task.taskEndTime ?? Date()) - (task.taskStartTime ?? Date())
+            let intervalString = Date.formatTimeInterval(interval, unitStyle: .full, units: [.hour, .minute]) 
             
-            finalResult = "\(interval) left"
+            finalResult = "\(intervalString) left"
         } else if isAllDayTask(task) {
             let tasksLeft = task.subtasks.count - countCompletedSubtask(task.subtasks)
             

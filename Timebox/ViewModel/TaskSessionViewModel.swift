@@ -16,7 +16,7 @@ class TaskSessionViewModel: ObservableObject {
     func getTotalTimeboxedHours(data: [TaskSession]) -> String {
         let total = data.reduce(0) { $0 + $1.focusedDuration }
         
-        return self.formatTimeInterval(interval: TimeInterval(total), unitsStyle: .abbreviated, units: [.hour, .minute])
+        return Date.formatTimeInterval(TimeInterval(total), unitStyle: .abbreviated, units: [.hour, .minute])
     }
     
     func presentGraphByWeek(data: [TaskSession]) -> [(String, Double)] {
@@ -29,7 +29,7 @@ class TaskSessionViewModel: ObservableObject {
         } else {
             // Aggregate by the day (Mon/Tue etc.) of completion
             let subset = Dictionary(grouping: data, by: {
-                formatDate(date: $0.timestamp!, format: "EEE")
+                $0.timestamp!.formatDateTime(format: "EEE")
             }).map { key, value in
                 (key, value.reduce(0) {
                     $0 + $1.focusedDuration
@@ -73,13 +73,12 @@ class TaskSessionViewModel: ObservableObject {
             return temp
         }
         
-        
         return secondPass.map { (key, value) -> (String, Double) in
             // Use weekday = 2 to tell use Monday as first weekday
             let newComponents = DateComponents(year: currentYear, month: currentMonth, weekday: 2, weekOfMonth: key) // nth week of March
             // Getting first & last day given weekOfMonth
             let firstWeekday = calendar.date(from: newComponents)!
-            let startDate = formatDate(date: firstWeekday, format: "d/M")
+            let startDate = firstWeekday.formatDateTime(format: "d/M")
             
             return ("\(startDate) -", value)
         }
@@ -92,21 +91,5 @@ class TaskSessionViewModel: ObservableObject {
         let delta = previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0
         
         return Int(delta)
-    }
-    
-    func formatDate(date: Date, format: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = format
-        
-        return formatter.string(from: date)
-    }
-    
-    func formatTimeInterval(interval: TimeInterval, unitsStyle: DateComponentsFormatter.UnitsStyle, units: NSCalendar.Unit) -> String {
-        let formatter = DateComponentsFormatter()
-        
-        formatter.unitsStyle = unitsStyle
-        formatter.allowedUnits = units
-        
-        return formatter.string(from: interval) ?? ""
     }
 }

@@ -17,8 +17,7 @@ struct DynamicAnalyticsView: View {
     @State private var showProductivityAlert: Bool = false
 
     // MARK: Data needed for analytics presentation
-    // Percentage of productivity improvement for display in summary card view
-    var percentage: Int {
+    var percentageImprove: Int {
         get {
             self.sessionModel.compareProductivity(current: currentDoneTasks, previous: previousDoneTasks)
         }
@@ -40,10 +39,9 @@ struct DynamicAnalyticsView: View {
     // String formatted in "1h 2m" etc.
     var totalDuration: [String] {
         get {
-            let totalSeconds = self.data.reduce(0) { $0 + $1.1 }
-            let formattedDuration = sessionModel.formatTimeInterval(interval: TimeInterval(totalSeconds),
-                                                                 unitsStyle: .full,
-                                                                 units: [.hour, .minute])
+            let totalSeconds = TimeInterval(self.data.reduce(0) { $0 + $1.1 })
+            let formattedDuration = Date.formatTimeInterval(totalSeconds, unitStyle: .full, units: [.hour, .minute])
+            
             return formattedDuration.components(separatedBy: " ")
         }
     }
@@ -125,22 +123,22 @@ struct DynamicAnalyticsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             // Summary card view...
-            SummaryCardView(percentage: percentage)
+            SummaryCardView(percentage: self.percentageImprove)
                 .onTapGesture {
-                    if percentage != 0 {
+                    if self.percentageImprove != 0 {
                         showProductivityAlert.toggle()
                     }
                 }
-                .alert("Productivity \(percentage > 0 ? "increased" : "decreased")",
+                .alert("Productivity \(self.percentageImprove > 0 ? "increased" : "decreased")",
                        isPresented: $showProductivityAlert,
                        actions: {}, message: {
-                    percentage > 0 ?
-                    Text("You have been able to focus for \(percentage)% longer than last \(selectedRange.rawValue).")
-                    : Text("Your ability to focus have dropped \(-percentage)% compared to last \(selectedRange.rawValue).")
+                    self.percentageImprove > 0 ?
+                    Text("You have been able to focus for \(self.percentageImprove)% longer than last \(selectedRange.rawValue).")
+                    : Text("Your ability to focus have dropped \(-self.percentageImprove)% compared to last \(selectedRange.rawValue).")
                 })
             
             // Bar graph view...
-            GraphView(data: data)
+            GraphView(data: self.data)
         }
     }
     
@@ -214,11 +212,11 @@ struct DynamicAnalyticsView: View {
                 
                 // Interval selection...
                 Menu {
-                    Button("This week") { selectedRange = .week }
-                    Button("This month") { selectedRange = .month }
+                    Button("This week") { self.selectedRange = .week }
+                    Button("This month") { self.selectedRange = .month }
                 } label: {
                     HStack(spacing: 4) {
-                        Text(selectedRange.description)
+                        Text(self.selectedRange.description)
                             .font(.caption())
                             .fontWeight(.semibold)
                         
@@ -237,8 +235,8 @@ struct DynamicAnalyticsView: View {
             // Presentation of graph...
             // Show fallback instead if graph is empty
             Group {
-                maxBarHeight > 0 ? GraphRenderer(data: data, max: Int(maxBarHeight)) : nil
-                maxBarHeight == 0 ? GraphFallback() : nil
+                self.maxBarHeight > 0 ? GraphRenderer(data: data, max: Int(maxBarHeight)) : nil
+                self.maxBarHeight == 0 ? GraphFallback() : nil
             }
             .frame(height: 128, alignment: .leading)
         }
@@ -257,10 +255,10 @@ struct DynamicAnalyticsView: View {
                         Capsule()
                             .fill(item.1 > 0 ? Color.uiLavender : Color.backgroundQuarternary)
                             .frame(width: 16)
-                            .frame(height: max > 0 ? getBarHeight(point: Int(item.1), max: max, size: proxy.size) : 0)
+                            .frame(height: max > 0 ? self.getBarHeight(point: Int(item.1), max: max, size: proxy.size) : 0)
                         
                         // Abbreviate day labels (e.g. Mon -> M)
-                        Text(selectedRange == .week ? String(item.0.first!) : item.0)
+                        Text(self.selectedRange == .week ? String(item.0.first!) : item.0)
                             .font(.caption())
                             .fontWeight(.semibold)
                             .foregroundColor(.textSecondary)
