@@ -381,9 +381,8 @@ struct Settings: View {
                                 withAnimation {
                                     check.toggle()
                                     
-                                    // Maintaining data integrity
                                     // Update calendar & event store accordingly
-                                    // Each time after selecting/deselecting a calendar.
+                                    // Each time after selecting/deselecting a calendar...
                                     eventModel.updateCalendarStore(put: check, selected: calendar)
                                     eventModel.loadCalendars()
                                     eventModel.loadEvents()

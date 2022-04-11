@@ -60,6 +60,20 @@ struct Root: View {
         }
         .padding(.bottom, GLOBAL.isNotched ? 32 : 8)
         .ignoresSafeArea(edges: .bottom)
+        .onAppear {
+            self.eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
+        }
+        // Detect any changes made to the default Calendar app
+        .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
+            withAnimation {
+                print("Calendar changed")
+                print("Current calendar permission: \(self.eventModel.syncCalendarsAllowed)")
+                // As per the instruction, so we fetch the EKCalendar again.
+                self.eventModel.loadCalendars()
+                self.eventModel.loadEvents()
+                self.eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
+            }
+        }
     }
     
     private func TabBarView() -> some View {
