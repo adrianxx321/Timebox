@@ -20,9 +20,6 @@ struct TaskDetails: View {
     @State var showMoreOptions = false
     @State var showDeleteDialog = false
     
-    // MARK: Core Data environment
-    @Environment(\.managedObjectContext) var context
-    
     // MARK: Convenient derived properties
     var canDelete: Bool {
         get {
@@ -204,7 +201,7 @@ struct TaskDetails: View {
                                 isPresented: $showDeleteDialog,
                                 titleVisibility: .visible) {
                 Button("Delete Task", role: .destructive) {
-                    taskModel.deleteTask(context: self.context, task: selectedTask)
+                    taskModel.deleteTask(task: selectedTask)
                     // Go back to previous screen after deletion...
                     presentationMode.wrappedValue.dismiss()
                 }

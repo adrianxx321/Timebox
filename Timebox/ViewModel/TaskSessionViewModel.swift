@@ -11,6 +11,8 @@ import CoreData
 class TaskSessionViewModel: ObservableObject {
     @Published var currentSession: TaskSession?
     
+    private var context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
+    
     func getAllTaskSessions(query: FetchedResults<TaskSession>) -> [TaskSession] {
         return query.map{$0 as TaskSession}
     }

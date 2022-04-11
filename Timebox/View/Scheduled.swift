@@ -10,8 +10,6 @@ import SwiftUI
 struct Scheduled: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
-    // MARK: Core Data injected environment context
-    @Environment(\.managedObjectContext) var context
     // MARK: Core Data fetch request
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
@@ -41,6 +39,10 @@ struct Scheduled: View {
             // Get scheduled task
             let filtered = taskModel.filterScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
             return filtered.filter { taskModel.isAllDayTask($0) }
+                // Sort by name first
+                .sorted(by: {$0.taskTitle! < $1.taskTitle! })
+                // Then importance
+                .sorted(by: {$0.isImportant && !$1.isImportant })
         }
     }
     
@@ -77,6 +79,17 @@ struct Scheduled: View {
                                           caption2: "Tap the plus button to create a new task.")
                     } else {
                         TaskListView().padding(.bottom, 32)
+                    }
+                }
+                // Detect any changes made to the default Calendar app
+                .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
+                    withAnimation {
+                        print("Calendar changed")
+                        print("Current calendar permission: \(self.eventModel.syncCalendarsAllowed)")
+                        // As per the instruction, so we fetch the EKCalendar again.
+                        self.eventModel.loadCalendars()
+                        self.eventModel.loadEvents()
+                        self.eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
                     }
                 }
             }

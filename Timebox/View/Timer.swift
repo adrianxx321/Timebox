@@ -16,8 +16,6 @@ struct Timer: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    // MARK: Core Data injected environment context
-    @Environment(\.managedObjectContext) var context
     // MARK: Core Data request
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     // MARK: ViewModels
@@ -196,7 +194,7 @@ struct Timer: View {
             } else {
                 // For singleton task
                 CTAButton(btnLabel: "Complete Task", btnFullSize: true) {
-                    self.taskModel.completeTask(currentTask, context: self.context)
+                    self.taskModel.completeTask(currentTask)
                 }
             }
         }

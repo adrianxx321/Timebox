@@ -14,8 +14,6 @@ struct FlatLinkStyle: ButtonStyle {
 }
 
 struct TaskCardView: View {
-    // MARK: Core Data environment
-    @Environment(\.managedObjectContext) var context
     // MARK: Dependencies (CD object)
     @ObservedObject var task: Task
     // MARK: ViewModels
@@ -79,7 +77,7 @@ struct TaskCardView: View {
                     Button("Delete Task", role: .destructive) {
                         withAnimation {
                             dragOffset = 0
-                            taskModel.deleteTask(context: self.context, task: self.task)
+                            taskModel.deleteTask(task: self.task)
                         }
                     }
                 } : nil
@@ -152,7 +150,7 @@ struct TaskCardView: View {
                     Button {
                         withAnimation() {
                             // Perform update onto Core Data...
-                            taskModel.completeTask(self.task, context: self.context)
+                            taskModel.completeTask(self.task)
                         }
                     } label: {
                         Image(task.isCompleted ? "checked" : "unchecked")

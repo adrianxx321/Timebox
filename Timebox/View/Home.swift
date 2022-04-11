@@ -27,12 +27,9 @@ enum GraphRange {
 struct Home: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
-    // MARK: Core Data injected environment context
-    @Environment(\.managedObjectContext) var context
     // MARK: ViewModels
     @StateObject var achievementModel = AchievementsViewModel()
     @ObservedObject var taskModel = TaskViewModel()
-    @ObservedObject var eventModel = EventViewModel()
     // MARK: Core Data fetch requests
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @FetchRequest var timeboxSessions: FetchedResults<TaskSession>
@@ -100,19 +97,6 @@ struct Home: View {
                             }
                         }
                         .frame(maxHeight: 128)
-//                        .onAppear {
-//                            withAnimation {
-//                                eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
-//                            }
-//                        }
-                        .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
-                            withAnimation {
-                                // As per the instruction, so we fetch the EKCalendar again.
-                                eventModel.loadCalendars()
-                                eventModel.loadEvents()
-                                eventModel.updatePersistedEventStore(context: self.context, persistentTaskStore: self.allTasks)
-                            }
-                        }
                         
                         // Analytics...
                         SectionView(title: "Statistics") {

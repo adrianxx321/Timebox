@@ -26,8 +26,6 @@ private enum TaskDuration: String, CaseIterable, Identifiable {
 }
 
 struct TaskModal: View {
-    // MARK: Core Data Context
-    @Environment(\.managedObjectContext) var context
     // MARK: ViewModels
     @EnvironmentObject var taskModel: TaskViewModel
     // MARK: Dismissal action for modal pop up
@@ -152,7 +150,7 @@ struct TaskModal: View {
                             HStack(spacing: 16) {
                                 Button {
                                     withAnimation {
-                                        self.subtasks.append(taskModel.addSubtask(context: self.context))
+                                        self.subtasks.append(taskModel.addSubtask())
                                     }
                                 } label: {
                                     Image("add")
@@ -308,7 +306,7 @@ struct TaskModal: View {
                                     // Start & end time will always be 0000 & 2359
                                     guard let existingTask = taskModel.editTask else {
                                         self.taskStartTime = Calendar.current.startOfDay(for: Date())
-                                        self.taskEndTime = taskEndTime!.getOneMinToMidnight()
+                                        self.taskEndTime = taskStartTime!.getOneMinToMidnight()
                                         
                                         return
                                     }
@@ -413,8 +411,7 @@ struct TaskModal: View {
                         // Create new task...
                         if let task = taskModel.editTask {
                             // Edit existing task...
-                            taskModel.updateTask(context: self.context,
-                                                 task: task,
+                            taskModel.updateTask(task: task,
                                                  self.taskTitle,
                                                  self.subtasks,
                                                  self.taskLabel,
@@ -423,8 +420,7 @@ struct TaskModal: View {
                                                  self.taskStartTime,
                                                  self.taskEndTime)
                         } else {
-                            taskModel.addTask(context: self.context,
-                                              id: self.id,
+                            taskModel.addTask(id: self.id,
                                               self.taskTitle,
                                               self.subtasks,
                                               self.taskLabel,

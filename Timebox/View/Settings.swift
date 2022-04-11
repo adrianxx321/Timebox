@@ -17,8 +17,6 @@ import EventKit
 struct Settings: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
-    // MARK: Core Data injected environment context
-    @Environment(\.managedObjectContext) var context
     // MARK: Core Data fetch requests
     @FetchRequest private var fetchedTasks: FetchedResults<Task>
     @FetchRequest private var fetchedSessions: FetchedResults<TaskSession>
@@ -41,17 +39,17 @@ struct Settings: View {
     // MARK: Data prepared from CD fetch
     private var allTasks: [Task] {
         get {
-            taskModel.getAllTasks(query: self.fetchedTasks)
+            self.taskModel.getAllTasks(query: self.fetchedTasks)
         }
     }
     private var allTaskSession: [TaskSession] {
         get {
-            return sessionModel.getAllTaskSessions(query: self.fetchedSessions)
+            return self.sessionModel.getAllTaskSessions(query: self.fetchedSessions)
         }
     }
     private var completedTasks: [Task] {
         get {
-            return taskModel.filterAllCompletedTasks(data: self.allTasks)
+            return self.taskModel.filterAllCompletedTasks(data: self.allTasks)
         }
     }
     private var totalCompleted: Int {
@@ -61,7 +59,7 @@ struct Settings: View {
     }
     private var totalHours: String {
         get {
-            return sessionModel.getTotalTimeboxedHours(data: self.allTaskSession)
+            return self.sessionModel.getTotalTimeboxedHours(data: self.allTaskSession)
         }
     }
     // MARK: Calendars aggregated by sources
@@ -184,6 +182,15 @@ struct Settings: View {
             .navigationBarHidden(true)
         }
         .navigationBarHidden(true)
+        // Loads the imported tasks if calendar permission is granted
+        .onChange(of: self.eventModel.syncCalendarsAllowed) { _ in
+            withAnimation {
+                print("Permission changed: Calendar \(eventModel.syncCalendarsAllowed)")
+                self.eventModel.loadCalendars()
+                self.eventModel.loadEvents()
+                self.eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
+            }
+        }
     }
     
     private func AvatarPage() -> some View {
@@ -380,7 +387,7 @@ struct Settings: View {
                                     eventModel.updateCalendarStore(put: check, selected: calendar)
                                     eventModel.loadCalendars()
                                     eventModel.loadEvents()
-                                    eventModel.updatePersistedEventStore(context: self.context, persistentTaskStore: self.allTasks)
+                                    eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
                                 }
                             } label: {
                                 icon

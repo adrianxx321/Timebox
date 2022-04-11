@@ -20,6 +20,10 @@ struct Backlog: View {
     var backlogTasks: [Task] {
         get {
             let tasks = self.fetchedBacklog.map { $0 as Task }
+                // Sort by name first
+                .sorted(by: {$0.taskTitle! < $1.taskTitle! })
+                // Then importance
+                .sorted(by: {$0.isImportant && !$1.isImportant })
             
             return hideCompletedTasks ? tasks.filter{ !$0.isCompleted } : tasks
         }

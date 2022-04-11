@@ -10,8 +10,6 @@ import SwiftUI
 struct Root: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
-    // MARK: Core Data injected environment context
-    @Environment(\.managedObjectContext) var context
     // MARK: Core Data fetch request
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     // MARK: ViewModels
@@ -20,7 +18,6 @@ struct Root: View {
     @ObservedObject var sessionModel = TaskSessionViewModel()
     // Using icon name to identify tab...
     @State var currentTab = "home"
-    @AppStorage("syncCalendarsAllowed") var syncCalendarsAllowed = false
     
     // Hiding native one...
     init() {
@@ -33,7 +30,7 @@ struct Root: View {
     
     private var allTasks: [Task] {
         get {
-            taskModel.getAllTasks(query: self.fetchedTasks)
+            self.taskModel.getAllTasks(query: self.fetchedTasks)
         }
     }
     
@@ -57,15 +54,7 @@ struct Root: View {
                     .tag("more")
                     .environmentObject(self.GLOBAL)
             }
-            // Detect any changes made to the default Calendar app
-            .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
-                withAnimation {
-                    // As per the instruction, so we fetch the EKCalendar again.
-                    eventModel.loadCalendars()
-                    eventModel.loadEvents()
-                }
-            }
-            
+
             // Custom Tab Bar...
             TabBarView()
         }

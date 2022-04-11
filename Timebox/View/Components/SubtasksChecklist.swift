@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct SubtasksChecklist: View {
-    // MARK: Core Data environment
-    @Environment(\.managedObjectContext) var context
     // MARK: ViewModels
     @ObservedObject private var taskModel = TaskViewModel()
     // MARK: Dependency (CD Object)
@@ -22,7 +20,7 @@ struct SubtasksChecklist: View {
                     // Checkbox for subtask completion...
                     Button {
                         withAnimation {
-                            taskModel.completeSubtask(parentTask: self.parentTask, subtask: subtask, context: self.context)
+                            taskModel.completeSubtask(parentTask: self.parentTask, subtask: subtask)
                         }
                     } label: {
                         Image(subtask.isCompleted ? "checked" : "unchecked")

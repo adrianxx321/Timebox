@@ -15,6 +15,8 @@ class TaskViewModel: ObservableObject {
     @Published var editTask: Task?
     @Published var currentDay = Date()
     
+    private var context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
+    
     // Get current week...
     init() {
         let today = Date()
@@ -92,17 +94,16 @@ class TaskViewModel: ObservableObject {
         }
     }
     
-    func addTask(context: NSManagedObjectContext, id: UUID,
-                 _ taskTitle: String, _ subtasks: [Subtask],
-                 _ taskLabel: String, _ color: UIColor,
-                 _ isImportant: Bool, _ taskStartTime: Date?,
-                 _ taskEndTime: Date?) {
-        let task = Task(context: context)
+    func addTask(id: UUID, _ taskTitle: String,
+                 _ subtasks: [Subtask], _ taskLabel: String,
+                 _ color: UIColor, _ isImportant: Bool,
+                 _ taskStartTime: Date?, _ taskEndTime: Date?) {
+        let task = Task(context: self.context)
         task.id = id
         task.taskTitle = taskTitle
         
         subtasks.forEach { subtask in
-            let newSubtask = Subtask(context: context)
+            let newSubtask = Subtask(context: self.context)
             newSubtask.subtaskTitle = subtask.subtaskTitle
             newSubtask.timestamp = subtask.timestamp
             newSubtask.isCompleted = subtask.isCompleted
@@ -119,10 +120,10 @@ class TaskViewModel: ObservableObject {
         // This is for imported event from Calendar API
         task.ekeventID = nil
         
-        try? context.save()
+        try? self.context.save()
     }
     
-    func addSubtask(context: NSManagedObjectContext) -> Subtask {
+    func addSubtask() -> Subtask {
         let newSubtask = Subtask(context: context)
         newSubtask.subtaskTitle = ""
         newSubtask.timestamp = Date()
@@ -132,11 +133,9 @@ class TaskViewModel: ObservableObject {
         return newSubtask
     }
     
-    func updateTask(context: NSManagedObjectContext, task: Task,
-                    _ taskTitle: String, _ subtasks: [Subtask],
-                    _ taskLabel: String, _ color: UIColor,
-                    _ isImportant: Bool, _ taskStartTime: Date?,
-                    _ taskEndTime: Date?) {
+    func updateTask(task: Task, _ taskTitle: String, _ subtasks: [Subtask],
+                    _ taskLabel: String, _ color: UIColor, _ isImportant: Bool,
+                    _ taskStartTime: Date?, _ taskEndTime: Date?) {
         task.taskTitle = taskTitle
         
         // Remove all old subtasks before reinserting new ones
@@ -156,23 +155,23 @@ class TaskViewModel: ObservableObject {
         task.taskStartTime = taskStartTime
         task.taskEndTime = taskEndTime
         
-        try? context.save()
+        try? self.context.save()
     }
     
-    func deleteTask(context: NSManagedObjectContext, task: Task) {
+    func deleteTask(task: Task) {
         context.delete(task)
         
-        try? context.save()
+        try? self.context.save()
     }
     
-    func completeTask(_ task: Task, context: NSManagedObjectContext) {
+    func completeTask(_ task: Task) {
         task.isCompleted.toggle()
         
         // Save to Core Data
-        try? context.save()
+        try? self.context.save()
     }
     
-    func completeSubtask(parentTask: Task, subtask: Subtask, context: NSManagedObjectContext) {
+    func completeSubtask(parentTask: Task, subtask: Subtask) {
         // We need this "magic" to overcome the fact that Core Data can't handle view update on to-many entities...
         parentTask.objectWillChange.send()
         subtask.isCompleted.toggle()
@@ -183,7 +182,7 @@ class TaskViewModel: ObservableObject {
             .contains(where: { !$0.isCompleted })
         
         // Save to Core Data...
-        try? context.save()
+        try? self.context.save()
     }
 
     func getTaskTimeRemaining(task: Task) -> String {
