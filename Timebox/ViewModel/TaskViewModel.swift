@@ -120,7 +120,11 @@ class TaskViewModel: ObservableObject {
         // This is for imported event from Calendar API
         task.ekeventID = nil
         
-        try? self.context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
     
     func addSubtask() -> Subtask {
@@ -155,20 +159,32 @@ class TaskViewModel: ObservableObject {
         task.taskStartTime = taskStartTime
         task.taskEndTime = taskEndTime
         
-        try? self.context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
     
     func deleteTask(task: Task) {
         context.delete(task)
         
-        try? self.context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
     
     func completeTask(_ task: Task) {
         task.isCompleted.toggle()
         
         // Save to Core Data
-        try? self.context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
     
     func completeSubtask(parentTask: Task, subtask: Subtask) {
@@ -182,7 +198,11 @@ class TaskViewModel: ObservableObject {
             .contains(where: { !$0.isCompleted })
         
         // Save to Core Data...
-        try? self.context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
 
     func getTaskTimeRemaining(task: Task) -> String {

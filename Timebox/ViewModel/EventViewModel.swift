@@ -131,7 +131,7 @@ class EventViewModel: ObservableObject {
         }
 
         if let updatedEvents = self.shouldUpdateEvents(persistentTaskStore) {
-            self.updateEvents(updatedEvents)
+            self.updateEvents(persistedTaskStore: persistentTaskStore, updatedEvents: updatedEvents)
             print("Updated \(updatedEvents.count) events")
         }
     }
@@ -225,21 +225,29 @@ class EventViewModel: ObservableObject {
         return editedEvents.isEmpty ? nil : editedEvents
     }
 
-    private func updateEvents(_ events: [Task]) {
-        events.forEach { event in
-            if let updatedTask = self.context.object(with: event.objectID) as? Task {
-                updatedTask.taskTitle = event.taskTitle
-                updatedTask.taskLabel = event.taskLabel
-                updatedTask.color = event.color
-                updatedTask.taskStartTime = event.taskStartTime
-                updatedTask.taskEndTime = event.taskEndTime
-                
-                do {
-                    try self.context.save()
-                } catch let error {
-                    print(error)
+    private func updateEvents(persistedTaskStore: [Task], updatedEvents: [Task]) {
+        // Note: <events> is the source of truth
+        // Our target is to modify the persisted context
+        persistedTaskStore.forEach { existing in
+            updatedEvents.forEach { updated in
+                if existing.ekeventID == updated.ekeventID {
+                    guard let updatedTask = self.context.object(with: existing.objectID) as? Task else {
+                        return
+                    }
+                    
+                    updatedTask.taskTitle = updated.taskTitle
+                    updatedTask.taskLabel = updated.taskLabel
+                    updatedTask.color = updated.color
+                    updatedTask.taskStartTime = updated.taskStartTime
+                    updatedTask.taskEndTime = updated.taskEndTime
                 }
             }
+        }
+        
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
         }
     }
 
