@@ -23,7 +23,7 @@ class EventViewModel: ObservableObject {
     @AppStorage("isfirstTimeSelect") private var isFirstTimeSelect = true
     // Singleton EventKit API accessor
     static let CalendarAccessor = EKEventStore()
-    
+    // MARK: Core Data shared context
     private var context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
     
     init() {
@@ -168,6 +168,7 @@ class EventViewModel: ObservableObject {
             self.context.insert(newTask)
         }
         
+        // Save to Core Data
         do {
             try self.context.save()
         } catch let error {
@@ -195,6 +196,7 @@ class EventViewModel: ObservableObject {
             self.context.delete(removedTask)
         }
         
+        // Save to Core Data
         do {
             try self.context.save()
         } catch let error {
@@ -244,6 +246,7 @@ class EventViewModel: ObservableObject {
             }
         }
         
+        // Save to Core Data
         do {
             try self.context.save()
         } catch let error {

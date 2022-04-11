@@ -14,7 +14,7 @@ extension Date {
     }
     
     /// Returns formatted time duration from TimeInterval
-    static func formatTimeInterval(_ interval: TimeInterval,
+    static func formatTimeDuration(_ interval: TimeInterval,
                                    unitStyle: DateComponentsFormatter.UnitsStyle,
                                    units: NSCalendar.Unit) -> String {
         let formatter = DateComponentsFormatter()

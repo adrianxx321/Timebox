@@ -52,7 +52,7 @@ struct TaskDetails: View {
                 let startTimeFormatted = startTime.formatDateTime(format: "hh:mm a")
                 let endTimeFormatted = endTime.formatDateTime(format: "hh:mm a")
                 let duration = endTime - startTime
-                let intervalFormated = Date.formatTimeInterval(duration, unitStyle: .full, units: [.hour, .minute])
+                let intervalFormated = Date.formatTimeDuration(duration, unitStyle: .full, units: [.hour, .minute])
                 
                 return "\(startTimeFormatted) - \(endTimeFormatted) (\(intervalFormated))"
             }
@@ -244,7 +244,7 @@ struct TaskDetails: View {
             // Indicate if task comes from imported calendar...
             if let ekEventID = selectedTask.ekeventID {
                 let foundEvent = eventModel.lookupCalendarEvent(ekEventID)
-                let foundCalendarSource = foundEvent?.calendar.source.title ?? "Calendar"
+                let foundCalendarSource = foundEvent?.calendar.source.title ?? "Unknown Calendar"
                 
                 HStack(spacing: 8) {
                     Image("alert")
@@ -258,7 +258,7 @@ struct TaskDetails: View {
                         Text("This task/event comes from: ")
                         .fontWeight(.semibold)
                         .foregroundColor(.textSecondary) +
-                        Text(foundCalendarSource)
+                        Text("\(foundCalendarSource) Calendar")
                             .fontWeight(.bold)
                             .foregroundColor(Color(selectedTask.color ?? .accent))
                     }

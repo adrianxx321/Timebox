@@ -16,7 +16,7 @@ struct Timer: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    // MARK: Core Data request
+    // MARK: Core Data fetch request
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     // MARK: ViewModels
     @ObservedObject private var taskModel = TaskViewModel()
@@ -26,11 +26,14 @@ struct Timer: View {
     @State private var start = false
     @State private var pause = false
     @State private var abort = false
-    @State private var timerProgress : CGFloat = 0 // Circular progress bar percentage
+    // Circular progress bar percentage
+    @State private var timerProgress : CGFloat = 0
     @State private var subtaskProgress: CGFloat = 0
-    @State private var countedSeconds: Double = 0 // Timer counter (in seconds, to match with data model's)
+    // Timer counter (in seconds, to match with data model's)
+    @State private var countedSeconds: Double = 0
     @State private var isMuted = false
-    @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect() // Publish something every 1 second
+    // Publish something every 1 second
+    @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     init() {
         _fetchedTasks = FetchRequest(
@@ -39,14 +42,14 @@ struct Timer: View {
     }
     
     // MARK: Convenient derived properties
-    var currentTask: Task? {
+    private var currentTask: Task? {
         get {
             let allTasks = self.taskModel.getAllTasks(query: self.fetchedTasks)
             
             return allTasks.filter{self.taskModel.isTimeboxedTask($0)}.filter{self.taskModel.isOngoing($0)}.first
         }
     }
-    var originalDuration: Double {
+    private var originalDuration: Double {
         get {
             guard let currentTask = self.currentTask else {
                 return 0
@@ -55,7 +58,18 @@ struct Timer: View {
             return (currentTask.taskEndTime ?? Date()) - (currentTask.taskStartTime ?? Date())
         }
     }
-    var pomodoroSessions: [Double] {
+    private var timeRemaining: String {
+        get {
+            if let currentTask = currentTask {
+                let remaining = currentTask.taskEndTime! - Date()
+                
+                return Date(timeInterval: remaining, since: currentTask.taskEndTime!).formatDateTime(format: "mm:ss")
+            } else {
+                return ""
+            }
+        }
+    }
+    private var pomodoroSessions: [Double] {
         get {
             var sessions: [Double] = []
             guard self.currentTask != nil else {
@@ -186,10 +200,7 @@ struct Timer: View {
                     HorizontalProgressBar(currentTask)
                     
                     // Subtasks checklist...
-                    ScrollView(.vertical, showsIndicators: false) {
-                        SubtasksChecklist(parentTask: currentTask)
-                    }
-                    .frame(height: 128)
+                    SubtasksChecklist(parentTask: currentTask)
                 }.frame(maxWidth: .infinity)
             } else {
                 // For singleton task
@@ -271,15 +282,16 @@ struct Timer: View {
                 // Timing information
                 VStack(spacing: 8) {
                     // TODO: Time remaining...
-                    Text("6:15")
+                    Text(self.timeRemaining)
                         .font(.headingH0())
                         .fontWeight(.heavy)
                     
-                    // TODO: Number of sessions, if using pomodoro mode...
+                    // Number of sessions, if using pomodoro mode...
+                    self.selectedMode == .pomodoro ?
                     Text("1 of 3 sessions")
                         .font(.paragraphP1())
                         .fontWeight(.bold)
-                        .foregroundColor(.textSecondary)
+                        .foregroundColor(.textSecondary) : nil
                 }
             }
         }

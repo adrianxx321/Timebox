@@ -9,18 +9,39 @@ import SwiftUI
 import CoreData
 
 class TaskSessionViewModel: ObservableObject {
-    @Published var currentSession: TaskSession?
-    
+    // MARK: Core Data shared context
     private var context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
     
     func getAllTaskSessions(query: FetchedResults<TaskSession>) -> [TaskSession] {
         return query.map{$0 as TaskSession}
     }
     
+    func saveSession(task: Task, focusedDuration: Double, usedPomodoro: Bool) {
+        
+        let newSession = TaskSession(context: self.context)
+        newSession.id = UUID()
+        newSession.task = task
+        newSession.timestamp = Date()
+        newSession.focusedDuration = focusedDuration
+        newSession.ptsAwarded = self.computeScore(focusedDuration, usedPomodoro)
+            
+        // Save to Core Data
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
+    }
+    
+    /// System for calculating points awarded from timeboxing
+    private func computeScore(_ focusedDuration: Double, _ usedPomodoro: Bool) -> Int32 {
+        return 0
+    }
+    
     func getTotalTimeboxedHours(data: [TaskSession]) -> String {
         let total = data.reduce(0) { $0 + $1.focusedDuration }
         
-        return Date.formatTimeInterval(TimeInterval(total), unitStyle: .abbreviated, units: [.hour, .minute])
+        return Date.formatTimeDuration(TimeInterval(total), unitStyle: .abbreviated, units: [.hour, .minute])
     }
     
     func presentGraphByWeek(data: [TaskSession]) -> [(String, Double)] {

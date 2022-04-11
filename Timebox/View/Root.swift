@@ -60,10 +60,11 @@ struct Root: View {
         }
         .padding(.bottom, GLOBAL.isNotched ? 32 : 8)
         .ignoresSafeArea(edges: .bottom)
+        // Load the events added when app was closed upon launching the app...
         .onAppear {
             self.eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
         }
-        // Detect any changes made to the default Calendar app
+        // Detect any changes made to the default Calendar app (in background)
         .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
             withAnimation {
                 print("Calendar changed")
@@ -119,6 +120,7 @@ struct Root: View {
             .shadow(color: .backgroundQuarternary, radius: 4, x: 0, y: 0)
             // Cover up the unwanted top shadow
             .mask(Rectangle().padding(.top, -8)))
+        // Brings up the add task modal
         .sheet(isPresented: $taskModel.addNewTask) {
             // Clearing Edit Data
             taskModel.editTask = nil

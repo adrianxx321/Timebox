@@ -14,7 +14,7 @@ class TaskViewModel: ObservableObject {
     @Published var addNewTask: Bool = false
     @Published var editTask: Task?
     @Published var currentDay = Date()
-    
+    // MARK: Core Data shared context
     private var context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
     
     // Get current week...
@@ -210,7 +210,7 @@ class TaskViewModel: ObservableObject {
         
         if isTimeboxedTask(task) {
             let interval = (task.taskEndTime ?? Date()) - (task.taskStartTime ?? Date())
-            let intervalString = Date.formatTimeInterval(interval, unitStyle: .full, units: [.hour, .minute]) 
+            let intervalString = Date.formatTimeDuration(interval, unitStyle: .short, units: [.hour]) 
             
             finalResult = "\(intervalString) left"
         } else if isAllDayTask(task) {
