@@ -18,5 +18,3 @@ struct TimeboxApp: App {
         }
     }
 }
-
-//PersistenceController.shared.container.viewContext

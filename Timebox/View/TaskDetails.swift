@@ -28,7 +28,8 @@ struct TaskDetails: View {
     }
     var canEdit: Bool {
         get {
-            !taskModel.isOverdue(self.selectedTask)
+//            !taskModel.isOverdue(self.selectedTask)
+            true
         }
     }
     var taskDateFormatted: String {

@@ -31,7 +31,8 @@ struct TaskCardView: View {
     }
     var canEdit: Bool {
         get {
-            !taskModel.isOverdue(self.task)
+//            !taskModel.isOverdue(self.task)
+            true
         }
     }
     var interval: String? {

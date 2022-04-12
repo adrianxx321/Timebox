@@ -16,7 +16,7 @@ struct Timer: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    // MARK: Core Data fetch request
+    // MARK: Core Data fetch request & result
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     // MARK: ViewModels
     @ObservedObject private var taskModel = TaskViewModel()
@@ -35,18 +35,22 @@ struct Timer: View {
     // Publish something every 1 second
     @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
+    @State private var timeRemaining: String = "00:00"
+    @State private var currentPomoSession: Int = 1
+    
     init() {
         _fetchedTasks = FetchRequest(
             entity: Task.entity(),
-            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: false)])
+            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: true)])
     }
     
     // MARK: Convenient derived properties
     private var currentTask: Task? {
         get {
-            let allTasks = self.taskModel.getAllTasks(query: self.fetchedTasks)
-            
-            return allTasks.filter{self.taskModel.isTimeboxedTask($0)}.filter{self.taskModel.isOngoing($0)}.first
+            self.taskModel.getAllTasks(query: self.fetchedTasks)
+                .filter({self.taskModel.isTimeboxedTask($0)})
+                .filter({self.taskModel.isOngoing($0)})
+                .first
         }
     }
     private var originalDuration: Double {
@@ -58,17 +62,6 @@ struct Timer: View {
             return (currentTask.taskEndTime ?? Date()) - (currentTask.taskStartTime ?? Date())
         }
     }
-    private var timeRemaining: String {
-        get {
-            if let currentTask = currentTask {
-                let remaining = currentTask.taskEndTime! - Date()
-                
-                return Date(timeInterval: remaining, since: currentTask.taskEndTime!).formatDateTime(format: "mm:ss")
-            } else {
-                return ""
-            }
-        }
-    }
     private var pomodoroSessions: [Double] {
         get {
             var sessions: [Double] = []
@@ -77,7 +70,7 @@ struct Timer: View {
             }
             
             // How many rounds of pomodoro
-            let rounds = Int(self.originalDuration) / 25
+            let rounds = Int(self.originalDuration) / (25 * 60)
             let remainder = self.originalDuration.truncatingRemainder(dividingBy: 25 * 60)
             
             (1...rounds).forEach { round in
@@ -282,17 +275,28 @@ struct Timer: View {
                 // Timing information
                 VStack(spacing: 8) {
                     // TODO: Time remaining...
-                    Text(self.timeRemaining)
-                        .font(.headingH0())
+                    Text(self.timeRemaining )
+                        .font(self.selectedMode == .normal ? .headingH1() : .headingH0())
                         .fontWeight(.heavy)
                     
                     // Number of sessions, if using pomodoro mode...
                     self.selectedMode == .pomodoro ?
-                    Text("1 of 3 sessions")
+                    Text("\(self.currentPomoSession) of \(self.pomodoroSessions.count) sessions")
                         .font(.paragraphP1())
                         .fontWeight(.bold)
                         .foregroundColor(.textSecondary) : nil
                 }
+            }
+        }
+        .onReceive(self.time) { _ in
+            // Assigning time remaining state...
+            // Depending on pomodoro or normal timer
+            let remaining = task.taskEndTime! - Date()
+            self.timeRemaining = Date.formatTimeDuration(remaining, unitStyle: .positional, units: [.hour, .minute, .second])
+            
+            // Let the timer runs in background...
+            withAnimation {
+                self.timerProgress = (self.originalDuration - remaining) / self.originalDuration
             }
         }
     }

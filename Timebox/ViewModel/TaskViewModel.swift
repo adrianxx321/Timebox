@@ -209,8 +209,8 @@ class TaskViewModel: ObservableObject {
         var finalResult = ""
         
         if isTimeboxedTask(task) {
-            let interval = (task.taskEndTime ?? Date()) - (task.taskStartTime ?? Date())
-            let intervalString = Date.formatTimeDuration(interval, unitStyle: .short, units: [.hour]) 
+            let interval = (task.taskEndTime ?? Date()) - Date()
+            let intervalString = Date.formatTimeDuration(interval, unitStyle: .short, units: [.hour, .minute]) 
             
             finalResult = "\(intervalString) left"
         } else if isAllDayTask(task) {

@@ -51,6 +51,7 @@
 		B5BE6CD6280156B20016E75A /* SubtasksChecklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5BE6CD5280156B20016E75A /* SubtasksChecklist.swift */; };
 		B5C1D9E027D3469C00E0D73E /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */; };
 		B5C26FE1280086F1002CADDD /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C26FE0280086F1002CADDD /* Timer.swift */; };
+		B5CB0FBF280573680071D8A7 /* TimeInterval+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CB0FBE280573680071D8A7 /* TimeInterval+extension.swift */; };
 		B5CD0AEB27F9D5A100D33D87 /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */; };
 		B5CD0AED27F9DC4100D33D87 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */; };
 		B5D152F927D082E10073421B /* TaskCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D152F827D082E10073421B /* TaskCardView.swift */; };
@@ -118,6 +119,7 @@
 		B5BE6CD5280156B20016E75A /* SubtasksChecklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtasksChecklist.swift; sourceTree = "<group>"; };
 		B5C1D9DF27D3469C00E0D73E /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
 		B5C26FE0280086F1002CADDD /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		B5CB0FBE280573680071D8A7 /* TimeInterval+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+extension.swift"; sourceTree = "<group>"; };
 		B5CD0AEA27F9D5A100D33D87 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
 		B5CD0AEC27F9DC4100D33D87 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		B5D152F827D082E10073421B /* TaskCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCardView.swift; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 				B5F39DA727F1EA6D00878579 /* Binding+extension.swift */,
 				B567D3FE27F340B200BB469F /* UIViewController+extension.swift */,
 				B5257925280200CF00B7B005 /* Date+extension.swift */,
+				B5CB0FBE280573680071D8A7 /* TimeInterval+extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -408,6 +411,7 @@
 				B5CD0AED27F9DC4100D33D87 /* NotificationViewModel.swift in Sources */,
 				B5B43B4227F0B2E500136E73 /* Root.swift in Sources */,
 				B5B43B3D27F0677500136E73 /* Task.swift in Sources */,
+				B5CB0FBF280573680071D8A7 /* TimeInterval+extension.swift in Sources */,
 				B51B3C4F27C79CD1001CD692 /* Login.swift in Sources */,
 				B5F39DA827F1EA6D00878579 /* Binding+extension.swift in Sources */,
 				B5015D2227F6107200D01DB6 /* MailView.swift in Sources */,

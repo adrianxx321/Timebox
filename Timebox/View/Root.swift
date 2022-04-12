@@ -19,15 +19,16 @@ struct Root: View {
     // Using icon name to identify tab...
     @State var currentTab = "home"
     
-    // Hiding native one...
     init() {
         _fetchedTasks = FetchRequest(
             entity: Task.entity(),
             sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: true)])
         
+        // Hiding native one...
         UITabBar.appearance().isHidden = true
     }
     
+    // MARK: Convenient derived properties
     private var allTasks: [Task] {
         get {
             self.taskModel.getAllTasks(query: self.fetchedTasks)
