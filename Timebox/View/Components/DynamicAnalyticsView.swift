@@ -40,7 +40,8 @@ struct DynamicAnalyticsView: View {
     var totalDuration: [String] {
         get {
             let totalSeconds = TimeInterval(self.data.reduce(0) { $0 + $1.1 })
-            let formattedDuration = Date.formatTimeDuration(totalSeconds, unitStyle: .full, units: [.hour, .minute])
+            let formattedDuration = Date.formatTimeDuration(totalSeconds, unitStyle: .full,
+                                                            units: [.hour, .minute], padding: nil)
             
             return formattedDuration.components(separatedBy: " ")
         }

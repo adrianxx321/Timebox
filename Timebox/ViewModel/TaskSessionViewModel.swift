@@ -7,8 +7,10 @@
 
 import SwiftUI
 import CoreData
+import AVFoundation
 
 class TaskSessionViewModel: ObservableObject {
+    private var audioPlayer: AVAudioPlayer?
     // MARK: Core Data shared context
     private var context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
     
@@ -16,14 +18,14 @@ class TaskSessionViewModel: ObservableObject {
         return query.map{$0 as TaskSession}
     }
     
-    func saveSession(task: Task, focusedDuration: Double, usedPomodoro: Bool) {
+    func saveSession(task: Task, focusedDuration: Double, completedProgress: CGFloat, usedPomodoro: Bool) {
         
         let newSession = TaskSession(context: self.context)
         newSession.id = UUID()
         newSession.task = task
         newSession.timestamp = Date()
         newSession.focusedDuration = focusedDuration
-        newSession.ptsAwarded = self.computeScore(focusedDuration, usedPomodoro)
+        newSession.ptsAwarded = self.computeScore(focusedDuration, completedProgress, usedPomodoro)
             
         // Save to Core Data
         do {
@@ -33,15 +35,46 @@ class TaskSessionViewModel: ObservableObject {
         }
     }
     
+    func playWhiteNoise(_ play: Bool) {
+        let sound = UserDefaults.standard.string(forKey: "whiteNoise") ?? "Ticking"
+        guard let data = NSDataAsset(name: sound)?.data else { return }
+
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            self.audioPlayer = try AVAudioPlayer(data: data)
+
+            /* iOS 10 and earlier require the following line:
+            player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileTypeMPEGLayer3) */
+
+            guard let player = self.audioPlayer else { return }
+            // Plays the white noise in loop
+            player.numberOfLoops =  -1
+            
+            if play {
+                player.play()
+            } else {
+                player.pause()
+            }
+
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
     /// System for calculating points awarded from timeboxing
-    private func computeScore(_ focusedDuration: Double, _ usedPomodoro: Bool) -> Int32 {
+    private func computeScore(_ focusedDuration: Double, _ completedProgress: CGFloat
+                              , _ usedPomodoro: Bool) -> Int32 {
         return 0
     }
     
     func getTotalTimeboxedHours(data: [TaskSession]) -> String {
         let total = data.reduce(0) { $0 + $1.focusedDuration }
         
-        return Date.formatTimeDuration(TimeInterval(total), unitStyle: .abbreviated, units: [.hour, .minute])
+        return Date.formatTimeDuration(TimeInterval(total), unitStyle: .abbreviated,
+                                       units: [.hour, .minute], padding: nil)
     }
     
     func presentGraphByWeek(data: [TaskSession]) -> [(String, Double)] {

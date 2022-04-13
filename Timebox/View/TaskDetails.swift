@@ -53,7 +53,8 @@ struct TaskDetails: View {
                 let startTimeFormatted = startTime.formatDateTime(format: "hh:mm a")
                 let endTimeFormatted = endTime.formatDateTime(format: "hh:mm a")
                 let duration = endTime - startTime
-                let intervalFormated = Date.formatTimeDuration(duration, unitStyle: .full, units: [.hour, .minute])
+                let intervalFormated = Date.formatTimeDuration(duration, unitStyle: .full,
+                                                               units: [.hour, .minute], padding: nil)
                 
                 return "\(startTimeFormatted) - \(endTimeFormatted) (\(intervalFormated))"
             }

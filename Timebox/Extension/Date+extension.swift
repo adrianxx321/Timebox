@@ -16,11 +16,15 @@ extension Date {
     /// Returns formatted time duration from TimeInterval
     static func formatTimeDuration(_ interval: TimeInterval,
                                    unitStyle: DateComponentsFormatter.UnitsStyle,
-                                   units: NSCalendar.Unit) -> String {
+                                   units: NSCalendar.Unit,
+                                   padding: DateComponentsFormatter.ZeroFormattingBehavior?) -> String {
         let formatter = DateComponentsFormatter()
         
         formatter.unitsStyle = unitStyle
         formatter.allowedUnits = units
+        if let padding = padding {
+            formatter.zeroFormattingBehavior = padding
+        }
         
         return formatter.string(from: interval) ?? "NaN"
     }

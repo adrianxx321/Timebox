@@ -21,21 +21,22 @@ struct Timer: View {
     // MARK: ViewModels
     @ObservedObject private var taskModel = TaskViewModel()
     @StateObject private var sessionModel = TaskSessionViewModel()
-    // MARK: UI States
-    @State private var selectedMode: TimerMode = .normal
+    // MARK: Timer States
     @State private var start = false
-    @State private var pause = false
-    @State private var abort = false
-    @State private var isMuted = false
-    // MARK: Task-related states
+    @State private var mute = false
+    @State private var pause = true
     // Circular progress bar percentage
     @State private var timerProgress : CGFloat = 0
-    @State private var subtaskProgress: CGFloat = 0
+    
+    // MARK: Task-related states
+    @State private var selectedMode: TimerMode = .normal
     @State private var timeRemaining: String = "00:00"
+    // MARK: Task session metrics
+    @State private var completedTasksCount: Int = 0
     @State private var currentPomoSession: Int = 1
-    // Timer counter (in seconds, to match with data model's)
     @State private var countedSeconds: Double = 0
-    // Publish something every 1 second
+    
+    // MARK: Publish something every 1 second
     @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     init() {
@@ -68,7 +69,7 @@ struct Timer: View {
                 return 0
             }
             
-            return Int(ceil(self.totalDuration/(2 * 60)))
+            return Int(ceil(self.totalDuration/(25 * 60)))
         }
     }
 
@@ -82,20 +83,9 @@ struct Timer: View {
                         
                         // Timer clock view
                         self.TimerClock(currentTask)
-                            .onReceive(self.time) { _ in
-                                // Use either normal or pomodoro timer
-                                // The timer always runs in background
-                                // And is independent of timeboxing calculation
-                                switch selectedMode {
-                                    case .normal:
-                                        self.regularTimerFunction(currentTask)
-                                    case .pomodoro:
-                                        self.pomodoroTimerFunction(currentTask)
-                                }
-                            }
                         
                         // Timer controller buttons
-                        self.TimerControls()
+                        self.TimerButtons()
                         
                         // User guide captions if not already started
                         // Show task ongoing info (subtasks & some captions etc.) if started
@@ -230,6 +220,15 @@ struct Timer: View {
                     
                     // Subtasks checklist...
                     SubtasksChecklist(parentTask: currentTask)
+                        // Updating the number of tasks done
+                        // In the course of timeboxing...
+                        .onAppear {
+                            self.completedTasksCount = currentTask.subtasks.filter{$0.isCompleted}.count
+                        }
+                        .onChange(of: currentTask.subtasks.filter{$0.isCompleted}.count) { completed in
+                            self.completedTasksCount = completed
+                            print(self.completedTasksCount)
+                        }
                 }.frame(maxWidth: .infinity)
             } else {
                 // For singleton task
@@ -265,62 +264,87 @@ struct Timer: View {
             // Inner stroke
             Circle()
             .trim(from: 0, to: self.timerProgress)
-            // TODO: Use task's color
             .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 20, lineCap: .round))
             .frame(width: 224, height: 224)
             .rotationEffect(.init(degrees: -90))
+            .opacity(self.pause ? 0.3 : 1)
             
             // Timing information
             VStack(spacing: 8) {
-                // TODO: Time remaining...
+                // Time remaining...
                 Text(self.timeRemaining)
                     .font(self.timeRemaining.count > 5 ? .headingH1() : .headingH0())
                     .fontWeight(.heavy)
+                    .foregroundColor(self.pause ? .textSecondary : .textPrimary)
                 
                 // Number of sessions, if using pomodoro mode...
                 self.selectedMode == .pomodoro ?
                 Text("\(self.currentPomoSession) of \(self.totalPomoSessions) sessions")
                     .font(.paragraphP1())
                     .fontWeight(.bold)
-                    .foregroundColor(.textSecondary) : nil
+                    .foregroundColor(self.pause ? .textTertiary : .textSecondary) : nil
+            }
+        }
+        .onReceive(self.time) { _ in
+            // Use either normal or pomodoro timer
+            // The timer always runs in background
+            // And is independent of timeboxing calculation
+            switch selectedMode {
+                case .normal:
+                    self.regularTimerFunction(task)
+                case .pomodoro:
+                    self.pomodoroTimerFunction(task)
             }
         }
     }
     
-    private func TimerControls() -> some View {
+    private func TimerButtons() -> some View {
         HStack(spacing: 32) {
-            // TODO: Mute/unmute button...
+            // MARK: Mute button
             Button {
-                self.isMuted.toggle()
+                self.mute.toggle()
+                self.sessionModel.playWhiteNoise(!self.mute)
             } label: {
-                ControllerButtonLabel(icon: Image(self.isMuted ? "volume-up-f" : "volume-mute-f"),
+                ControllerButtonLabel(icon: Image(self.mute ? "volume-mute-f" : "volume-up-f"),
                                       padding: 16, cornerRadius: 24, customColor: nil)
             }
+            .disabled(!self.start || self.pause)
+            .opacity(!self.pause ? 1 : 0.5)
             
-            // TODO: Play button...
+            // MARK: Play button
             Button {
                 withAnimation {
                     if !self.start {
-                        self.start.toggle()
-                        self.pause.toggle()
+                        start = true
+                        pause = false
+                        self.sessionModel.playWhiteNoise(true)
                     } else {
                         self.pause.toggle()
+                        self.mute.toggle()
+                        self.sessionModel.playWhiteNoise(!self.pause)
                     }
                 }
             } label: {
-                ControllerButtonLabel(icon: self.pause ? Image("pause-f") : Image("play-f"),
+                ControllerButtonLabel(icon: self.pause ? Image("play-f") : Image("pause-f"),
                                       padding: 24, cornerRadius: 32, customColor: .accent)
             }
             
-            // TODO: Stop button...
+            // MARK: Stop button
             Button {
                 withAnimation {
-                    self.abort.toggle()
+                    // Reset (almost) everything...
+                    self.start = false
+                    self.pause = true
+                    self.mute = false
+                    self.sessionModel.playWhiteNoise(false)
+                    self.countedSeconds = 0
                 }
             } label: {
                 ControllerButtonLabel(icon: Image("stop-f"), padding: 16,
                                       cornerRadius: 24, customColor: nil)
             }
+            .disabled(!self.start)
+            .opacity(self.start ? 1 : 0.5)
         }
     }
     
@@ -332,7 +356,7 @@ struct Timer: View {
             .frame(width: 28)
             .foregroundColor(customColor != nil ? .uiWhite : .accent)
             .padding(padding)
-            .background(customColor ?? Color.backgroundSecondary)
+            .background(customColor ?? Color.backgroundTertiary)
             .cornerRadius(cornerRadius)
             .shadow(color: customColor ?? .textTertiary, radius: 8, x: 0, y: 3)
     }
@@ -340,7 +364,9 @@ struct Timer: View {
     // MARK: UI Logic for normal timer
     private func regularTimerFunction(_ task: Task) {
         let remaining = task.taskEndTime! - Date()
-        self.timeRemaining = Date.formatTimeDuration(remaining, unitStyle: .positional, units: [.hour, .minute, .second])
+        self.timeRemaining = Date.formatTimeDuration(remaining, unitStyle: .positional,
+                                                     units: [.hour, .minute, .second],
+                                                     padding: nil)
         
         withAnimation {
             self.timerProgress = (self.totalDuration - remaining) / self.totalDuration
@@ -357,17 +383,17 @@ struct Timer: View {
             // Partiality means the last cycle is less than the standard 25 minutes.
             let hasPartiality = !self.totalDuration.truncatingRemainder(dividingBy: 2).isZero
             // The end time & duration for last cycle
-            cycleDuration = hasPartiality ? self.totalDuration.truncatingRemainder(dividingBy: 2) : (2 * 60)
+            cycleDuration = hasPartiality ? self.totalDuration.truncatingRemainder(dividingBy: 25) : (25 * 60)
             cycleEnd = task.taskEndTime!
         } else {
             // The end time & duration for first and subsequent cycles
-            cycleDuration = (2 * 60)
+            cycleDuration = (25 * 60)
             cycleEnd = task.taskStartTime! + (Double(self.currentPomoSession) * cycleDuration)
         }
         
         let cycleRemaining: TimeInterval = cycleEnd - Date()
         self.currentPomoSession = cycleRemaining <= 0 ? self.currentPomoSession + 1 : self.currentPomoSession
-        self.timeRemaining = Date.formatTimeDuration(cycleRemaining, unitStyle: .positional, units: [.minute, .second])
+        self.timeRemaining = Date.formatTimeDuration(cycleRemaining, unitStyle: .positional, units: [.minute, .second], padding: .pad)
         
         withAnimation {
             self.timerProgress = (cycleDuration - cycleRemaining) / cycleDuration
