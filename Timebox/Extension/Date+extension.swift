@@ -12,7 +12,7 @@ extension Date {
     static func - (lhs: Date, rhs: Date) -> TimeInterval {
         return lhs.timeIntervalSinceReferenceDate - rhs.timeIntervalSinceReferenceDate
     }
-    
+
     /// Returns formatted time duration from TimeInterval
     static func formatTimeDuration(_ interval: TimeInterval,
                                    unitStyle: DateComponentsFormatter.UnitsStyle,

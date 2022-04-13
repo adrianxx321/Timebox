@@ -26,17 +26,17 @@ struct Timer: View {
     @State private var start = false
     @State private var pause = false
     @State private var abort = false
+    @State private var isMuted = false
+    // MARK: Task-related states
     // Circular progress bar percentage
     @State private var timerProgress : CGFloat = 0
     @State private var subtaskProgress: CGFloat = 0
-    // Timer counter (in seconds, to match with data model's)
-    @State private var countedSeconds: Double = 0
-    @State private var isMuted = false
-    // Publish something every 1 second
-    @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
     @State private var timeRemaining: String = "00:00"
     @State private var currentPomoSession: Int = 1
+    // Timer counter (in seconds, to match with data model's)
+    @State private var countedSeconds: Double = 0
+    // Publish something every 1 second
+    @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     init() {
         _fetchedTasks = FetchRequest(
@@ -53,7 +53,7 @@ struct Timer: View {
                 .first
         }
     }
-    private var originalDuration: Double {
+    private var totalDuration: Double {
         get {
             guard let currentTask = self.currentTask else {
                 return 0
@@ -62,26 +62,13 @@ struct Timer: View {
             return (currentTask.taskEndTime ?? Date()) - (currentTask.taskStartTime ?? Date())
         }
     }
-    private var pomodoroSessions: [Double] {
+    private var totalPomoSessions: Int {
         get {
-            var sessions: [Double] = []
             guard self.currentTask != nil else {
-                return sessions
+                return 0
             }
             
-            // How many rounds of pomodoro
-            let rounds = Int(self.originalDuration) / (25 * 60)
-            let remainder = self.originalDuration.truncatingRemainder(dividingBy: 25 * 60)
-            
-            (1...rounds).forEach { round in
-                sessions.append(25)
-            }
-            
-            if remainder != 0 {
-                sessions.append(remainder)
-            }
-            
-            return sessions
+            return Int(ceil(self.totalDuration/(2 * 60)))
         }
     }
 
@@ -113,21 +100,33 @@ struct Timer: View {
                 .navigationBarHidden(true)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .background(Color.backgroundPrimary)
-            } else {
+                .onReceive(self.time) { _ in
+                    // Assigning time remaining state...
+                    // Depending on pomodoro or normal timer
+                    switch selectedMode {
+                        case .normal:
+                        self.regularTimerFunction(currentTask)
+                        case .pomodoro:
+                        self.pomodoroTimerFunction(currentTask)
+                    }
+                }
+            }
+            else {
                 VStack(spacing: 24) {
                     UniversalCustomNavigationBar(screenTitle: "Timer", hasBackButton: false)
                     
                     ScrollView(.vertical, showsIndicators: false) {
                         ScreenFallbackView(title: "No task for now", image: Image("no-timebox"),
-                                           caption1: "You don’t have any ongoing task right now.",
-                                           caption2: "Tap the plus button to create a new one.")
+                                           caption1: "You don’t have any ongoing task.",
+                                           caption2: "Tap the plus button to create one.")
                     }
                 }
                 .navigationBarHidden(true)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .background(Color.backgroundPrimary)
             }
-        }.navigationBarHidden(true)
+        }
+        .navigationBarHidden(true)
     }
     
     private func TaskHeader(_ currentTask: Task) -> some View {
@@ -165,16 +164,52 @@ struct Timer: View {
         }
     }
     
-    private func UserGuideCaptions() -> some View {
-        VStack(alignment: .leading, spacing: 24) {
-            Text("Select the timer mode to begin timeboxing")
-                .font(.headingH2())
-                .fontWeight(.heavy)
-                .foregroundColor(.textPrimary)
+    private func TimerModeSelector() -> some View {
+        HStack {
+            ForEach(TimerMode.allCases, id: \.self) { mode in
+                Button {
+                    withAnimation {
+                        self.selectedMode = mode
+                    }
+                } label: {
+                    Image(mode.rawValue)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 32)
+                        .background(self.selectedMode == mode ? Color.uiWhite : Color.clear)
+                        .clipShape(Capsule())
+                }.foregroundColor(self.selectedMode == mode ? .accent : .textSecondary)
+            }
+        }
+        .padding(8)
+        .background(Color.backgroundTertiary)
+        .clipShape(Capsule())
+    }
+    
+    private func HorizontalProgressBar(_ task: Task) -> some View {
+        HStack(spacing: 8) {
+            let totalSubtasksCount: CGFloat = CGFloat(task.subtasks.count)
+            let completedSubtasksCount: CGFloat = CGFloat(self.taskModel.countCompletedSubtask(task.subtasks))
+            let percentage: CGFloat = totalSubtasksCount != 0 ? (completedSubtasksCount / totalSubtasksCount) : 0
             
-            Text("Tap on the play button to start timer.")
-                .font(.paragraphP1())
-                .fontWeight(.bold)
+            ZStack(alignment: .leading) {
+                Rectangle()
+                    .frame(height: 8)
+                    .frame(maxWidth: 256)
+                    .foregroundColor(.backgroundQuarternary)
+                    .cornerRadius(8)
+                
+                Rectangle()
+                    .frame(width: 256 * CGFloat(percentage), height: 8)
+                    .foregroundColor(Color(task.color!))
+                    .cornerRadius(8)
+            }
+            
+            Text("\(Int(percentage * 100))%")
+                .font(.caption())
+                .fontWeight(.heavy)
                 .foregroundColor(.textSecondary)
         }
     }
@@ -204,99 +239,49 @@ struct Timer: View {
         }
     }
     
-    private func HorizontalProgressBar(_ task: Task) -> some View {
-        HStack(spacing: 8) {
-            let totalSubtasksCount: CGFloat = CGFloat(task.subtasks.count)
-            let completedSubtasksCount: CGFloat = CGFloat(self.taskModel.countCompletedSubtask(task.subtasks))
-            let percentage: CGFloat = totalSubtasksCount != 0 ? (completedSubtasksCount / totalSubtasksCount) : 0
-            
-            ZStack(alignment: .leading) {
-                Rectangle()
-                    .frame(height: 8)
-                    .frame(maxWidth: 256)
-                    .foregroundColor(.backgroundQuarternary)
-                    .cornerRadius(8)
-                
-                Rectangle()
-                    .frame(width: 256 * CGFloat(percentage), height: 8)
-                    .foregroundColor(Color(task.color!))
-                    .cornerRadius(8)
-            }
-            
-            Text("\(Int(percentage * 100))%")
-                .font(.caption())
+    private func UserGuideCaptions() -> some View {
+        VStack(alignment: .leading, spacing: 24) {
+            Text("Select the timer mode to begin timeboxing")
+                .font(.headingH2())
                 .fontWeight(.heavy)
+                .foregroundColor(.textPrimary)
+            
+            Text("Tap on the play button to start timer.")
+                .font(.paragraphP1())
+                .fontWeight(.bold)
                 .foregroundColor(.textSecondary)
         }
     }
-    
-    private func TimerModeSelector() -> some View {
-        HStack {
-            ForEach(TimerMode.allCases, id: \.self) { mode in
-                Button {
-                    withAnimation {
-                        self.selectedMode = mode
-                    }
-                } label: {
-                    Image(mode.rawValue)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 24)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 32)
-                        .background(self.selectedMode == mode ? Color.uiWhite : Color.clear)
-                        .clipShape(Capsule())
-                }.foregroundColor(self.selectedMode == mode ? .accent : .textSecondary)
-            }
-        }
-        .padding(8)
-        .background(Color.backgroundTertiary)
-        .clipShape(Capsule())
-    }
-    
+
     private func TimerClock(_ task: Task) -> some View {
-        VStack {
-            // Timer circle
-            ZStack{
-                // Outer stroke
-                Circle()
-                .trim(from: 0, to: 1)
-                    .stroke(Color.backgroundTertiary, style: StrokeStyle(lineWidth: 20, lineCap: .round))
-                .frame(width: 224, height: 224)
-                
-                // Inner stroke
-                Circle()
-                .trim(from: 0, to: self.timerProgress)
-                // TODO: Use task's color
-                .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 20, lineCap: .round))
-                .frame(width: 224, height: 224)
-                .rotationEffect(.init(degrees: -90))
-                
-                // Timing information
-                VStack(spacing: 8) {
-                    // TODO: Time remaining...
-                    Text(self.timeRemaining )
-                        .font(self.selectedMode == .normal ? .headingH1() : .headingH0())
-                        .fontWeight(.heavy)
-                    
-                    // Number of sessions, if using pomodoro mode...
-                    self.selectedMode == .pomodoro ?
-                    Text("\(self.currentPomoSession) of \(self.pomodoroSessions.count) sessions")
-                        .font(.paragraphP1())
-                        .fontWeight(.bold)
-                        .foregroundColor(.textSecondary) : nil
-                }
-            }
-        }
-        .onReceive(self.time) { _ in
-            // Assigning time remaining state...
-            // Depending on pomodoro or normal timer
-            let remaining = task.taskEndTime! - Date()
-            self.timeRemaining = Date.formatTimeDuration(remaining, unitStyle: .positional, units: [.hour, .minute, .second])
+        ZStack {
+            // Outer stroke
+            Circle()
+            .trim(from: 0, to: 1)
+                .stroke(Color.backgroundTertiary, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+            .frame(width: 224, height: 224)
             
-            // Let the timer runs in background...
-            withAnimation {
-                self.timerProgress = (self.originalDuration - remaining) / self.originalDuration
+            // Inner stroke
+            Circle()
+            .trim(from: 0, to: self.timerProgress)
+            // TODO: Use task's color
+            .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 20, lineCap: .round))
+            .frame(width: 224, height: 224)
+            .rotationEffect(.init(degrees: -90))
+            
+            // Timing information
+            VStack(spacing: 8) {
+                // TODO: Time remaining...
+                Text(self.timeRemaining)
+                    .font(self.timeRemaining.count > 5 ? .headingH1() : .headingH0())
+                    .fontWeight(.heavy)
+                
+                // Number of sessions, if using pomodoro mode...
+                self.selectedMode == .pomodoro ?
+                Text("\(self.currentPomoSession) of \(self.totalPomoSessions) sessions")
+                    .font(.paragraphP1())
+                    .fontWeight(.bold)
+                    .foregroundColor(.textSecondary) : nil
             }
         }
     }
@@ -348,5 +333,39 @@ struct Timer: View {
             .background(customColor ?? Color.backgroundSecondary)
             .cornerRadius(cornerRadius)
             .shadow(color: customColor ?? .textTertiary, radius: 8, x: 0, y: 3)
+    }
+    
+    // MARK: UI Logic for normal timer
+    private func regularTimerFunction(_ task: Task) {
+        let remaining = task.taskEndTime! - Date()
+        self.timeRemaining = Date.formatTimeDuration(remaining, unitStyle: .positional, units: [.hour, .minute, .second])
+        
+        withAnimation {
+            self.timerProgress = (self.totalDuration - remaining) / self.totalDuration
+        }
+    }
+    
+    // MARK: UI Logic for pomodoro timer
+    private func pomodoroTimerFunction(_ task: Task) {
+        let isLastCycle = self.currentPomoSession >= self.totalPomoSessions
+        let cycleDuration: TimeInterval
+        let cycleEnd: Date
+        
+        if isLastCycle {
+            // The start time for last cycle
+            cycleDuration = self.totalDuration.truncatingRemainder(dividingBy: 2)
+            cycleEnd = task.taskEndTime!
+        } else {
+            cycleDuration = (2 * 60)
+            cycleEnd = task.taskStartTime! + (Double(self.currentPomoSession) * cycleDuration)
+        }
+        
+        let cycleRemaining: TimeInterval = cycleEnd - Date()
+        self.currentPomoSession = cycleRemaining <= 0 ? self.currentPomoSession + 1 : self.currentPomoSession
+        self.timeRemaining = Date.formatTimeDuration(cycleRemaining, unitStyle: .positional, units: [.minute, .second])
+        
+        withAnimation {
+            self.timerProgress = (cycleDuration - cycleRemaining) / cycleDuration
+        }
     }
 }
