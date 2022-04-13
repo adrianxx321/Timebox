@@ -82,6 +82,17 @@ struct Timer: View {
                         
                         // Timer clock view
                         self.TimerClock(currentTask)
+                            .onReceive(self.time) { _ in
+                                // Use either normal or pomodoro timer
+                                // The timer always runs in background
+                                // And is independent of timeboxing calculation
+                                switch selectedMode {
+                                    case .normal:
+                                        self.regularTimerFunction(currentTask)
+                                    case .pomodoro:
+                                        self.pomodoroTimerFunction(currentTask)
+                                }
+                            }
                         
                         // Timer controller buttons
                         self.TimerControls()
@@ -100,16 +111,6 @@ struct Timer: View {
                 .navigationBarHidden(true)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .background(Color.backgroundPrimary)
-                .onReceive(self.time) { _ in
-                    // Assigning time remaining state...
-                    // Depending on pomodoro or normal timer
-                    switch selectedMode {
-                        case .normal:
-                        self.regularTimerFunction(currentTask)
-                        case .pomodoro:
-                        self.pomodoroTimerFunction(currentTask)
-                    }
-                }
             }
             else {
                 VStack(spacing: 24) {
@@ -323,7 +324,8 @@ struct Timer: View {
         }
     }
     
-    private func ControllerButtonLabel(icon: Image, padding: CGFloat, cornerRadius: CGFloat, customColor: Color?) -> some View {
+    private func ControllerButtonLabel(icon: Image, padding: CGFloat,
+                                       cornerRadius: CGFloat, customColor: Color?) -> some View {
         icon
             .resizable()
             .aspectRatio(contentMode: .fit)
@@ -352,10 +354,13 @@ struct Timer: View {
         let cycleEnd: Date
         
         if isLastCycle {
-            // The start time for last cycle
-            cycleDuration = self.totalDuration.truncatingRemainder(dividingBy: 2)
+            // Partiality means the last cycle is less than the standard 25 minutes.
+            let hasPartiality = !self.totalDuration.truncatingRemainder(dividingBy: 2).isZero
+            // The end time & duration for last cycle
+            cycleDuration = hasPartiality ? self.totalDuration.truncatingRemainder(dividingBy: 2) : (2 * 60)
             cycleEnd = task.taskEndTime!
         } else {
+            // The end time & duration for first and subsequent cycles
             cycleDuration = (2 * 60)
             cycleEnd = task.taskStartTime! + (Double(self.currentPomoSession) * cycleDuration)
         }
