@@ -10,6 +10,13 @@ import SwiftUI
 private enum TimerMode: String, CaseIterable {
     case normal = "clock-f"
     case pomodoro = "tomato-f"
+    
+    var description : String {
+        switch self {
+            case .normal: return "Regular Timer"
+            case .pomodoro: return "Pomodoro"
+        }
+    }
 }
 
 struct Timer: View {
@@ -25,8 +32,8 @@ struct Timer: View {
     @State private var start = false
     @State private var mute = false
     @State private var pause = true
-    // Circular progress bar percentage
     @State private var timerProgress : CGFloat = 0
+    @State private var isPulsing = false
     
     // MARK: Task-related states
     @State private var selectedMode: TimerMode = .normal
@@ -72,12 +79,15 @@ struct Timer: View {
             return Int(ceil(self.totalDuration/(25 * 60)))
         }
     }
+    private var pulseAnimation: Animation {
+        (!self.pause && self.start) ? Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true) : .default
+    }
 
     var body: some View {
         NavigationView {
             if let currentTask = self.currentTask {
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 32) {
+                    VStack(spacing: self.pause ? 36 : 38) {
                         // Task information...
                         self.TaskHeader(currentTask)
                         
@@ -149,9 +159,7 @@ struct Timer: View {
             }
             
             // Show timer mode selection if haven't started
-            if !self.start {
-                self.TimerModeSelector()
-            }
+            if !self.start { self.TimerModeSelector() }
         }
     }
     
@@ -212,28 +220,37 @@ struct Timer: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.textSecondary)
             
-            // Subtasks breakdown if any...
-            if currentTask.subtasks.count > 0 {
-                VStack(alignment: .leading, spacing: 24) {
-                    // Horizontal progress bar... (with subtasks)
-                    HorizontalProgressBar(currentTask)
-                    
-                    // Subtasks checklist...
-                    SubtasksChecklist(parentTask: currentTask)
-                        // Updating the number of tasks done
-                        // In the course of timeboxing...
-                        .onAppear {
-                            self.completedTasksCount = currentTask.subtasks.filter{$0.isCompleted}.count
-                        }
-                        .onChange(of: currentTask.subtasks.filter{$0.isCompleted}.count) { completed in
-                            self.completedTasksCount = completed
-                            print(self.completedTasksCount)
-                        }
-                }.frame(maxWidth: .infinity)
-            } else {
-                // For singleton task
-                CTAButton(btnLabel: "Complete Task", btnFullSize: true) {
-                    self.taskModel.completeTask(currentTask)
+            // Subtasks/Complete Task button
+            Group {
+                // Subtasks breakdown if any...
+                if currentTask.subtasks.count > 0 {
+                    VStack(alignment: .leading, spacing: 24) {
+                        // Horizontal progress bar... (with subtasks)
+                        HorizontalProgressBar(currentTask)
+                        
+                        // Subtasks checklist...
+                        SubtasksChecklist(parentTask: currentTask)
+                            // Updating the number of tasks done
+                            // In the course of timeboxing...
+                            .onAppear {
+                                self.completedTasksCount = currentTask.subtasks.filter{$0.isCompleted}.count
+                            }
+                            .onChange(of: currentTask.subtasks.filter{$0.isCompleted}.count) { completed in
+                                self.completedTasksCount = completed
+                                print(self.completedTasksCount)
+                            }
+                            // Disable checklist when timer is paused...
+                            .disabled(self.pause)
+                            .opacity(self.pause ? 0.5 : 1)
+                    }.frame(maxWidth: .infinity)
+                } else {
+                    // For singleton task
+                    CTAButton(btnLabel: "Complete Task", btnFullSize: true) {
+                        self.taskModel.completeTask(currentTask)
+                    }
+                    // Disable the button when timer is paused...
+                    .disabled(self.pause)
+                    .opacity(self.pause ? 0.4 : 1)
                 }
             }
         }
@@ -241,12 +258,12 @@ struct Timer: View {
     
     private func UserGuideCaptions() -> some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Select the timer mode to begin timeboxing")
+            Text("Select the timer mode for Timeboxing")
                 .font(.headingH2())
                 .fontWeight(.heavy)
                 .foregroundColor(.textPrimary)
             
-            Text("Tap on the play button to start timer.")
+            Text("Tap on the play button to begin.")
                 .font(.paragraphP1())
                 .fontWeight(.bold)
                 .foregroundColor(.textSecondary)
@@ -255,34 +272,56 @@ struct Timer: View {
 
     private func TimerClock(_ task: Task) -> some View {
         ZStack {
-            // Outer stroke
-            Circle()
-            .trim(from: 0, to: 1)
-                .stroke(Color.backgroundTertiary, style: StrokeStyle(lineWidth: 20, lineCap: .round))
-            .frame(width: 224, height: 224)
-            
-            // Inner stroke
-            Circle()
-            .trim(from: 0, to: self.timerProgress)
-            .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 20, lineCap: .round))
-            .frame(width: 224, height: 224)
-            .rotationEffect(.init(degrees: -90))
-            .opacity(self.pause ? 0.3 : 1)
+            // Circular Progress Bar...
+            Group {
+                // Outer stroke
+                Circle()
+                .trim(from: 0, to: 1)
+                    .stroke(Color.backgroundTertiary, style: StrokeStyle(lineWidth: 32, lineCap: .round))
+                .frame(width: 224, height: 224)
+                
+                // Inner stroke
+                Circle()
+                .trim(from: 0, to: self.timerProgress)
+                .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 32, lineCap: .round))
+                .frame(width: 224, height: 224)
+                .rotationEffect(.init(degrees: -90))
+                .opacity(!self.pause && self.start ? 1 : 0.2)
+            }
+            .scaleEffect(self.isPulsing ? 1.0625 : 1)
             
             // Timing information
-            VStack(spacing: 8) {
-                // Time remaining...
-                Text(self.timeRemaining)
-                    .font(self.timeRemaining.count > 5 ? .headingH1() : .headingH0())
-                    .fontWeight(.heavy)
-                    .foregroundColor(self.pause ? .textSecondary : .textPrimary)
-                
-                // Number of sessions, if using pomodoro mode...
-                self.selectedMode == .pomodoro ?
-                Text("\(self.currentPomoSession) of \(self.totalPomoSessions) sessions")
-                    .font(.paragraphP1())
-                    .fontWeight(.bold)
-                    .foregroundColor(self.pause ? .textTertiary : .textSecondary) : nil
+            // Presents only when timer started...
+            // Otherwise presents a indicator showing timer mode selected
+            if self.start {
+                VStack(spacing: 8) {
+                    // Time remaining...
+                    Text(self.timeRemaining)
+                        .font(.headingH0())
+                        .fontWeight(.heavy)
+                        .foregroundColor(self.pause ? .textSecondary : .textPrimary)
+                    
+                    // Number of sessions, if using pomodoro mode...
+                    self.selectedMode == .pomodoro ?
+                    Text("\(self.currentPomoSession) of \(self.totalPomoSessions) sessions")
+                        .font(.paragraphP1())
+                        .fontWeight(.bold)
+                        .foregroundColor(self.pause ? .textTertiary : .textSecondary) : nil
+                }
+            } else {
+                VStack(spacing: 16) {
+                    // Logo for the timer mode selected...
+                    Image("\(self.selectedMode.rawValue)")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 64)
+                        .foregroundColor(.textSecondary)
+                    
+                    Text("\(self.selectedMode.description)")
+                        .font(.paragraphP1())
+                        .fontWeight(.heavy)
+                        .foregroundColor(.textTertiary)
+                }
             }
         }
         .onReceive(self.time) { _ in
@@ -317,12 +356,18 @@ struct Timer: View {
                     if !self.start {
                         start = true
                         pause = false
+                        // Play the white noise after begin timeboxing
                         self.sessionModel.playWhiteNoise(true)
                     } else {
                         self.pause.toggle()
                         self.mute.toggle()
                         self.sessionModel.playWhiteNoise(!self.pause)
                     }
+                }
+                
+                // MARK: Specially controls the pulse animation
+                withAnimation(self.pulseAnimation) {
+                    self.isPulsing.toggle()
                 }
             } label: {
                 ControllerButtonLabel(icon: self.pause ? Image("play-f") : Image("pause-f"),
@@ -338,6 +383,12 @@ struct Timer: View {
                     self.mute = false
                     self.sessionModel.playWhiteNoise(false)
                     self.countedSeconds = 0
+                }
+                
+                // MARK: Specially controls the pulse animation
+                withAnimation(self.pulseAnimation) {
+                    // Stops the animation
+                    self.isPulsing = false
                 }
             } label: {
                 ControllerButtonLabel(icon: Image("stop-f"), padding: 16,
