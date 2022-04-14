@@ -22,11 +22,11 @@ private enum TimerMode: String, CaseIterable {
 struct Timer: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     // MARK: Core Data fetch request & result
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     // MARK: ViewModels
     @ObservedObject private var taskModel = TaskViewModel()
+    @ObservedObject private var notificationModel = NotificationViewModel()
     @StateObject private var sessionModel = TaskSessionViewModel()
     // MARK: Timer States
     @State private var start = false
@@ -37,11 +37,16 @@ struct Timer: View {
     
     // MARK: Task-related states
     @State private var selectedMode: TimerMode = .normal
-    @State private var timeRemaining: String = "00:00"
+    @State private var timeRemainingText: String = "00:00"
     // MARK: Task session metrics
     @State private var completedTasksCount: Int = 0
     @State private var currentPomoSession: Int = 1
-    @State private var countedSeconds: Double = 0
+    @State private var countedFocusedTime: Double = 0
+    
+    // MARK: Modal states
+    @State private var completedTimebox = false
+    @State private var collectedPoints = false
+    @State private var timesUp = false
     
     // MARK: Publish something every 1 second
     @State private var time = SwiftUI.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -55,10 +60,13 @@ struct Timer: View {
     // MARK: Convenient derived properties
     private var currentTask: Task? {
         get {
-            self.taskModel.getAllTasks(query: self.fetchedTasks)
-                .filter({self.taskModel.isTimeboxedTask($0)})
-                .filter({self.taskModel.isOngoing($0)})
-                .first
+            withAnimation {
+                return self.taskModel.getAllTasks(query: self.fetchedTasks)
+                    .filter({self.taskModel.isTimeboxedTask($0)})
+                    // Get those tasks which has not been "timeboxed" yet
+                    .filter({self.taskModel.isOngoing($0) && $0.session == nil})
+                    .first
+            }
         }
     }
     private var totalDuration: Double {
@@ -68,6 +76,11 @@ struct Timer: View {
             }
             
             return (currentTask.taskEndTime ?? Date()) - (currentTask.taskStartTime ?? Date())
+        }
+    }
+    private var timeRemaining: Double {
+        get {
+            (self.currentTask?.taskEndTime! ?? Date()) - Date()
         }
     }
     private var totalPomoSessions: Int {
@@ -111,6 +124,10 @@ struct Timer: View {
                 .navigationBarHidden(true)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .background(Color.backgroundPrimary)
+                // What happens when user completed all tasks in the middle...
+                .onChange(of: currentTask.isCompleted) { completed in
+                    if completed { self.taskCompletedHandler(currentTask) }
+                }
             }
             else {
                 VStack(spacing: 24) {
@@ -128,6 +145,22 @@ struct Timer: View {
             }
         }
         .navigationBarHidden(true)
+        .overlay(content: {
+            // Messages showing completed timebox session & points awarded
+            if self.completedTimebox {
+                LottieModalView(isPresent: self.$completedTimebox, lottieFile: "timeboxing-done",
+                                loop: true, playbackSpeed: 0.75,
+                                caption: "Yay! You've completed your task with Timeboxing.")
+            } else if self.timesUp {
+                LottieModalView(isPresent: self.$timesUp, lottieFile: "alarm-ringing",
+                                loop: true, playbackSpeed: 1.0,
+                                caption: "Time's Up! It's time to let go your task now.")
+            } else if self.collectedPoints {
+                LottieModalView(isPresent: self.$collectedPoints, lottieFile: "points-collected",
+                                loop: true, playbackSpeed: 0.75,
+                                caption: "You've been rewarded XXX points.")
+            }
+        })
     }
     
     private func TaskHeader(_ currentTask: Task) -> some View {
@@ -185,6 +218,165 @@ struct Timer: View {
         .padding(8)
         .background(Color.backgroundTertiary)
         .clipShape(Capsule())
+    }
+    
+    private func TimerClock(_ task: Task) -> some View {
+        ZStack {
+            // Circular Progress Bar...
+            Group {
+                // Outer stroke
+                Circle()
+                .trim(from: 0, to: 1)
+                    .stroke(Color.backgroundTertiary, style: StrokeStyle(lineWidth: 32, lineCap: .round))
+                .frame(width: 224, height: 224)
+                
+                // Inner stroke
+                Circle()
+                .trim(from: 0, to: self.timerProgress)
+                .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 32, lineCap: .round))
+                .frame(width: 224, height: 224)
+                .rotationEffect(.init(degrees: -90))
+                .opacity(!self.pause && self.start ? 1 : 0.2)
+            }
+            .scaleEffect(self.isPulsing ? 1.0625 : 1)
+            
+            // Timing information
+            // Presents only when timer started...
+            // Otherwise presents a indicator showing timer mode selected
+            if self.start {
+                VStack(spacing: 8) {
+                    // Time remaining...
+                    Text(self.timeRemainingText)
+                        .font(self.timeRemainingText.count > 5 ? .headingH1() : .headingH0())
+                        .fontWeight(.heavy)
+                        .foregroundColor(self.pause ? .textSecondary : .textPrimary)
+                    
+                    // Number of sessions, if using pomodoro mode...
+                    self.selectedMode == .pomodoro ?
+                    Text("\(self.currentPomoSession) of \(self.totalPomoSessions) sessions")
+                        .font(.paragraphP1())
+                        .fontWeight(.bold)
+                        .foregroundColor(self.pause ? .textTertiary : .textSecondary) : nil
+                }
+            } else {
+                VStack(spacing: 16) {
+                    // Logo for the timer mode selected...
+                    Image("\(self.selectedMode.rawValue)")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 64)
+                        .foregroundColor(.textSecondary)
+                    
+                    Text("\(self.selectedMode.description)")
+                        .font(.paragraphP1())
+                        .fontWeight(.heavy)
+                        .foregroundColor(.textTertiary)
+                }
+            }
+        }
+        // MARK: This is the functional part of the timer
+        .onReceive(self.time) { _ in
+            if self.timeRemaining < 0 {
+                // We don't need it when we start off
+                self.time.upstream.connect().cancel()
+                return
+            } else if self.timeRemaining > 0 {
+                // Use either normal or pomodoro timer
+                // The timer always runs in background
+                // And is independent of timeboxing calculation
+                switch selectedMode {
+                    case .normal:
+                        self.regularTimerFunction(task)
+                    case .pomodoro:
+                        self.pomodoroTimerFunction(task)
+                }
+                
+                // Count the focused duration...
+                // Will only count after start && is not paused
+                self.countedFocusedTime += (self.start && !self.pause) ? 1 : 0
+            } else {
+                // Save it at very last second
+                self.time.upstream.connect().cancel()
+                
+                // Save the task if and only if timer is running...
+                if self.start { self.timesUpHandler(task) }
+            }
+        }
+    }
+    
+    private func TimerButtons() -> some View {
+        HStack(spacing: 32) {
+            // MARK: Mute button
+            Button {
+                self.mute.toggle()
+                self.sessionModel.playWhiteNoise(!self.mute)
+            } label: {
+                ControllerButtonLabel(icon: Image(self.mute ? "volume-mute-f" : "volume-up-f"),
+                                      padding: 16, cornerRadius: 24, customColor: nil)
+            }
+            .disabled(!self.start || self.pause)
+            .opacity(!self.pause ? 1 : 0.5)
+            
+            // MARK: Play button
+            Button {
+                withAnimation {
+                    if !self.start {
+                        start = true
+                        pause = false
+                        // Play the white noise after begin timeboxing
+                        self.sessionModel.playWhiteNoise(true)
+                    } else {
+                        self.pause.toggle()
+                        self.mute.toggle()
+                        self.sessionModel.playWhiteNoise(!self.pause)
+                    }
+                }
+                
+                // MARK: Specially controls the pulse animation
+                withAnimation(self.pulseAnimation) {
+                    self.isPulsing.toggle()
+                }
+            } label: {
+                ControllerButtonLabel(icon: self.pause ? Image("play-f") : Image("pause-f"),
+                                      padding: 24, cornerRadius: 32, customColor: .accent)
+            }
+            
+            // MARK: Stop button
+            Button {
+                withAnimation {
+                    // Reset (almost) everything...
+                    self.start = false
+                    self.pause = true
+                    self.mute = false
+                    self.sessionModel.playWhiteNoise(false)
+                    self.countedFocusedTime = 0
+                }
+                
+                // MARK: Specially controls the pulse animation
+                withAnimation(self.pulseAnimation) {
+                    // Stops the animation
+                    self.isPulsing = false
+                }
+            } label: {
+                ControllerButtonLabel(icon: Image("stop-f"), padding: 16,
+                                      cornerRadius: 24, customColor: nil)
+            }
+            .disabled(!self.start)
+            .opacity(self.start ? 1 : 0.5)
+        }
+    }
+    
+    private func ControllerButtonLabel(icon: Image, padding: CGFloat,
+                                       cornerRadius: CGFloat, customColor: Color?) -> some View {
+        icon
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 28)
+            .foregroundColor(customColor != nil ? .uiWhite : .accent)
+            .padding(padding)
+            .background(customColor ?? Color.backgroundTertiary)
+            .cornerRadius(cornerRadius)
+            .shadow(color: customColor ?? .textTertiary, radius: 8, x: 0, y: 3)
     }
     
     private func HorizontalProgressBar(_ task: Task) -> some View {
@@ -269,158 +461,16 @@ struct Timer: View {
                 .foregroundColor(.textSecondary)
         }
     }
-
-    private func TimerClock(_ task: Task) -> some View {
-        ZStack {
-            // Circular Progress Bar...
-            Group {
-                // Outer stroke
-                Circle()
-                .trim(from: 0, to: 1)
-                    .stroke(Color.backgroundTertiary, style: StrokeStyle(lineWidth: 32, lineCap: .round))
-                .frame(width: 224, height: 224)
-                
-                // Inner stroke
-                Circle()
-                .trim(from: 0, to: self.timerProgress)
-                .stroke(Color(task.color!), style: StrokeStyle(lineWidth: 32, lineCap: .round))
-                .frame(width: 224, height: 224)
-                .rotationEffect(.init(degrees: -90))
-                .opacity(!self.pause && self.start ? 1 : 0.2)
-            }
-            .scaleEffect(self.isPulsing ? 1.0625 : 1)
-            
-            // Timing information
-            // Presents only when timer started...
-            // Otherwise presents a indicator showing timer mode selected
-            if self.start {
-                VStack(spacing: 8) {
-                    // Time remaining...
-                    Text(self.timeRemaining)
-                        .font(.headingH0())
-                        .fontWeight(.heavy)
-                        .foregroundColor(self.pause ? .textSecondary : .textPrimary)
-                    
-                    // Number of sessions, if using pomodoro mode...
-                    self.selectedMode == .pomodoro ?
-                    Text("\(self.currentPomoSession) of \(self.totalPomoSessions) sessions")
-                        .font(.paragraphP1())
-                        .fontWeight(.bold)
-                        .foregroundColor(self.pause ? .textTertiary : .textSecondary) : nil
-                }
-            } else {
-                VStack(spacing: 16) {
-                    // Logo for the timer mode selected...
-                    Image("\(self.selectedMode.rawValue)")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 64)
-                        .foregroundColor(.textSecondary)
-                    
-                    Text("\(self.selectedMode.description)")
-                        .font(.paragraphP1())
-                        .fontWeight(.heavy)
-                        .foregroundColor(.textTertiary)
-                }
-            }
-        }
-        .onReceive(self.time) { _ in
-            // Use either normal or pomodoro timer
-            // The timer always runs in background
-            // And is independent of timeboxing calculation
-            switch selectedMode {
-                case .normal:
-                    self.regularTimerFunction(task)
-                case .pomodoro:
-                    self.pomodoroTimerFunction(task)
-            }
-        }
-    }
-    
-    private func TimerButtons() -> some View {
-        HStack(spacing: 32) {
-            // MARK: Mute button
-            Button {
-                self.mute.toggle()
-                self.sessionModel.playWhiteNoise(!self.mute)
-            } label: {
-                ControllerButtonLabel(icon: Image(self.mute ? "volume-mute-f" : "volume-up-f"),
-                                      padding: 16, cornerRadius: 24, customColor: nil)
-            }
-            .disabled(!self.start || self.pause)
-            .opacity(!self.pause ? 1 : 0.5)
-            
-            // MARK: Play button
-            Button {
-                withAnimation {
-                    if !self.start {
-                        start = true
-                        pause = false
-                        // Play the white noise after begin timeboxing
-                        self.sessionModel.playWhiteNoise(true)
-                    } else {
-                        self.pause.toggle()
-                        self.mute.toggle()
-                        self.sessionModel.playWhiteNoise(!self.pause)
-                    }
-                }
-                
-                // MARK: Specially controls the pulse animation
-                withAnimation(self.pulseAnimation) {
-                    self.isPulsing.toggle()
-                }
-            } label: {
-                ControllerButtonLabel(icon: self.pause ? Image("play-f") : Image("pause-f"),
-                                      padding: 24, cornerRadius: 32, customColor: .accent)
-            }
-            
-            // MARK: Stop button
-            Button {
-                withAnimation {
-                    // Reset (almost) everything...
-                    self.start = false
-                    self.pause = true
-                    self.mute = false
-                    self.sessionModel.playWhiteNoise(false)
-                    self.countedSeconds = 0
-                }
-                
-                // MARK: Specially controls the pulse animation
-                withAnimation(self.pulseAnimation) {
-                    // Stops the animation
-                    self.isPulsing = false
-                }
-            } label: {
-                ControllerButtonLabel(icon: Image("stop-f"), padding: 16,
-                                      cornerRadius: 24, customColor: nil)
-            }
-            .disabled(!self.start)
-            .opacity(self.start ? 1 : 0.5)
-        }
-    }
-    
-    private func ControllerButtonLabel(icon: Image, padding: CGFloat,
-                                       cornerRadius: CGFloat, customColor: Color?) -> some View {
-        icon
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 28)
-            .foregroundColor(customColor != nil ? .uiWhite : .accent)
-            .padding(padding)
-            .background(customColor ?? Color.backgroundTertiary)
-            .cornerRadius(cornerRadius)
-            .shadow(color: customColor ?? .textTertiary, radius: 8, x: 0, y: 3)
-    }
     
     // MARK: UI Logic for normal timer
     private func regularTimerFunction(_ task: Task) {
-        let remaining = task.taskEndTime! - Date()
-        self.timeRemaining = Date.formatTimeDuration(remaining, unitStyle: .positional,
+        let grandRemaining = self.timeRemaining
+        self.timeRemainingText = Date.formatTimeDuration(grandRemaining, unitStyle: .positional,
                                                      units: [.hour, .minute, .second],
-                                                     padding: nil)
+                                                     padding: .pad)
         
         withAnimation {
-            self.timerProgress = (self.totalDuration - remaining) / self.totalDuration
+            self.timerProgress = (self.totalDuration - grandRemaining) / self.totalDuration
         }
     }
     
@@ -444,10 +494,36 @@ struct Timer: View {
         
         let cycleRemaining: TimeInterval = cycleEnd - Date()
         self.currentPomoSession = cycleRemaining <= 0 ? self.currentPomoSession + 1 : self.currentPomoSession
-        self.timeRemaining = Date.formatTimeDuration(cycleRemaining, unitStyle: .positional, units: [.minute, .second], padding: .pad)
+        self.timeRemainingText = Date.formatTimeDuration(cycleRemaining, unitStyle: .positional, units: [.minute, .second], padding: .pad)
         
         withAnimation {
             self.timerProgress = (cycleDuration - cycleRemaining) / cycleDuration
+        }
+    }
+    
+    private func taskCompletedHandler(_ task: Task) {
+        withAnimation {
+            // Play animations accordingly...
+            self.completedTimebox = !self.collectedPoints
+            self.collectedPoints = self.completedTimebox
+            
+            // Saving session...
+            self.sessionModel.saveSession(task: task, focusedDuration: self.countedFocusedTime,
+                                          completedTasks: self.completedTasksCount,
+                                          usedPomodoro: self.selectedMode == .pomodoro)
+        }
+    }
+    
+    private func timesUpHandler(_ task: Task) {
+        withAnimation {
+            // Play animations accordingly...
+            self.timesUp = !self.collectedPoints
+            self.collectedPoints = self.timesUp
+            
+            // Saving session...
+            self.sessionModel.saveSession(task: task, focusedDuration: self.countedFocusedTime,
+                                          completedTasks: self.completedTasksCount,
+                                          usedPomodoro: self.selectedMode == .pomodoro)
         }
     }
 }

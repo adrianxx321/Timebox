@@ -18,15 +18,20 @@ class TaskSessionViewModel: ObservableObject {
         return query.map{$0 as TaskSession}
     }
     
-    func saveSession(task: Task, focusedDuration: Double, completedProgress: CGFloat, usedPomodoro: Bool) {
+    func saveSession(task: Task, focusedDuration: Double, completedTasks: Int, usedPomodoro: Bool) {
+        // Deallocates the system resources for AVAudioPlayer
+        self.audioPlayer?.stop()
         
         let newSession = TaskSession(context: self.context)
         newSession.id = UUID()
         newSession.task = task
         newSession.timestamp = Date()
         newSession.focusedDuration = focusedDuration
-        newSession.ptsAwarded = self.computeScore(focusedDuration, completedProgress, usedPomodoro)
-            
+        newSession.ptsAwarded = self.computeScore(focusedDuration, completedTasks, usedPomodoro)
+        
+        // Assigning entire session to Task to fulfill relationship constraint...
+        task.session = newSession
+        
         // Save to Core Data
         do {
             try self.context.save()
@@ -65,8 +70,8 @@ class TaskSessionViewModel: ObservableObject {
     }
     
     /// System for calculating points awarded from timeboxing
-    private func computeScore(_ focusedDuration: Double, _ completedProgress: CGFloat
-                              , _ usedPomodoro: Bool) -> Int32 {
+    private func computeScore(_ focusedDuration: Double, _ completedTasks: Int,
+                              _ usedPomodoro: Bool) -> Int32 {
         return 0
     }
     

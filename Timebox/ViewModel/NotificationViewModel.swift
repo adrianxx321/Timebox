@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 class NotificationViewModel: ObservableObject {
     // Singleton notification center object...
@@ -50,6 +51,57 @@ class NotificationViewModel: ObservableObject {
             return notifyAtStart || notifyAtEnd || notifyAllDay ? "On" : "Off"
         } else {
             return ""
+        }
+    }
+    
+    func sendTaskStartsNotification(task: Task) {
+        if self.notifyAtStart {
+            let content = UNMutableNotificationContent()
+            let calendar = Calendar.current
+            content.title = task.taskTitle!
+            content.subtitle = "Howdy, your task has started. Get them done now!"
+            content.sound = .default
+            
+            var date = DateComponents()
+            date.hour = calendar.component(.hour, from: task.taskStartTime!)
+            date.minute = calendar.component(.minute, from: task.taskStartTime!)
+            
+            let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: false)
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            NotificationViewModel.NotificationAccessor.add(request)
+        }
+    }
+    
+    func sendTaskEndsNotification(task: Task) {
+        if self.notifyAtEnd {
+            let content = UNMutableNotificationContent()
+            let calendar = Calendar.current
+            let endDateFormatted = task.taskEndTime!.formatDateTime(format: "h mm: a")
+            content.title = task.taskTitle!
+            content.subtitle = "Your task has just ended on \(endDateFormatted)."
+            content.sound = .default
+            
+            let triggerDate = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: task.taskEndTime!)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            NotificationViewModel.NotificationAccessor.add(request)
+        }
+    }
+    
+    func sendAllDayTaskNotification(task: Task) {
+        if self.notifyAllDay {
+            let content = UNMutableNotificationContent()
+            content.title = task.taskTitle!
+            content.subtitle = "Here is the task of your day. Get them done before midnight!"
+            content.sound = .default
+            
+            var date = DateComponents()
+            date.hour = 9
+            date.minute = 0
+            
+            let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: false)
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request)
         }
     }
 }

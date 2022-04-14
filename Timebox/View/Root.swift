@@ -34,7 +34,7 @@ struct Root: View {
             self.taskModel.getAllTasks(query: self.fetchedTasks)
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Tab View...
@@ -68,8 +68,6 @@ struct Root: View {
         // Detect any changes made to the default Calendar app (in background)
         .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
             withAnimation {
-                print("Calendar changed")
-                print("Current calendar permission: \(self.eventModel.syncCalendarsAllowed)")
                 // As per the instruction, so we fetch the EKCalendar again.
                 self.eventModel.loadCalendars()
                 self.eventModel.loadEvents()

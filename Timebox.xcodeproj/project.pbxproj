@@ -31,6 +31,13 @@
 		B569230927F18A6A0010A04C /* UIColorPickerModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B569230827F18A6A0010A04C /* UIColorPickerModal.swift */; };
 		B569230B27F1BBEB0010A04C /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B569230A27F1BBEB0010A04C /* Settings.swift */; };
 		B569429427F81CAB00A6E701 /* ScreenFallbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B569429327F81CAB00A6E701 /* ScreenFallbackView.swift */; };
+		B57CCA07280859C8009C2E94 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = B57CCA06280859C8009C2E94 /* Lottie */; };
+		B57CCA09280859EA009C2E94 /* LottieAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57CCA08280859EA009C2E94 /* LottieAnimationView.swift */; };
+		B57CCA0B28085D90009C2E94 /* LottieModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57CCA0A28085D90009C2E94 /* LottieModalView.swift */; };
+		B57CCA1128085E0C009C2E94 /* points-collected.json in Resources */ = {isa = PBXBuildFile; fileRef = B57CCA0D28085E0C009C2E94 /* points-collected.json */; };
+		B57CCA1228085E0C009C2E94 /* checkmark.json in Resources */ = {isa = PBXBuildFile; fileRef = B57CCA0E28085E0C009C2E94 /* checkmark.json */; };
+		B57CCA1428085E0C009C2E94 /* alarm-ringing.json in Resources */ = {isa = PBXBuildFile; fileRef = B57CCA1028085E0C009C2E94 /* alarm-ringing.json */; };
+		B57CCA1628085EF2009C2E94 /* timeboxing-done.json in Resources */ = {isa = PBXBuildFile; fileRef = B57CCA1528085EF2009C2E94 /* timeboxing-done.json */; };
 		B58C531E27D7035B00A48AE8 /* TaskDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58C531D27D7035B00A48AE8 /* TaskDetails.swift */; };
 		B592B9FB27CE0A97009F079C /* Scheduled.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FA27CE0A97009F079C /* Scheduled.swift */; };
 		B592B9FF27CE2079009F079C /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B592B9FE27CE2079009F079C /* TaskViewModel.swift */; };
@@ -97,6 +104,12 @@
 		B569230827F18A6A0010A04C /* UIColorPickerModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorPickerModal.swift; sourceTree = "<group>"; };
 		B569230A27F1BBEB0010A04C /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		B569429327F81CAB00A6E701 /* ScreenFallbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenFallbackView.swift; sourceTree = "<group>"; };
+		B57CCA08280859EA009C2E94 /* LottieAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieAnimationView.swift; sourceTree = "<group>"; };
+		B57CCA0A28085D90009C2E94 /* LottieModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieModalView.swift; sourceTree = "<group>"; };
+		B57CCA0D28085E0C009C2E94 /* points-collected.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "points-collected.json"; sourceTree = "<group>"; };
+		B57CCA0E28085E0C009C2E94 /* checkmark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = checkmark.json; sourceTree = "<group>"; };
+		B57CCA1028085E0C009C2E94 /* alarm-ringing.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "alarm-ringing.json"; sourceTree = "<group>"; };
+		B57CCA1528085EF2009C2E94 /* timeboxing-done.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "timeboxing-done.json"; sourceTree = "<group>"; };
 		B58C531D27D7035B00A48AE8 /* TaskDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetails.swift; sourceTree = "<group>"; };
 		B592B9FA27CE0A97009F079C /* Scheduled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scheduled.swift; sourceTree = "<group>"; };
 		B592B9FE27CE2079009F079C /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
@@ -145,6 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5F645DB27CB6E9900AF1716 /* CloudKit.framework in Frameworks */,
+				B57CCA07280859C8009C2E94 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +259,7 @@
 		B551BD9527C68647006FCB58 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B57CCA0C28085DA7009C2E94 /* Lottie Animations */,
 				B55CC17827FF513000A947C4 /* Static Model */,
 				B5A323B027C75CB300D9767C /* Montserrat-Italic.ttf */,
 				B5A323B127C75CB300D9767C /* Montserrat.ttf */,
@@ -280,6 +295,17 @@
 			path = "Static Model";
 			sourceTree = "<group>";
 		};
+		B57CCA0C28085DA7009C2E94 /* Lottie Animations */ = {
+			isa = PBXGroup;
+			children = (
+				B57CCA1028085E0C009C2E94 /* alarm-ringing.json */,
+				B57CCA0E28085E0C009C2E94 /* checkmark.json */,
+				B57CCA1528085EF2009C2E94 /* timeboxing-done.json */,
+				B57CCA0D28085E0C009C2E94 /* points-collected.json */,
+			);
+			path = "Lottie Animations";
+			sourceTree = "<group>";
+		};
 		B5D152F727D082C40073421B /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -298,6 +324,8 @@
 				B569429327F81CAB00A6E701 /* ScreenFallbackView.swift */,
 				B53B0F0F27FEE56C00688D49 /* AvatarView.swift */,
 				B5BE6CD5280156B20016E75A /* SubtasksChecklist.swift */,
+				B57CCA08280859EA009C2E94 /* LottieAnimationView.swift */,
+				B57CCA0A28085D90009C2E94 /* LottieModalView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -327,6 +355,7 @@
 			);
 			name = Timebox;
 			packageProductDependencies = (
+				B57CCA06280859C8009C2E94 /* Lottie */,
 			);
 			productName = Timebox;
 			productReference = B551BD8027C685F1006FCB58 /* Timebox.app */;
@@ -357,7 +386,7 @@
 			);
 			mainGroup = B551BD7727C685F1006FCB58;
 			packageReferences = (
-				B5D668F027FDFA2100F4B46A /* XCRemoteSwiftPackageReference "swift-collections" */,
+				B57CCA05280859C8009C2E94 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = B551BD8127C685F1006FCB58 /* Products */;
 			projectDirPath = "";
@@ -378,11 +407,15 @@
 				B5D668F427FDFB5A00F4B46A /* Avatar.plist in Resources */,
 				B5B957E728002E6500263721 /* LaunchScreen.storyboard in Resources */,
 				B5D668ED27FDEFCA00F4B46A /* Onboarding.plist in Resources */,
+				B57CCA1628085EF2009C2E94 /* timeboxing-done.json in Resources */,
 				B551BD8B27C685F2006FCB58 /* Preview Assets.xcassets in Resources */,
 				B599749327F49E5B00C188E2 /* WhiteNoise.plist in Resources */,
 				B551BD8827C685F2006FCB58 /* Assets.xcassets in Resources */,
 				B5A323B227C75CB300D9767C /* Montserrat-Italic.ttf in Resources */,
+				B57CCA1128085E0C009C2E94 /* points-collected.json in Resources */,
+				B57CCA1428085E0C009C2E94 /* alarm-ringing.json in Resources */,
 				B5B43B3627F0425800136E73 /* Achievements.json in Resources */,
+				B57CCA1228085E0C009C2E94 /* checkmark.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,6 +453,7 @@
 				B5D152FB27D0A5620073421B /* Backlog.swift in Sources */,
 				B5A0822C27EF1C92000F7BE3 /* String+extension.swift in Sources */,
 				B5DB8A3B27D4B57B000D8B51 /* Persistence.swift in Sources */,
+				B57CCA0B28085D90009C2E94 /* LottieModalView.swift in Sources */,
 				B5D408AE27EC7378007FEB90 /* OngoingCardView.swift in Sources */,
 				B569429427F81CAB00A6E701 /* ScreenFallbackView.swift in Sources */,
 				E557C1745A5FE5DD47C4AFB9 /* UIColor+extension.swift in Sources */,
@@ -441,6 +475,7 @@
 				A6D17918CA4D3FF150C49356 /* Color+extension.swift in Sources */,
 				B5B43B4427F0BB7D00136E73 /* HexagonShape.swift in Sources */,
 				B53B0F1027FEE56C00688D49 /* AvatarView.swift in Sources */,
+				B57CCA09280859EA009C2E94 /* LottieAnimationView.swift in Sources */,
 				4D2AF6B16791ACA9BEEF4801 /* Font+extension.swift in Sources */,
 				B592B9FB27CE0A97009F079C /* Scheduled.swift in Sources */,
 				B5F645DD27CB837700AF1716 /* LoginViewModel.swift in Sources */,
@@ -501,7 +536,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -556,7 +591,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -664,15 +699,23 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B5D668F027FDFA2100F4B46A /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+		B57CCA05280859C8009C2E94 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-collections.git";
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 3.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B57CCA06280859C8009C2E94 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B57CCA05280859C8009C2E94 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		B5DB8A6A27D50167000D8B51 /* Timebox.xcdatamodeld */ = {
