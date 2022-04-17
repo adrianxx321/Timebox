@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Backlog: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.dismiss) var dismiss
     // MARK: Core Data fetch request
     @FetchRequest var fetchedBacklog: FetchedResults<Task>
     // MARK: ViewModels
@@ -19,7 +19,7 @@ struct Backlog: View {
     // MARK: Tasks prepared from CD fetch
     var backlogTasks: [Task] {
         get {
-            let tasks = self.fetchedBacklog.map { $0 as Task }
+            let tasks = self.taskModel.getAllTasks(query: self.fetchedBacklog)
                 // Sort by name first
                 .sorted(by: {$0.taskTitle! < $1.taskTitle! })
                 // Then importance
@@ -46,22 +46,22 @@ struct Backlog: View {
                 
                 // Scrollview showing list of backlog tasks...
                 ScrollView(.vertical, showsIndicators: false) {
-                    if backlogTasks.isEmpty {
-                        ScreenFallbackView(title: "Your untimed to-do's",
-                                           image: Image("backlog"),
-                                           caption1: "Task with no specific date goes here.",
-                                           caption2: "")
-                    } else {
-                        VStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        if backlogTasks.isEmpty {
+                            ScreenFallbackView(title: "Your untimed to-do's",
+                                               image: Image("backlog"),
+                                               caption1: "Task with no specific date goes here.",
+                                               caption2: "")
+                        } else {
                             ForEach(backlogTasks, id: \.id) { task in
                                 TaskCardView(task: task)
                             }
-                        }.padding(.bottom, 32)
-                    }
+                        }
+                    }.padding(.bottom, 32)
                 }
             }
-            .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
+            .background(Color.backgroundPrimary)
         }
         .navigationBarHidden(true)
     }
@@ -70,7 +70,7 @@ struct Backlog: View {
         HStack() {
             // Back button leading to previous screen...
             Button {
-                presentationMode.wrappedValue.dismiss()
+                self.dismiss()
             } label: {
                 Image("chevron-left")
                     .resizable()

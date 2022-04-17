@@ -356,7 +356,7 @@ struct Timer: View {
                 self.time.upstream.connect().cancel()
                 
                 // Save the task if and only if timer is running...
-                if self.start { self.completionHandler(task) }
+                if self.start { withAnimation { self.completionHandler(task) } }
             }
         }
     }
@@ -506,7 +506,7 @@ struct Timer: View {
         }
         // What happens when user completed all tasks in the middle...
         .onChange(of: task.isCompleted) { completed in
-            if completed { self.completionHandler(task) }
+            if completed { withAnimation { self.completionHandler(task) } }
         }
     }
     
@@ -587,3 +587,17 @@ struct Timer: View {
         }
     }
 }
+
+// Helper
+private struct BackgroundBlurView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        DispatchQueue.main.async {
+            view.superview?.superview?.backgroundColor = .uiBlack.withAlphaComponent(0.6)
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+

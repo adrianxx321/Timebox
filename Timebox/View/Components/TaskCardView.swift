@@ -31,8 +31,7 @@ struct TaskCardView: View {
     }
     var canEdit: Bool {
         get {
-//            !taskModel.isOverdue(self.task)
-            true
+            !taskModel.isOverdue(self.task)
         }
     }
     var interval: String? {
@@ -49,6 +48,13 @@ struct TaskCardView: View {
                 
                 return "\(startTimeFormatted) - \(endTimeFormatted)"
             }
+        }
+    }
+    // See how many actions can be performed on the task
+    // Some may be edited & deleted, some only one, some totally none
+    var swipeBtnSpace: CGFloat {
+        get {
+            self.canEdit && self.canDelete ? 130 : self.canEdit || self.canDelete ? 65 : 0
         }
     }
     
@@ -82,7 +88,6 @@ struct TaskCardView: View {
                         }
                     }
                 } : nil
-                
             }
             
             // Clickable task card which leads to Task Details screen...
@@ -177,7 +182,7 @@ struct TaskCardView: View {
                     }
                     .onEnded { value in
                         withAnimation(.spring()) {
-                            dragOffset = value.translation.width <= -50 ? -130 : 0
+                            dragOffset = value.translation.width <= -50 ? -self.swipeBtnSpace : 0
                         }
                     })
             }

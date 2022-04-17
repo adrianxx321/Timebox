@@ -13,10 +13,11 @@ struct TaskDetails: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    
+    // MARK: ViewModels
     @ObservedObject var selectedTask: Task
     @ObservedObject private var eventModel = EventViewModel()
     @StateObject private var taskModel = TaskViewModel()
+    // MARK: UI States
     @State var showMoreOptions = false
     @State var showDeleteDialog = false
     
@@ -28,8 +29,7 @@ struct TaskDetails: View {
     }
     var canEdit: Bool {
         get {
-//            !taskModel.isOverdue(self.selectedTask)
-            true
+            !taskModel.isOverdue(self.selectedTask)
         }
     }
     var taskDateFormatted: String {

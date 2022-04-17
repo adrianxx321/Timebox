@@ -46,6 +46,7 @@ struct Root: View {
                 Scheduled()
                     .tag("tasks")
                     .environmentObject(self.GLOBAL)
+                    .navigationViewStyle(.stack)
                 
                 Timer()
                     .tag("timer")
