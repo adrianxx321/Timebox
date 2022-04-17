@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct LottieModalView: View {
-    @Binding var isPresent: Bool
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
+    @Environment(\.presentationMode) var presentationMode
     var lottieFile: String
     var loop: Bool = false
     var playbackSpeed: CGFloat = 1
     var caption: String
     
     var body: some View {
-        self.isPresent ?
         ZStack {
             VStack {
                 Text(self.caption)
@@ -29,16 +30,29 @@ struct LottieModalView: View {
                 
                 CTAButton(btnLabel: "Dismiss", btnFullSize: false, action: {
                     withAnimation {
-                        self.isPresent.toggle()
+                        self.presentationMode.wrappedValue.dismiss()
                     }
                 })
             }
             .padding(.vertical, 32)
-            .padding(.horizontal)
-            .background(Color.backgroundQuarternary)
+            .padding(.horizontal, GLOBAL.isSmallDevice ? 16 : 32)
+            .background(Color.backgroundTertiary)
             .cornerRadius(32)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background((Color.uiBlack).opacity(0.6)) : nil
+        .background(BackgroundBlurView())
     }
+}
+
+// Helper
+struct BackgroundBlurView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        DispatchQueue.main.async {
+            view.superview?.superview?.backgroundColor = .uiBlack.withAlphaComponent(0.6)
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
 }

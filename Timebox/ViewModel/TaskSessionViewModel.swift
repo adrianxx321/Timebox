@@ -18,7 +18,7 @@ class TaskSessionViewModel: ObservableObject {
         return query.map{$0 as TaskSession}
     }
     
-    func saveSession(task: Task, focusedDuration: Double, completedTasks: Int, usedPomodoro: Bool) {
+    func saveSession(task: Task, focusedDuration: Double, completedTasks: Int, usedPomodoro: Bool, scoreObtained: Int32) {
         // Deallocates the system resources for AVAudioPlayer
         self.audioPlayer?.stop()
         
@@ -27,7 +27,7 @@ class TaskSessionViewModel: ObservableObject {
         newSession.task = task
         newSession.timestamp = Date()
         newSession.focusedDuration = focusedDuration
-        newSession.ptsAwarded = self.computeScore(focusedDuration, completedTasks, usedPomodoro)
+        newSession.ptsAwarded = scoreObtained
         
         // Assigning entire session to Task to fulfill relationship constraint...
         task.session = newSession
@@ -70,9 +70,12 @@ class TaskSessionViewModel: ObservableObject {
     }
     
     /// System for calculating points awarded from timeboxing
-    private func computeScore(_ focusedDuration: Double, _ completedTasks: Int,
-                              _ usedPomodoro: Bool) -> Int32 {
-        return 0
+    func computeScore(_ focusedDuration: Double, _ completedTasks: Int,
+                      _ usedPomodoro: Bool) -> Int32 {
+        let timeMultiplier = usedPomodoro ? 2 : 1.5
+        let tasksDoneMultiplier = completedTasks <= 3 ? 1.5 : 1.75
+        
+        return Int32(((focusedDuration/60) * timeMultiplier) + (Double(completedTasks) * tasksDoneMultiplier))
     }
     
     func getTotalTimeboxedHours(data: [TaskSession]) -> String {
