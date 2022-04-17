@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct Backlog: View {
-    @Environment(\.dismiss) var dismiss
     // MARK: Core Data fetch request
     @FetchRequest var fetchedBacklog: FetchedResults<Task>
     // MARK: ViewModels
     @StateObject var taskModel = TaskViewModel()
     // MARK: UI States
     @State private var hideCompletedTasks = false
+    @Binding var isPresent: Bool
     
     // MARK: Tasks prepared from CD fetch
     var backlogTasks: [Task] {
@@ -29,13 +29,15 @@ struct Backlog: View {
         }
     }
     
-    init() {
+    init(isPresent: Binding<Bool>) {
         let predicate = NSPredicate(format: "taskStartTime == nil AND taskEndTime == nil", argumentArray: [])
 
         _fetchedBacklog = FetchRequest(
             entity: Task.entity(),
             sortDescriptors: [.init(keyPath: \Task.isImportant, ascending: false)],
             predicate: predicate)
+        
+        self._isPresent = isPresent
     }
     
     var body: some View {
@@ -70,7 +72,7 @@ struct Backlog: View {
         HStack() {
             // Back button leading to previous screen...
             Button {
-                self.dismiss()
+                self.isPresent.toggle()
             } label: {
                 Image("chevron-left")
                     .resizable()
@@ -105,8 +107,3 @@ struct Backlog: View {
     }
 }
 
-struct BacklogTasks_Previews: PreviewProvider {
-    static var previews: some View {
-        Backlog()
-    }
-}

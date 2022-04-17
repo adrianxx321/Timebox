@@ -20,6 +20,7 @@ struct Scheduled: View {
     // MARK: UI States
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
+    @State var showBacklog = false
     
     // MARK: Tasks prepared from CD fetch
     private var allTasks: [Task] {
@@ -92,7 +93,9 @@ struct Scheduled: View {
     private func HeaderView() -> some View {
         HStack {
             // Menu button leading to Planned Tasks...
-            NavigationLink(destination: Backlog()) {
+            NavigationLink(isActive: self.$showBacklog) {
+                Backlog(isPresent: self.$showBacklog)
+            } label: {
                 Image("menu")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
