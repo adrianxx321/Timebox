@@ -152,6 +152,8 @@ struct TaskModal: View {
                                     withAnimation {
                                         self.subtasks.append(taskModel.addSubtask())
                                     }
+                                    
+                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                 } label: {
                                     Image("add")
                                         .resizable()
@@ -370,6 +372,9 @@ struct TaskModal: View {
                                     }
                                     self.isEdited["taskStartTime"] = self.taskStartTime != taskModel.editTask?.taskStartTime
                                     self.isEdited["taskEndTime"] = self.taskEndTime != taskModel.editTask?.taskEndTime
+                                })
+                                .onTapGesture(perform: {
+                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                 })
 
                             selectedDuration == .timeboxed ?

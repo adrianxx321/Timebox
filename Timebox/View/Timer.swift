@@ -393,6 +393,8 @@ struct Timer: View {
                 withAnimation(self.pulseAnimation) {
                     self.isPulsing.toggle()
                 }
+                
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             } label: {
                 ControllerButtonLabel(icon: self.pause ? Image("play-f") : Image("pause-f"),
                                       padding: 24, cornerRadius: 32, customColor: .accent)
@@ -414,6 +416,8 @@ struct Timer: View {
                     // Stops the animation
                     self.isPulsing = false
                 }
+                
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             } label: {
                 ControllerButtonLabel(icon: Image("stop-f"), padding: 16,
                                       cornerRadius: 24, customColor: nil)

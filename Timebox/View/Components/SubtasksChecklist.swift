@@ -22,6 +22,8 @@ struct SubtasksChecklist: View {
                         withAnimation {
                             taskModel.completeSubtask(parentTask: self.parentTask, subtask: subtask)
                         }
+                        
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     } label: {
                         Image(subtask.isCompleted ? "checked" : "unchecked")
                             .resizable()

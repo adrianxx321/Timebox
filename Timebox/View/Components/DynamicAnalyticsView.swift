@@ -128,6 +128,7 @@ struct DynamicAnalyticsView: View {
                 .onTapGesture {
                     if self.percentageImprove != 0 {
                         showProductivityAlert.toggle()
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     }
                 }
                 .alert("Productivity \(self.percentageImprove > 0 ? "increased" : "decreased")",
@@ -213,8 +214,14 @@ struct DynamicAnalyticsView: View {
                 
                 // Interval selection...
                 Menu {
-                    Button("This week") { self.selectedRange = .week }
-                    Button("This month") { self.selectedRange = .month }
+                    Button("This week") {
+                        self.selectedRange = .week
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    }
+                    Button("This month") {
+                        self.selectedRange = .month
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    }
                 } label: {
                     HStack(spacing: 4) {
                         Text(self.selectedRange.description)

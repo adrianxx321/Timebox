@@ -210,6 +210,7 @@ struct Settings: View {
                         Button {
                             withAnimation {
                                 self.settingsModel.avatar = avatar
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                             }
                         } label: {
                             Image(avatar)

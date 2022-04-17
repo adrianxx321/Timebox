@@ -97,6 +97,7 @@ struct Root: View {
                 
                 Button {
                     taskModel.addNewTask.toggle()
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
                     Image("add")
                         .resizable()

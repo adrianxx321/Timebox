@@ -114,6 +114,7 @@ struct Scheduled: View {
                     hideCompletedTasks.toggle()
                 }
                 
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
                 Image(hideCompletedTasks ? "eye-close" : "eye")
                     .resizable()
@@ -129,7 +130,10 @@ struct Scheduled: View {
             
             // Month selector...
             HStack {
-                Button { currentWeek -= 1 } label: {
+                Button {
+                    currentWeek -= 1
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
                     Image("chevron-left")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -139,7 +143,11 @@ struct Scheduled: View {
                     .font(.headingH2())
                     .fontWeight(.bold)
                 
-                Button { currentWeek += 1 } label: {
+                Button {
+                    currentWeek += 1
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    
+                } label: {
                     Image("chevron-right")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -198,7 +206,10 @@ struct Scheduled: View {
                     )
                     .animation(.easeInOut, value: taskModel.currentDay)
                     // Update the view when select another day...
-                    .onTapGesture { taskModel.currentDay = day }
+                    .onTapGesture {
+                        taskModel.currentDay = day
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    }
                 }
             }
             .padding(.horizontal)

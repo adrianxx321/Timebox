@@ -73,6 +73,7 @@ struct OngoingCardView: View {
         .padding(16)
         .background(Color.uiWhite)
         .cornerRadius(16)
+        .buttonStyle(FlatLinkStyle.init())
     }
     
     private func CircularProgressBar() -> some View {

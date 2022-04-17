@@ -92,6 +92,8 @@ struct Backlog: View {
                 withAnimation {
                     hideCompletedTasks.toggle()
                 }
+                
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
                 Image(hideCompletedTasks ? "eye-close" : "eye")
                     .resizable()

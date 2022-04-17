@@ -8,6 +8,12 @@
 import SwiftUI
 
 // MARK: Global Variables
+struct FlatLinkStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+    }
+}
+
 class GlobalVariables: ObservableObject {
     /// Global variable to indicate if iPhone is X or later...
     var isNotched: Bool {

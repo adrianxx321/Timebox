@@ -118,10 +118,12 @@ struct Home: View {
                                                 if achievementModel.isUnlocked(medal, userPoints: self.totalPts) {
                                                     self.selectedMedal = medal
                                                     self.showUnlockedMedal.toggle()
+                                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                                 } else {
                                                     self.alertTitle = medal.title
                                                     self.alertMessage = medal.description
                                                     self.showMedalUnlockTips.toggle()
+                                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                                 }
                                             }
                                     }

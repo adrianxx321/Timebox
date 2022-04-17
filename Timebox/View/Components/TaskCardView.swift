@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-struct FlatLinkStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-    }
-}
-
 struct TaskCardView: View {
     // MARK: Dependencies (CD object)
     @ObservedObject var task: Task
@@ -70,6 +64,7 @@ struct TaskCardView: View {
                     // Brings up edit modal...
                     taskModel.addNewTask.toggle()
                     taskModel.editTask = task
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 }) : nil
                 
                 // Delete...
@@ -77,6 +72,7 @@ struct TaskCardView: View {
                 SwipeToButton(isDestructive: true, action: {
                     // Perform task deletion...
                     showDeleteDialog.toggle()
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 })
                 .confirmationDialog("Are you sure you want to delete this task?",
                                     isPresented: $showDeleteDialog,
@@ -158,6 +154,8 @@ struct TaskCardView: View {
                             // Perform update onto Core Data...
                             taskModel.completeTask(self.task)
                         }
+                        
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     } label: {
                         Image(task.isCompleted ? "checked" : "unchecked")
                             .resizable()

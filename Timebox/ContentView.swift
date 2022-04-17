@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var globalModel = GlobalVariables()
-    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     
     init() {
         // Globally define UIKit appearances that suits my app's theme
