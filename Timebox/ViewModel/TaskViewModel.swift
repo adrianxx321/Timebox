@@ -20,7 +20,8 @@ class TaskViewModel: ObservableObject {
     // Get current week...
     init() {
         let today = Date()
-        let calendar = Calendar.current
+        var calendar = Calendar.current
+        calendar.firstWeekday = 1
         
         // Because week ends at 00:00 of the Sunday (supposed to be 23:59)
         // Therefore we need to do some adjustment

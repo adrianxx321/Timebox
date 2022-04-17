@@ -373,9 +373,6 @@ struct TaskModal: View {
                                     self.isEdited["taskStartTime"] = self.taskStartTime != taskModel.editTask?.taskStartTime
                                     self.isEdited["taskEndTime"] = self.taskEndTime != taskModel.editTask?.taskEndTime
                                 })
-                                .onTapGesture(perform: {
-                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                })
 
                             selectedDuration == .timeboxed ?
                             Group {

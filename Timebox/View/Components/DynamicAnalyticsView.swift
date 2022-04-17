@@ -15,6 +15,7 @@ struct DynamicAnalyticsView: View {
     @State private var currentDoneTasks: [TaskSession]
     @State private var previousDoneTasks: [TaskSession]
     @State private var showProductivityAlert: Bool = false
+    @State private var selectedBar: String?
 
     // MARK: Data needed for analytics presentation
     var percentageImprove: Int {
@@ -260,16 +261,33 @@ struct DynamicAnalyticsView: View {
             HStack {
                 ForEach(data, id: \.0) { item in
                     VStack {
-                        Capsule()
-                            .fill(item.1 > 0 ? Color.uiLavender : Color.backgroundQuarternary)
-                            .frame(width: 16)
-                            .frame(height: max > 0 ? self.getBarHeight(point: Int(item.1), max: max, size: proxy.size) : 0)
+                        Button {
+                            withAnimation {
+                                self.selectedBar = item.0
+                            }
+                            
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        } label: {
+                            VStack {
+                                self.selectedBar == item.0 ?
+                                Text(Date.formatTimeDuration(item.1, unitStyle: .abbreviated,
+                                                             units: [.hour, .minute], padding: nil))
+                                .font(.caption())
+                                .fontWeight(.heavy)
+                                .foregroundColor(.accent) : nil
+                                
+                                Capsule()
+                                    .fill(self.selectedBar == item.0 ? Color.accent : Color.uiLavender)
+                                    .frame(width: 16)
+                                    .frame(height: max > 0 ? self.getBarHeight(point: Int(item.1), max: max, size: proxy.size) : 0)
+                            }
+                        }
                         
                         // Abbreviate day labels (e.g. Mon -> M)
                         Text(self.selectedRange == .week ? String(item.0.first!) : item.0)
                             .font(.caption())
                             .fontWeight(.semibold)
-                            .foregroundColor(.textSecondary)
+                            .foregroundColor(self.selectedBar == item.0 ? .accent : .textSecondary)
                             .multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -277,6 +295,7 @@ struct DynamicAnalyticsView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
+        .padding(.bottom, self.selectedBar != nil ? 20 : 0)
     }
     
     private func GraphFallback() -> some View {

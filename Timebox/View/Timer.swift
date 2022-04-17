@@ -207,6 +207,7 @@ struct Timer: View {
                         withAnimation {
                             // Dismiss this popover
                             self.popover = nil
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         }
                     })
                 }

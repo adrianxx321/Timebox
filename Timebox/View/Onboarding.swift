@@ -44,11 +44,17 @@ struct Onboarding: View {
                     self.currentIndex < (onboardingModel.carousels.count - 1) ?
                     // Next tab button
                     CTAButton(btnLabel: "Next", btnFullSize: false, action: {
-                        withAnimation { self.currentIndex += 1 }
+                        withAnimation {
+                            self.currentIndex += 1
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
                     }) :
                     // Go to login page
                     CTAButton(btnLabel: "Get Started", btnFullSize: false, action: {
-                        withAnimation { viewDismissed = true }
+                        withAnimation {
+                            viewDismissed = true
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
                     })
                 }
                 .frame(maxHeight: .infinity)
