@@ -16,6 +16,7 @@ struct Scheduled: View {
     // MARK: ViewModels
     @ObservedObject var eventModel = EventViewModel()
     @ObservedObject var sessionModel = TaskSessionViewModel()
+    @ObservedObject var notificationModel = NotificationViewModel()
     @StateObject var taskModel = TaskViewModel()
     // MARK: UI States
     @State private var currentWeek = 0
@@ -88,6 +89,17 @@ struct Scheduled: View {
             .navigationBarHidden(true)
         }
         .navigationBarHidden(true)
+        // MARK: Sends notification for task START & END
+        .onChange(of: self.timeboxedTasks) { tasks in
+            guard let task = tasks.first else { return }
+            
+            self.notificationModel.sendTaskStartsNotification(task: task)
+            self.notificationModel.sendTaskEndsNotification(task: task)
+        }
+        // MARK: Sends notification for all-day task START
+        .onChange(of: self.allDayTasks) { tasks in
+            self.notificationModel.sendAllDayTaskNotification(tasks: tasks)
+        }
     }
     
     private func HeaderView() -> some View {
