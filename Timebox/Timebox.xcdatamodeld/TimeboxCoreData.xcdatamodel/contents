@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E258" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="Subtask" representedClassName="Subtask" syncable="YES">
         <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="subtaskTitle" optional="YES" attributeType="String"/>
@@ -20,7 +20,7 @@
         <relationship name="subtask" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Subtask" inverseName="parentTask" inverseEntity="Subtask"/>
     </entity>
     <entity name="TaskSession" representedClassName="TaskSession" syncable="YES">
-        <attribute name="focusedDuration" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="focusedDuration" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="ptsAwarded" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -29,6 +29,6 @@
     <elements>
         <element name="Subtask" positionX="-253.4375" positionY="-26.25" width="128" height="103"/>
         <element name="Task" positionX="-59.15625" positionY="-93.86328125" width="128" height="194"/>
-        <element name="TaskSession" positionX="176.73046875" positionY="-70.23828125" width="128" height="118"/>
+        <element name="TaskSession" positionX="176.73046875" positionY="-70.23828125" width="128" height="104"/>
     </elements>
 </model>

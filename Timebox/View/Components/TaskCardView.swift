@@ -7,23 +7,17 @@
 
 import SwiftUI
 
-struct FlatLinkStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-    }
-}
-
 struct TaskCardView: View {
+    // MARK: Dependencies (CD object)
     @ObservedObject var task: Task
-    @StateObject var taskModel = TaskViewModel()
+    // MARK: ViewModels
+    @ObservedObject var taskModel = TaskViewModel()
+    // MARK: UI States
     @State private var dragOffset: CGFloat = 0
     @State private var showDeleteDialog = false
     @GestureState private var isDragging = false
     
-    // MARK: Core Data environment
-    @Environment(\.managedObjectContext) var context
-    
-    // Determines if this task can be edited and/or deleted
+    // MARK: Convenient derived properties
     var canDelete: Bool {
         get {
             task.ekeventID == nil
@@ -32,6 +26,29 @@ struct TaskCardView: View {
     var canEdit: Bool {
         get {
             !taskModel.isOverdue(self.task)
+        }
+    }
+    var interval: String? {
+        get {
+            guard let startTime = self.task.taskStartTime, let endTime = self.task.taskEndTime else {
+                return nil
+            }
+            
+            if taskModel.isAllDayTask(self.task) {
+                return nil
+            } else {
+                let startTimeFormatted = startTime.formatDateTime(format: "h:mm a")
+                let endTimeFormatted = endTime.formatDateTime(format: "h:mm a")
+                
+                return "\(startTimeFormatted) - \(endTimeFormatted)"
+            }
+        }
+    }
+    // See how many actions can be performed on the task
+    // Some may be edited & deleted, some only one, some totally none
+    var swipeBtnSpace: CGFloat {
+        get {
+            self.canEdit && self.canDelete ? 130 : self.canEdit || self.canDelete ? 65 : 0
         }
     }
     
@@ -47,6 +64,7 @@ struct TaskCardView: View {
                     // Brings up edit modal...
                     taskModel.addNewTask.toggle()
                     taskModel.editTask = task
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 }) : nil
                 
                 // Delete...
@@ -54,6 +72,7 @@ struct TaskCardView: View {
                 SwipeToButton(isDestructive: true, action: {
                     // Perform task deletion...
                     showDeleteDialog.toggle()
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 })
                 .confirmationDialog("Are you sure you want to delete this task?",
                                     isPresented: $showDeleteDialog,
@@ -61,11 +80,10 @@ struct TaskCardView: View {
                     Button("Delete Task", role: .destructive) {
                         withAnimation {
                             dragOffset = 0
-                            taskModel.deleteTask(context: self.context, task: self.task)
+                            taskModel.deleteTask(task: self.task)
                         }
                     }
                 } : nil
-                
             }
             
             // Clickable task card which leads to Task Details screen...
@@ -118,13 +136,13 @@ struct TaskCardView: View {
                         // Show the task duration if
                         // 1. It has time constaint
                         // 2. It is not all-day long
-                        taskModel.isScheduledTask(task) && !taskModel.isAllDayTask(task) ?
-                        Text("\(taskModel.formatDate(date: task.taskStartTime!, format: "h:mm a")) - \(taskModel.formatDate(date: task.taskEndTime!, format: "h:mm a"))")
-                            .font(.caption())
-                            .fontWeight(.semibold)
-                            // Text color varies depending on overdue and/or completion status...
-                            .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textSecondary)
-                        : nil
+                        if let interval = self.interval {
+                            Text(interval)
+                                .font(.caption())
+                                .fontWeight(.semibold)
+                                // Text color varies depending on overdue and/or completion status...
+                                .foregroundColor((task.isCompleted || taskModel.isOverdue(task)) ? .textTertiary : .textSecondary)
+                        }
                     }
                     
                     Spacer()
@@ -134,8 +152,10 @@ struct TaskCardView: View {
                     Button {
                         withAnimation() {
                             // Perform update onto Core Data...
-                            taskModel.completeTask(self.task, context: self.context)
+                            taskModel.completeTask(self.task)
                         }
+                        
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     } label: {
                         Image(task.isCompleted ? "checked" : "unchecked")
                             .resizable()
@@ -160,7 +180,7 @@ struct TaskCardView: View {
                     }
                     .onEnded { value in
                         withAnimation(.spring()) {
-                            dragOffset = value.translation.width <= -50 ? -130 : 0
+                            dragOffset = value.translation.width <= -50 ? -self.swipeBtnSpace : 0
                         }
                     })
             }

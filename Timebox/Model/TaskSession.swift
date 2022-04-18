@@ -21,7 +21,7 @@ extension TaskSession {
     }
 
     @NSManaged public var id: UUID?
-    @NSManaged public var focusedDuration: Int64
+    @NSManaged public var focusedDuration: Double
     @NSManaged public var timestamp: Date?
     @NSManaged public var ptsAwarded: Int32
     @NSManaged public var task: Task?

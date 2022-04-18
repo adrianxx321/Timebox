@@ -10,16 +10,14 @@ import SwiftUI
 struct CTAButton: View {
     var btnLabel: String
     var btnFullSize: Bool
-    var btnAction: () -> Void
+    var action: () -> Void
     
 
     var body: some View {
         Button {
-            
             // MARK: Perform action using function passed
-            btnAction()
+            action()
         } label: {
-            
             // MARK: Textual label of button
             Text("\(btnLabel)")
                 .font(.subheading1())
@@ -31,8 +29,7 @@ struct CTAButton: View {
                 // MARK: Button length based on screen width minus horizontal margins
                 .frame(maxWidth: btnFullSize ? UIScreen.main.bounds.width - 64 : nil)
                 // MARK: Gives capsule shape for the button
-                .background(Capsule()
-                                .foregroundColor(.accent))
+                .background(Capsule().foregroundColor(.accent))
         }
     }
 }

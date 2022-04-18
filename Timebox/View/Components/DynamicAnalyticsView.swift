@@ -8,27 +8,29 @@
 import SwiftUI
 
 struct DynamicAnalyticsView: View {
+    // MARK: ViewModels
+    @ObservedObject var sessionModel = TaskSessionViewModel()
+    // MARK: UI States
     @Binding private var selectedRange: GraphRange
     @State private var currentDoneTasks: [TaskSession]
     @State private var previousDoneTasks: [TaskSession]
     @State private var showProductivityAlert: Bool = false
-    @StateObject var sessionModel = TaskSessionViewModel()
-    
+    @State private var selectedBar: String?
+
     // MARK: Data needed for analytics presentation
-    // Percentage of productivity improvement for display in summary card view
-    var percentage: Int {
+    var percentageImprove: Int {
         get {
             self.sessionModel.compareProductivity(current: currentDoneTasks, previous: previousDoneTasks)
         }
     }
     // Graph columns and values presented in array of tuples
-    var data: [(String, Int64)] {
+    var data: [(String, Double)] {
         get {
             self.selectedRange == .week ? sessionModel.presentGraphByWeek(data: currentDoneTasks)
             : self.sessionModel.presentGraphByMonth(data: currentDoneTasks)
         }
     }
-    var maxBarHeight: Int64 {
+    var maxBarHeight: Double {
         get {
             self.data.max { first, second in
                 return second.1 > first.1
@@ -38,10 +40,10 @@ struct DynamicAnalyticsView: View {
     // String formatted in "1h 2m" etc.
     var totalDuration: [String] {
         get {
-            let totalSeconds = self.data.reduce(0) { $0 + $1.1 }
-            let formattedDuration = sessionModel.formatTimeInterval(interval: TimeInterval(totalSeconds),
-                                                                 unitsStyle: .full,
-                                                                 units: [.hour, .minute])
+            let totalSeconds = TimeInterval(self.data.reduce(0) { $0 + $1.1 })
+            let formattedDuration = Date.formatTimeDuration(totalSeconds, unitStyle: .full,
+                                                            units: [.hour, .minute], padding: nil)
+            
             return formattedDuration.components(separatedBy: " ")
         }
     }
@@ -123,22 +125,23 @@ struct DynamicAnalyticsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             // Summary card view...
-            SummaryCardView(percentage: percentage)
+            SummaryCardView(percentage: self.percentageImprove)
                 .onTapGesture {
-                    if percentage != 0 {
+                    if self.percentageImprove != 0 {
                         showProductivityAlert.toggle()
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     }
                 }
-                .alert("Productivity \(percentage > 0 ? "increased" : "decreased")",
+                .alert("Productivity \(self.percentageImprove > 0 ? "increased" : "decreased")",
                        isPresented: $showProductivityAlert,
                        actions: {}, message: {
-                    percentage > 0 ?
-                    Text("You have been able to focus for \(percentage)% longer than last \(selectedRange.rawValue).")
-                    : Text("Your ability to focus have dropped \(-percentage)% compared to last \(selectedRange.rawValue).")
+                    self.percentageImprove > 0 ?
+                    Text("You have been able to focus for \(self.percentageImprove)% longer than last \(selectedRange.rawValue).")
+                    : Text("Your ability to focus have dropped \(-self.percentageImprove)% compared to last \(selectedRange.rawValue).")
                 })
             
             // Bar graph view...
-            GraphView(data: data)
+            GraphView(data: self.data)
         }
     }
     
@@ -175,7 +178,7 @@ struct DynamicAnalyticsView: View {
         .cornerRadius(16)
     }
     
-    private func GraphView(data: [(String, Int64)]) -> some View {
+    private func GraphView(data: [(String, Double)]) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Timeboxed Duration")
                 .font(.subheading1())
@@ -212,11 +215,17 @@ struct DynamicAnalyticsView: View {
                 
                 // Interval selection...
                 Menu {
-                    Button("This week") { selectedRange = .week }
-                    Button("This month") { selectedRange = .month }
+                    Button("This week") {
+                        self.selectedRange = .week
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    }
+                    Button("This month") {
+                        self.selectedRange = .month
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    }
                 } label: {
                     HStack(spacing: 4) {
-                        Text(selectedRange.description)
+                        Text(self.selectedRange.description)
                             .font(.caption())
                             .fontWeight(.semibold)
                         
@@ -235,8 +244,8 @@ struct DynamicAnalyticsView: View {
             // Presentation of graph...
             // Show fallback instead if graph is empty
             Group {
-                maxBarHeight > 0 ? GraphRenderer(data: data, max: Int(maxBarHeight)) : nil
-                maxBarHeight == 0 ? GraphFallback() : nil
+                self.maxBarHeight > 0 ? GraphRenderer(data: data, max: Int(maxBarHeight)) : nil
+                self.maxBarHeight == 0 ? GraphFallback() : nil
             }
             .frame(height: 128, alignment: .leading)
         }
@@ -247,21 +256,38 @@ struct DynamicAnalyticsView: View {
         .cornerRadius(24)
     }
     
-    private func GraphRenderer(data: [(String, Int64)], max: Int) -> some View {
+    private func GraphRenderer(data: [(String, Double)], max: Int) -> some View {
         GeometryReader { proxy in
             HStack {
                 ForEach(data, id: \.0) { item in
                     VStack {
-                        Capsule()
-                            .fill(item.1 > 0 ? Color.uiLavender : Color.backgroundQuarternary)
-                            .frame(width: 16)
-                            .frame(height: max > 0 ? getBarHeight(point: Int(item.1), max: max, size: proxy.size) : 0)
+                        Button {
+                            withAnimation {
+                                self.selectedBar = item.0
+                            }
+                            
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        } label: {
+                            VStack {
+                                self.selectedBar == item.0 ?
+                                Text(Date.formatTimeDuration(item.1, unitStyle: .abbreviated,
+                                                             units: [.hour, .minute], padding: nil))
+                                .font(.caption())
+                                .fontWeight(.heavy)
+                                .foregroundColor(.accent) : nil
+                                
+                                Capsule()
+                                    .fill(self.selectedBar == item.0 ? Color.accent : Color.uiLavender)
+                                    .frame(width: 16)
+                                    .frame(height: max > 0 ? self.getBarHeight(point: Int(item.1), max: max, size: proxy.size) : 0)
+                            }
+                        }
                         
                         // Abbreviate day labels (e.g. Mon -> M)
-                        Text(selectedRange == .week ? String(item.0.first!) : item.0)
+                        Text(self.selectedRange == .week ? String(item.0.first!) : item.0)
                             .font(.caption())
                             .fontWeight(.semibold)
-                            .foregroundColor(.textSecondary)
+                            .foregroundColor(self.selectedBar == item.0 ? .accent : .textSecondary)
                             .multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -269,6 +295,7 @@ struct DynamicAnalyticsView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
+        .padding(.bottom, self.selectedBar != nil ? 20 : 0)
     }
     
     private func GraphFallback() -> some View {

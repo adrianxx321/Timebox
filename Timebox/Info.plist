@@ -7,6 +7,8 @@
 		<string>Montserrat-Italic.ttf</string>
 		<string>Montserrat.ttf</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 </dict>

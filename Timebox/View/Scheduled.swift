@@ -8,14 +8,20 @@
 import SwiftUI
 
 struct Scheduled: View {
-    // MARK: Core Data injected environment context
-    @Environment(\.managedObjectContext) var context
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
+    // MARK: Core Data fetch request
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     @Namespace var animation
+    // MARK: ViewModels
     @ObservedObject var eventModel = EventViewModel()
+    @ObservedObject var sessionModel = TaskSessionViewModel()
+    @ObservedObject var notificationModel = NotificationViewModel()
     @StateObject var taskModel = TaskViewModel()
+    // MARK: UI States
     @State private var currentWeek = 0
     @State private var hideCompletedTasks = false
+    @State var showBacklog = false
     
     // MARK: Tasks prepared from CD fetch
     private var allTasks: [Task] {
@@ -35,6 +41,10 @@ struct Scheduled: View {
             // Get scheduled task
             let filtered = taskModel.filterScheduledTasks(data: self.allTasks, hideCompleted: self.hideCompletedTasks).map { $0 as Task }
             return filtered.filter { taskModel.isAllDayTask($0) }
+                // Sort by name first
+                .sorted(by: {$0.taskTitle! < $1.taskTitle! })
+                // Then importance
+                .sorted(by: {$0.isImportant && !$1.isImportant })
         }
     }
     
@@ -55,7 +65,7 @@ struct Scheduled: View {
                     CalendarView()
                         .padding(.vertical)
                 }
-                .padding(.top, isNotched ? 47: 20)
+                .padding(.top, GLOBAL.isNotched ? 47: 20)
                 .background(Color.uiWhite)
                 .cornerRadius(40, corners: [.bottomLeft, .bottomRight])
                 .shadow(radius: 12, x: 0, y: 3)
@@ -77,27 +87,27 @@ struct Scheduled: View {
             .ignoresSafeArea(edges: .top)
             .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
-            .onAppear {
-                withAnimation {
-                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
-                }
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
-                withAnimation {
-                    // As per the instruction, so we fetch the EKCalendar again.
-                    eventModel.loadCalendars()
-                    eventModel.loadEvents()
-                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
-                }
-            }
         }
         .navigationBarHidden(true)
+        // MARK: Sends notification for task START & END
+        .onChange(of: self.timeboxedTasks) { tasks in
+            guard let task = tasks.first else { return }
+            
+            self.notificationModel.sendTaskStartsNotification(task: task)
+            self.notificationModel.sendTaskEndsNotification(task: task)
+        }
+        // MARK: Sends notification for all-day task START
+        .onChange(of: self.allDayTasks) { tasks in
+            self.notificationModel.sendAllDayTaskNotification(tasks: tasks)
+        }
     }
     
     private func HeaderView() -> some View {
         HStack {
             // Menu button leading to Planned Tasks...
-            NavigationLink(destination: Backlog()) {
+            NavigationLink(isActive: self.$showBacklog) {
+                Backlog(isPresent: self.$showBacklog)
+            } label: {
                 Image("menu")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -119,6 +129,7 @@ struct Scheduled: View {
                     hideCompletedTasks.toggle()
                 }
                 
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
                 Image(hideCompletedTasks ? "eye-close" : "eye")
                     .resizable()
@@ -134,18 +145,24 @@ struct Scheduled: View {
             
             // Month selector...
             HStack {
-                Button { currentWeek -= 1 } label: {
+                Button {
+                    currentWeek -= 1
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
                     Image("chevron-left")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 32)
                 }
-                
-                Text("\(taskModel.formatDate(date: taskModel.currentDay, format: "MMMM y"))")
+                Text(taskModel.currentDay.formatDateTime(format: "MMMM y"))
                     .font(.headingH2())
                     .fontWeight(.bold)
                 
-                Button { currentWeek += 1 } label: {
+                Button {
+                    currentWeek += 1
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    
+                } label: {
                     Image("chevron-right")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -172,8 +189,7 @@ struct Scheduled: View {
                     VStack(spacing: 8) {
                         // MARK: Day label
                         // EEEEE returns day as M,T,W ...
-                        Text(taskModel.formatDate(date: day,
-                                                  format: "EEEEE"))
+                        Text(day.formatDateTime(format: "EEEEE"))
                             .font(.paragraphP1())
                             .fontWeight(.bold)
                             .textCase(.uppercase)
@@ -183,7 +199,7 @@ struct Scheduled: View {
                         
                         // MARK: Date label
                         // dd will return date as 01,02 ...
-                        Text(taskModel.formatDate(date: day, format: "dd"))
+                        Text(day.formatDateTime(format: "dd"))
                             .font(.subheading1())
                             .fontWeight(.bold)
                             .textCase(.uppercase)
@@ -205,7 +221,10 @@ struct Scheduled: View {
                     )
                     .animation(.easeInOut, value: taskModel.currentDay)
                     // Update the view when select another day...
-                    .onTapGesture { taskModel.currentDay = day }
+                    .onTapGesture {
+                        taskModel.currentDay = day
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    }
                 }
             }
             .padding(.horizontal)

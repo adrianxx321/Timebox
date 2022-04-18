@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct OngoingCardView: View {
-    @StateObject var taskModel = TaskViewModel()
+    // MARK: Dependencies (CD object)
     @ObservedObject var task: Task
+    // MARK: ViewModels
+    @StateObject var taskModel = TaskViewModel()
     
+    // MARK: Derived properties
     // Numbers needed for circular progress bar presentation
     var percentage: Float {
         get {
@@ -49,7 +52,7 @@ struct OngoingCardView: View {
                         
                     // Task time remaining...
                     // If it's not timeboxed then show how many tasks left instead
-                    Text(taskModel.getTimeRemaining(task: task))
+                    Text(taskModel.getTaskTimeRemaining(task: task))
                         .font(.caption())
                         .fontWeight(.semibold)
                         .foregroundColor(.textTertiary)
@@ -66,10 +69,11 @@ struct OngoingCardView: View {
             : nil
         }
         .fixedSize(horizontal: false, vertical: true)
-        .frame(maxHeight: 128)
+        .frame(minWidth: 144, maxHeight: 128, alignment: .leading)
         .padding(16)
         .background(Color.uiWhite)
         .cornerRadius(16)
+        .buttonStyle(FlatLinkStyle.init())
     }
     
     private func CircularProgressBar() -> some View {

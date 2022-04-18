@@ -34,17 +34,21 @@ class AchievementsViewModel: ObservableObject {
     func getCurrentRank(userPoints: Int32) -> String {
         let currentRank = achievements.reversed().first(where: {
             userPoints >= $0.unlockedAt
-        })?.title.components(separatedBy: " ").first! ?? "No ranking"
+        })?.title.components(separatedBy: " ").first ?? "No ranking"
 
         return currentRank
     }
     
     func getNextRank(userPoints: Int32) -> String {
-        let nextRank = achievements.max { this, next in
-            return this.unlockedAt...next.unlockedAt ~= userPoints
-        }?.title.components(separatedBy: " ").first
-        
-        return nextRank!
+        if userPoints > achievements.last!.unlockedAt {
+            return "None"
+        } else {
+            let nextRank = achievements.max { this, next in
+                return this.unlockedAt...next.unlockedAt ~= userPoints
+            }?.title.components(separatedBy: " ").first ?? "None"
+            
+            return nextRank
+        }
     }
     
     func getPtsToNextRank(userPoints: Int32) -> Int32 {

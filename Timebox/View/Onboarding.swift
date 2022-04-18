@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct Onboarding: View {
+    // MARK: ViewModels
     @StateObject private var onboardingModel = OnboardingViewModel()
-    // Current page of carousels
+    // MARK: UI States
     @State private var currentIndex = 0
     @State private var viewDismissed = false
     
@@ -40,9 +41,20 @@ struct Onboarding: View {
                         }
                     }
                     
-                    // Go to login page...
-                    CTAButton(btnLabel: "Get Started", btnFullSize: false, btnAction: {
-                        withAnimation { viewDismissed = true }
+                    self.currentIndex < (onboardingModel.carousels.count - 1) ?
+                    // Next tab button
+                    CTAButton(btnLabel: "Next", btnFullSize: false, action: {
+                        withAnimation {
+                            self.currentIndex += 1
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
+                    }) :
+                    // Go to login page
+                    CTAButton(btnLabel: "Get Started", btnFullSize: false, action: {
+                        withAnimation {
+                            viewDismissed = true
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
                     })
                 }
                 .frame(maxHeight: .infinity)
@@ -52,7 +64,8 @@ struct Onboarding: View {
         .overlay(
             Group {
                 if viewDismissed {
-                    Login().transition(.move(edge: .trailing))
+                    Login()
+                        .transition(.move(edge: .trailing))
                 }
             }
         )
@@ -85,8 +98,5 @@ struct Onboarding: View {
 struct OnboardingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Onboarding()
-            .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro Max"))
-        Onboarding()
-            .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
     }
 }

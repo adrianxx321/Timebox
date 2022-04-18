@@ -10,6 +10,9 @@ import AuthenticationServices
 import CloudKit
 
 struct Login: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
+    // MARK: ViewModels
     @StateObject private var loginData = LoginViewModel()
     
     var body: some View {
@@ -61,7 +64,7 @@ struct Login: View {
                 }
             )
             .signInWithAppleButtonStyle(.black)
-            .frame(height: isSmallDevice ? 50 : 56)
+            .frame(height: GLOBAL.isSmallDevice ? 50 : 56)
             .clipShape(Capsule())
             .padding(.horizontal, 32)
             
@@ -74,8 +77,5 @@ struct Login: View {
 struct LoginScreen_Previews: PreviewProvider {
     static var previews: some View {
         Login()
-            .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro Max"))
-        Login()
-            .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
     }
 }

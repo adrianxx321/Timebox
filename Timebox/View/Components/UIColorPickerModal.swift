@@ -10,6 +10,7 @@ import SwiftUI
 // This color picker was created because the default one used in SwiftUI
 // Does not allow for dismissal when presented modally
 struct UIColorPickerModal: UIViewControllerRepresentable {
+    // MARK: UI States
     @Binding var isPresented: Bool
     @Binding var selectedColor: UIColor
 

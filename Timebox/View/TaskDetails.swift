@@ -10,16 +10,18 @@ import CoreData
 import EventKit
 
 struct TaskDetails: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    // MARK: ViewModels
     @ObservedObject var selectedTask: Task
     @ObservedObject private var eventModel = EventViewModel()
     @StateObject private var taskModel = TaskViewModel()
+    // MARK: UI States
     @State var showMoreOptions = false
     @State var showDeleteDialog = false
     
-    // MARK: Core Data environment
-    @Environment(\.managedObjectContext) var context
-    
+    // MARK: Convenient derived properties
     var canDelete: Bool {
         get {
             selectedTask.ekeventID == nil
@@ -28,6 +30,34 @@ struct TaskDetails: View {
     var canEdit: Bool {
         get {
             !taskModel.isOverdue(self.selectedTask)
+        }
+    }
+    var taskDateFormatted: String {
+        get {
+            guard let startTime = self.selectedTask.taskStartTime else {
+                return "None"
+            }
+            
+            return "\(startTime.formatDateTime(format: "EEEE, d MMMM yyyy"))"
+        }
+    }
+    var intervalDuration: String {
+        get {
+            guard let startTime = self.selectedTask.taskStartTime, let endTime = self.selectedTask.taskEndTime else {
+                return "None"
+            }
+            
+            if taskModel.isAllDayTask(self.selectedTask) {
+                return "All-day"
+            } else {
+                let startTimeFormatted = startTime.formatDateTime(format: "hh:mm a")
+                let endTimeFormatted = endTime.formatDateTime(format: "hh:mm a")
+                let duration = endTime - startTime
+                let intervalFormated = Date.formatTimeDuration(duration, unitStyle: .full,
+                                                               units: [.hour, .minute], padding: nil)
+                
+                return "\(startTimeFormatted) - \(endTimeFormatted) (\(intervalFormated))"
+            }
         }
     }
     
@@ -45,40 +75,13 @@ struct TaskDetails: View {
                         // Subtasks section...
                         TaskSectionView(sectionTitle: "Subtasks") {
                             // Subtasks breakdown, if any...
-                            VStack(alignment: .leading, spacing: 16) {
-                                ForEach(selectedTask.subtasks, id: \.id) { subtask in
-                                    HStack(spacing: 12) {
-                                        // Checkbox for subtask completion...
-                                        Button {
-                                            withAnimation {
-                                                taskModel.completeSubtask(parentTask: self.selectedTask, subtask: subtask, context: self.context)
-                                            }
-                                        } label: {
-                                            Image(subtask.isCompleted ? "checked" : "unchecked")
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: 28)
-                                                .foregroundColor(.accent)
-                                                .padding(.trailing, 8)
-                                        }
-                                        
-                                        // Subtask title...
-                                        Text(subtask.subtaskTitle ?? "")
-                                            .font(.paragraphP1())
-                                            .fontWeight(.bold)
-                                            .foregroundColor(subtask.isCompleted ? .textSecondary : .textPrimary)
-                                            .if(subtask.isCompleted) { text in
-                                                text.strikethrough()
-                                            }
-                                    }
-                                }
-                                
-                                // Indicator for no subtask...
-                                selectedTask.subtasks.count <= 0 ?
-                                Text("This task doesn't have any subtask.")
+                            if self.selectedTask.subtasks.count > 0 {
+                                SubtasksChecklist(parentTask: self.selectedTask)
+                            } else {
+                                Text("This task doesn't have contain any subtask.")
                                     .font(.paragraphP1())
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.textPrimary) : nil
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.textPrimary)
                             }
                         }
                         
@@ -97,13 +100,7 @@ struct TaskDetails: View {
                                         .background(Circle()
                                             .foregroundColor(.uiLightPurple))
                                     
-                                    taskModel.isScheduledTask(selectedTask) ?
-                                    Text(taskModel.formatDate(date: selectedTask.taskStartTime!,
-                                                              format: "EEEE, d MMMM yyyy"))
-                                        .font(.paragraphP1())
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.textPrimary)
-                                    : Text("None")
+                                    Text(self.taskDateFormatted)
                                         .font(.paragraphP1())
                                         .fontWeight(.bold)
                                         .foregroundColor(.textPrimary)
@@ -120,29 +117,7 @@ struct TaskDetails: View {
                                         .background(Circle()
                                             .foregroundColor(.uiLightPurple))
                                     
-                                    // Complicated task duration calculation...
-                                    let startTime = taskModel.formatDate(date: selectedTask.taskStartTime ?? Date(),
-                                                                         format: "hh:mm a")
-                                    
-                                    let endTime = taskModel.formatDate(date: selectedTask.taskEndTime ?? Date(),
-                                                                       format: "hh:mm a")
-                                    
-                                    let interval = taskModel.formatTimeInterval(startTime: selectedTask.taskStartTime ?? Date(),
-                                                                                endTime: selectedTask.taskEndTime ?? Date(),
-                                                                                unitStyle: .full,
-                                                                                units: [.hour, .minute])
-                                    
-                                    taskModel.isScheduledTask(selectedTask) ?
-                                        taskModel.isAllDayTask(selectedTask) ?
-                                        Text("All-day")
-                                            .font(.paragraphP1())
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.textPrimary)
-                                        : Text("\(startTime) - \(endTime) (\(interval))")
-                                            .font(.paragraphP1())
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.textPrimary)
-                                    : Text("None")
+                                    Text("\(self.intervalDuration)")
                                         .font(.paragraphP1())
                                         .fontWeight(.bold)
                                         .foregroundColor(.textPrimary)
@@ -158,11 +133,11 @@ struct TaskDetails: View {
             // Button for start timeboxing for ongoing task...
             if taskModel.isScheduledTask(selectedTask) {
                 if selectedTask.taskStartTime! >= Date() && selectedTask.taskEndTime! < Date() {
-                    CTAButton(btnLabel: "Start Timeboxing", btnFullSize: true, btnAction: {
+                    CTAButton(btnLabel: "Start Timeboxing", btnFullSize: true, action: {
                         
                     })
                     .frame(maxWidth: .infinity)
-                    .padding(.bottom, isNotched ? 0 : 15)
+                    .padding(.bottom, GLOBAL.isNotched ? 0 : 15)
                 }
             }
         }
@@ -228,7 +203,7 @@ struct TaskDetails: View {
                                 isPresented: $showDeleteDialog,
                                 titleVisibility: .visible) {
                 Button("Delete Task", role: .destructive) {
-                    taskModel.deleteTask(context: self.context, task: selectedTask)
+                    taskModel.deleteTask(task: selectedTask)
                     // Go back to previous screen after deletion...
                     presentationMode.wrappedValue.dismiss()
                 }
@@ -271,7 +246,7 @@ struct TaskDetails: View {
             // Indicate if task comes from imported calendar...
             if let ekEventID = selectedTask.ekeventID {
                 let foundEvent = eventModel.lookupCalendarEvent(ekEventID)
-                let foundCalendarSource = foundEvent?.calendar.source.title ?? "Calendar"
+                let foundCalendarSource = foundEvent?.calendar.source.title ?? "Unknown Calendar"
                 
                 HStack(spacing: 8) {
                     Image("alert")
@@ -285,7 +260,7 @@ struct TaskDetails: View {
                         Text("This task/event comes from: ")
                         .fontWeight(.semibold)
                         .foregroundColor(.textSecondary) +
-                        Text(foundCalendarSource.uppercased())
+                        Text("\(foundCalendarSource) Calendar")
                             .fontWeight(.bold)
                             .foregroundColor(Color(selectedTask.color ?? .accent))
                     }

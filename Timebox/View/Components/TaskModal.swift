@@ -26,11 +26,13 @@ private enum TaskDuration: String, CaseIterable, Identifiable {
 }
 
 struct TaskModal: View {
+    // MARK: ViewModels
+    @EnvironmentObject var taskModel: TaskViewModel
     // MARK: Dismissal action for modal pop up
     @Environment(\.dismiss) var dismiss
+    // MARK: UI States
     @State private var isModalActive = false
     @State private var showColorPicker = false
-    // A dictionary to keep track of changes in all fields
     @State private var isEdited: [String: Bool] = [
         "taskTitle" : false,
         "subtasks" : false,
@@ -43,7 +45,7 @@ struct TaskModal: View {
     ]
     @State private var showDiscardConfirm = false
     
-    // Task properties that will be directly saved to Core Data...
+    // MARK: Task properties to be saved to Core Data...
     @State var id: UUID = UUID.init()
     @State var taskTitle: String = ""
     @State var subtasks: [Subtask] = []
@@ -82,12 +84,7 @@ struct TaskModal: View {
             return task.ekeventID != nil
         }
     }
-    
-    // MARK: Core Data Context
-    @Environment(\.managedObjectContext) var context
-    @EnvironmentObject var taskModel: TaskViewModel
-    
-    // MARK: Predefined color list
+    // Predefined color list
     static private let colors = [
         ColorChoice(name: "Red", value: UIColor.red),
         ColorChoice(name: "Blue", value: UIColor.blue),
@@ -96,6 +93,7 @@ struct TaskModal: View {
         ColorChoice(name: "Green", value: UIColor.green),
     ]
     
+    // MARK: UI States
     @State private var selectedColor: ColorChoice = ColorChoice(name: "Purple", value: UIColor.purple)
     @State private var selectedCustomColor: ColorChoice = ColorChoice(name: "Custom...", value: UIColor.purple)
     @State private var selectedDuration: TaskDuration = .untimed
@@ -152,8 +150,10 @@ struct TaskModal: View {
                             HStack(spacing: 16) {
                                 Button {
                                     withAnimation {
-                                        self.subtasks.append(taskModel.addSubtask(context: self.context))
+                                        self.subtasks.append(taskModel.addSubtask())
                                     }
+                                    
+                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                 } label: {
                                     Image("add")
                                         .resizable()
@@ -308,21 +308,21 @@ struct TaskModal: View {
                                     // Start & end time will always be 0000 & 2359
                                     guard let existingTask = taskModel.editTask else {
                                         self.taskStartTime = Calendar.current.startOfDay(for: Date())
-                                        self.taskEndTime = taskModel.getOneMinToMidnight(taskStartTime!)
+                                        self.taskEndTime = taskStartTime!.getOneMinToMidnight()
                                         
                                         return
                                     }
                                 self.taskStartTime = taskModel.isAllDayTask(existingTask) ? existingTask.taskStartTime : Calendar.current.startOfDay(for: Date())
-                                self.taskEndTime = taskModel.getOneMinToMidnight(taskStartTime!)
+                                self.taskEndTime = taskStartTime!.getOneMinToMidnight()
                                 
                                 case .timeboxed:
                                     guard let existingTask = taskModel.editTask else {
-                                        taskStartTime = taskModel.getNearestHour(Date())
+                                        taskStartTime = Date().getNearestHour()
                                         taskEndTime = Calendar.current.date(byAdding: .hour, value: 1, to: taskStartTime!)
 
                                         return
                                     }
-                                    taskStartTime = taskModel.isTimeboxedTask(existingTask) ? existingTask.taskStartTime : taskModel.getNearestHour(Date())
+                                    taskStartTime = taskModel.isTimeboxedTask(existingTask) ? existingTask.taskStartTime : Date().getNearestHour()
                                     taskEndTime = taskModel.isTimeboxedTask(existingTask) ? existingTask.taskEndTime : Calendar.current.date(byAdding: .hour, value: 1, to: taskStartTime!)
                             }
                             // MARK: (EDIT MODE) Initial values unchanged
@@ -413,8 +413,7 @@ struct TaskModal: View {
                         // Create new task...
                         if let task = taskModel.editTask {
                             // Edit existing task...
-                            taskModel.updateTask(context: self.context,
-                                                 task: task,
+                            taskModel.updateTask(task: task,
                                                  self.taskTitle,
                                                  self.subtasks,
                                                  self.taskLabel,
@@ -423,8 +422,7 @@ struct TaskModal: View {
                                                  self.taskStartTime,
                                                  self.taskEndTime)
                         } else {
-                            taskModel.addTask(context: self.context,
-                                              id: self.id,
+                            taskModel.addTask(id: self.id,
                                               self.taskTitle,
                                               self.subtasks,
                                               self.taskLabel,

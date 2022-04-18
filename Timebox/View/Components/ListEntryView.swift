@@ -19,8 +19,8 @@ struct ListEntryView<Content: View>: View {
     
     var body: some View {
         NavigationLink(isActive: $selector) {
-            VStack(spacing: 24) {
-                hideDefaultNavigationBar ? UniversalCustomNavigationBar(screenTitle: entryTitle) : nil
+            VStack(spacing: 32) {
+                hideDefaultNavigationBar ? UniversalCustomNavigationBar(screenTitle: entryTitle, hasBackButton: true) : nil
                 
                 content()
             }

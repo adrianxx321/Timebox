@@ -15,8 +15,8 @@ import EventKit
 // Calendar syncing, loading preset white noises, notification permission etc.
 // Tthrough corresponding ViewModels
 struct Settings: View {
-    // MARK: Core Data injected environment context
-    @Environment(\.managedObjectContext) var context
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
     // MARK: Core Data fetch requests
     @FetchRequest private var fetchedTasks: FetchedResults<Task>
     @FetchRequest private var fetchedSessions: FetchedResults<TaskSession>
@@ -39,17 +39,17 @@ struct Settings: View {
     // MARK: Data prepared from CD fetch
     private var allTasks: [Task] {
         get {
-            taskModel.getAllTasks(query: self.fetchedTasks)
+            self.taskModel.getAllTasks(query: self.fetchedTasks)
         }
     }
     private var allTaskSession: [TaskSession] {
         get {
-            return sessionModel.getAllTaskSessions(query: self.fetchedSessions)
+            return self.sessionModel.getAllTaskSessions(query: self.fetchedSessions)
         }
     }
     private var completedTasks: [Task] {
         get {
-            return taskModel.filterAllCompletedTasks(data: self.allTasks)
+            return self.taskModel.filterAllCompletedTasks(data: self.allTasks)
         }
     }
     private var totalCompleted: Int {
@@ -59,7 +59,7 @@ struct Settings: View {
     }
     private var totalHours: String {
         get {
-            return sessionModel.getTotalTimeboxedHours(data: self.allTaskSession)
+            return self.sessionModel.getTotalTimeboxedHours(data: self.allTaskSession)
         }
     }
     // MARK: Calendars aggregated by sources
@@ -102,7 +102,7 @@ struct Settings: View {
                                 // Avatar...
                                 AvatarView(size: 48, avatar: Image(settingsModel.avatar))
                                 
-                                Text("Change Your Avatar")
+                                Text("Change Avatar")
                                     .font(.subheading1())
                                     .fontWeight(.bold)
                                     .foregroundColor(.textPrimary)
@@ -182,6 +182,15 @@ struct Settings: View {
             .navigationBarHidden(true)
         }
         .navigationBarHidden(true)
+        // Loads the imported tasks if calendar permission is granted
+        .onChange(of: self.eventModel.syncCalendarsAllowed) { _ in
+            withAnimation {
+                print("Permission changed: Calendar \(eventModel.syncCalendarsAllowed)")
+                self.eventModel.loadCalendars()
+                self.eventModel.loadEvents()
+                self.eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
+            }
+        }
     }
     
     private func AvatarPage() -> some View {
@@ -189,7 +198,7 @@ struct Settings: View {
             let grids: [GridItem] = Array(repeating: .init(.adaptive(minimum: 128)), count: 5)
             
             // Navigation bar
-            UniversalCustomNavigationBar(screenTitle: "Change Your Avatar")
+            UniversalCustomNavigationBar(screenTitle: "Change Avatar", hasBackButton: true)
             
             // Avatar selection panel
             VStack(spacing: 48) {
@@ -201,6 +210,7 @@ struct Settings: View {
                         Button {
                             withAnimation {
                                 self.settingsModel.avatar = avatar
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
                             }
                         } label: {
                             Image(avatar)
@@ -271,7 +281,7 @@ struct Settings: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: UIScreen.main.bounds.width - 64,
-                       maxHeight: isSmallDevice ? 240 : 360)
+                       maxHeight: GLOBAL.isSmallDevice ? 240 : 360)
 
             VStack(spacing: 16) {
                 Text("We need your permission.")
@@ -290,7 +300,7 @@ struct Settings: View {
                 .multilineTextAlignment(.center)
             }
             
-            CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
+            CTAButton(btnLabel: "Allow Access", btnFullSize: false, action: {
                 withAnimation {
                     notificationModel.requestNotificationsPermission()
                 }
@@ -305,7 +315,7 @@ struct Settings: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: UIScreen.main.bounds.width - 64,
-                       maxHeight: isSmallDevice ? 240 : 360)
+                       maxHeight: GLOBAL.isSmallDevice ? 240 : 360)
 
             VStack(spacing: 16) {
                 Text("We need your permission.")
@@ -324,7 +334,7 @@ struct Settings: View {
                 .multilineTextAlignment(.center)
             }
             
-            CTAButton(btnLabel: "Allow Access", btnFullSize: false, btnAction: {
+            CTAButton(btnLabel: "Allow Access", btnFullSize: false, action: {
                 withAnimation {
                     eventModel.requestCalendarAccessPermission()
                 }
@@ -372,13 +382,12 @@ struct Settings: View {
                                 withAnimation {
                                     check.toggle()
                                     
-                                    // Maintaining data integrity
                                     // Update calendar & event store accordingly
-                                    // Each time after selecting/deselecting a calendar.
+                                    // Each time after selecting/deselecting a calendar...
                                     eventModel.updateCalendarStore(put: check, selected: calendar)
                                     eventModel.loadCalendars()
                                     eventModel.loadEvents()
-                                    eventModel.updateEventStore(context: self.context, persistentTaskStore: self.allTasks)
+                                    eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
                                 }
                             } label: {
                                 icon

@@ -8,28 +8,36 @@
 import SwiftUI
 
 struct Backlog: View {
-    // MARK: Core Data stuff
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    // MARK: Core Data fetch request
     @FetchRequest var fetchedBacklog: FetchedResults<Task>
+    // MARK: ViewModels
     @StateObject var taskModel = TaskViewModel()
+    // MARK: UI States
     @State private var hideCompletedTasks = false
+    @Binding var isPresent: Bool
     
     // MARK: Tasks prepared from CD fetch
     var backlogTasks: [Task] {
         get {
-            let tasks = self.fetchedBacklog.map { $0 as Task }
+            let tasks = self.taskModel.getAllTasks(query: self.fetchedBacklog)
+                // Sort by name first
+                .sorted(by: {$0.taskTitle! < $1.taskTitle! })
+                // Then importance
+                .sorted(by: {$0.isImportant && !$1.isImportant })
             
             return hideCompletedTasks ? tasks.filter{ !$0.isCompleted } : tasks
         }
     }
     
-    init() {
+    init(isPresent: Binding<Bool>) {
         let predicate = NSPredicate(format: "taskStartTime == nil AND taskEndTime == nil", argumentArray: [])
 
         _fetchedBacklog = FetchRequest(
             entity: Task.entity(),
             sortDescriptors: [.init(keyPath: \Task.isImportant, ascending: false)],
             predicate: predicate)
+        
+        self._isPresent = isPresent
     }
     
     var body: some View {
@@ -40,22 +48,22 @@ struct Backlog: View {
                 
                 // Scrollview showing list of backlog tasks...
                 ScrollView(.vertical, showsIndicators: false) {
-                    if backlogTasks.isEmpty {
-                        ScreenFallbackView(title: "Your untimed to-do's",
-                                           image: Image("backlog"),
-                                           caption1: "Task with no specific date goes here.",
-                                           caption2: "")
-                    } else {
-                        VStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        if backlogTasks.isEmpty {
+                            ScreenFallbackView(title: "Your untimed to-do's",
+                                               image: Image("backlog"),
+                                               caption1: "Task with no specific date goes here.",
+                                               caption2: "")
+                        } else {
                             ForEach(backlogTasks, id: \.id) { task in
                                 TaskCardView(task: task)
                             }
-                        }.padding(.bottom, 32)
-                    }
+                        }
+                    }.padding(.bottom, 32)
                 }
             }
-            .background(Color.backgroundPrimary)
             .navigationBarHidden(true)
+            .background(Color.backgroundPrimary)
         }
         .navigationBarHidden(true)
     }
@@ -64,7 +72,7 @@ struct Backlog: View {
         HStack() {
             // Back button leading to previous screen...
             Button {
-                presentationMode.wrappedValue.dismiss()
+                self.isPresent.toggle()
             } label: {
                 Image("chevron-left")
                     .resizable()
@@ -86,6 +94,8 @@ struct Backlog: View {
                 withAnimation {
                     hideCompletedTasks.toggle()
                 }
+                
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
                 Image(hideCompletedTasks ? "eye-close" : "eye")
                     .resizable()
@@ -97,8 +107,3 @@ struct Backlog: View {
     }
 }
 
-struct BacklogTasks_Previews: PreviewProvider {
-    static var previews: some View {
-        Backlog()
-    }
-}

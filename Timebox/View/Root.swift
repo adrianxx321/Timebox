@@ -8,37 +8,73 @@
 import SwiftUI
 
 struct Root: View {
+    // MARK: GLOBAL VARIABLES
+    @EnvironmentObject var GLOBAL: GlobalVariables
+    // MARK: Core Data fetch request
+    @FetchRequest var fetchedTasks: FetchedResults<Task>
+    // MARK: ViewModels
+    @ObservedObject var taskModel = TaskViewModel()
+    @ObservedObject var eventModel = EventViewModel()
+    @ObservedObject var sessionModel = TaskSessionViewModel()
     // Using icon name to identify tab...
     @State var currentTab = "home"
-    @StateObject var taskModel = TaskViewModel()
     
-    // Hiding native one...
     init() {
+        _fetchedTasks = FetchRequest(
+            entity: Task.entity(),
+            sortDescriptors: [.init(keyPath: \Task.taskStartTime, ascending: true)])
+        
+        // Hiding native one...
         UITabBar.appearance().isHidden = true
     }
     
+    // MARK: Convenient derived properties
+    private var allTasks: [Task] {
+        get {
+            self.taskModel.getAllTasks(query: self.fetchedTasks)
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Tab View...
             TabView(selection: $currentTab) {
                 Home()
                     .tag("home")
+                    .environmentObject(self.GLOBAL)
                 
                 Scheduled()
                     .tag("tasks")
+                    .environmentObject(self.GLOBAL)
+                    .navigationViewStyle(.stack)
                 
-                Text("Timer")
+                Timer()
                     .tag("timer")
+                    .environmentObject(self.GLOBAL)
                 
                 Settings()
                     .tag("more")
+                    .environmentObject(self.GLOBAL)
             }
-            
+
             // Custom Tab Bar...
             TabBarView()
         }
-        .padding(.bottom, isNotched ? 32 : 8)
+        .padding(.bottom, GLOBAL.isNotched ? 32 : 8)
         .ignoresSafeArea(edges: .bottom)
+        // Load the events added when app was closed upon launching the app...
+        .onAppear {
+            self.eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
+        }
+        // Detect any changes made to the default Calendar app (in background)
+        .onReceive(NotificationCenter.default.publisher(for: .EKEventStoreChanged)) { _ in
+            withAnimation {
+                // As per the instruction, so we fetch the EKCalendar again.
+                self.eventModel.loadCalendars()
+                self.eventModel.loadEvents()
+                self.eventModel.updatePersistedEventStore(persistentTaskStore: self.allTasks)
+            }
+        }
     }
     
     private func TabBarView() -> some View {
@@ -61,6 +97,7 @@ struct Root: View {
                 
                 Button {
                     taskModel.addNewTask.toggle()
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
                     Image("add")
                         .resizable()
@@ -84,6 +121,7 @@ struct Root: View {
             .shadow(color: .backgroundQuarternary, radius: 4, x: 0, y: 0)
             // Cover up the unwanted top shadow
             .mask(Rectangle().padding(.top, -8)))
+        // Brings up the add task modal
         .sheet(isPresented: $taskModel.addNewTask) {
             // Clearing Edit Data
             taskModel.editTask = nil

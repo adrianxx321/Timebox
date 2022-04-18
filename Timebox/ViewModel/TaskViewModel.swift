@@ -14,11 +14,14 @@ class TaskViewModel: ObservableObject {
     @Published var addNewTask: Bool = false
     @Published var editTask: Task?
     @Published var currentDay = Date()
+    // MARK: Core Data shared context
+    private var context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
     
     // Get current week...
     init() {
         let today = Date()
-        let calendar = Calendar.current
+        var calendar = Calendar.current
+        calendar.firstWeekday = 1
         
         // Because week ends at 00:00 of the Sunday (supposed to be 23:59)
         // Therefore we need to do some adjustment
@@ -42,6 +45,14 @@ class TaskViewModel: ObservableObject {
         }
         // Replace so that week ends at 23:59 of Sunday
         currentWeek[currentWeek.count - 1] = lastWeekDay
+    }
+    
+    func updateWeek(offset: Int) {
+        let calendar = Calendar.current
+
+        currentWeek = currentWeek.map {
+            calendar.date(byAdding: .weekOfMonth, value: offset, to: $0)!
+        }
     }
     
     func getAllTasks(query: FetchedResults<Task>) -> [Task] {
@@ -84,17 +95,16 @@ class TaskViewModel: ObservableObject {
         }
     }
     
-    func addTask(context: NSManagedObjectContext, id: UUID,
-                 _ taskTitle: String, _ subtasks: [Subtask],
-                 _ taskLabel: String, _ color: UIColor,
-                 _ isImportant: Bool, _ taskStartTime: Date?,
-                 _ taskEndTime: Date?) {
-        let task = Task(context: context)
+    func addTask(id: UUID, _ taskTitle: String,
+                 _ subtasks: [Subtask], _ taskLabel: String,
+                 _ color: UIColor, _ isImportant: Bool,
+                 _ taskStartTime: Date?, _ taskEndTime: Date?) {
+        let task = Task(context: self.context)
         task.id = id
         task.taskTitle = taskTitle
         
         subtasks.forEach { subtask in
-            let newSubtask = Subtask(context: context)
+            let newSubtask = Subtask(context: self.context)
             newSubtask.subtaskTitle = subtask.subtaskTitle
             newSubtask.timestamp = subtask.timestamp
             newSubtask.isCompleted = subtask.isCompleted
@@ -111,10 +121,14 @@ class TaskViewModel: ObservableObject {
         // This is for imported event from Calendar API
         task.ekeventID = nil
         
-        try? context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
     
-    func addSubtask(context: NSManagedObjectContext) -> Subtask {
+    func addSubtask() -> Subtask {
         let newSubtask = Subtask(context: context)
         newSubtask.subtaskTitle = ""
         newSubtask.timestamp = Date()
@@ -124,11 +138,9 @@ class TaskViewModel: ObservableObject {
         return newSubtask
     }
     
-    func updateTask(context: NSManagedObjectContext, task: Task,
-                    _ taskTitle: String, _ subtasks: [Subtask],
-                    _ taskLabel: String, _ color: UIColor,
-                    _ isImportant: Bool, _ taskStartTime: Date?,
-                    _ taskEndTime: Date?) {
+    func updateTask(task: Task, _ taskTitle: String, _ subtasks: [Subtask],
+                    _ taskLabel: String, _ color: UIColor, _ isImportant: Bool,
+                    _ taskStartTime: Date?, _ taskEndTime: Date?) {
         task.taskTitle = taskTitle
         
         // Remove all old subtasks before reinserting new ones
@@ -148,23 +160,35 @@ class TaskViewModel: ObservableObject {
         task.taskStartTime = taskStartTime
         task.taskEndTime = taskEndTime
         
-        try? context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
     
-    func deleteTask(context: NSManagedObjectContext, task: Task) {
+    func deleteTask(task: Task) {
         context.delete(task)
         
-        try? context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
     
-    func completeTask(_ task: Task, context: NSManagedObjectContext) {
+    func completeTask(_ task: Task) {
         task.isCompleted.toggle()
         
         // Save to Core Data
-        try? context.save()
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
+        }
     }
     
-    func completeSubtask(parentTask: Task, subtask: Subtask, context: NSManagedObjectContext) {
+    func completeSubtask(parentTask: Task, subtask: Subtask) {
         // We need this "magic" to overcome the fact that Core Data can't handle view update on to-many entities...
         parentTask.objectWillChange.send()
         subtask.isCompleted.toggle()
@@ -175,47 +199,22 @@ class TaskViewModel: ObservableObject {
             .contains(where: { !$0.isCompleted })
         
         // Save to Core Data...
-        try? context.save()
-    }
-
-    func updateWeek(offset: Int) {
-        let calendar = Calendar.current
-
-        currentWeek = currentWeek.map {
-            calendar.date(byAdding: .weekOfMonth, value: offset, to: $0)!
+        do {
+            try self.context.save()
+        } catch let error {
+            print(error)
         }
     }
-    
-    func formatDate(date: Date, format: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = format
-        
-        return formatter.string(from: date)
-    }
-    
-    func formatTimeInterval(startTime: Date,
-                            endTime: Date,
-                            unitStyle: DateComponentsFormatter.UnitsStyle,
-                            units: NSCalendar.Unit) -> String {
-        let formatter = DateComponentsFormatter()
-        let interval = DateInterval(start: startTime, end: endTime).duration
-        
-        formatter.unitsStyle = unitStyle
-        formatter.allowedUnits = units
-        
-        return formatter.string(from: interval) ?? ""
-    }
-    
-    func getTimeRemaining(task: Task) -> String {
+
+    func getTaskTimeRemaining(task: Task) -> String {
         var finalResult = ""
         
         if isTimeboxedTask(task) {
-            let interval = formatTimeInterval(startTime: task.taskStartTime!,
-                                             endTime: task.taskEndTime!,
-                                             unitStyle: .full,
-                                             units: [.hour, .minute])
+            let interval = (task.taskEndTime ?? Date()) - Date()
+            let intervalString = Date.formatTimeDuration(interval, unitStyle: .short,
+                                                         units: [.hour, .minute], padding: nil) 
             
-            finalResult = "\(interval) left"
+            finalResult = "\(intervalString) left"
         } else if isAllDayTask(task) {
             let tasksLeft = task.subtasks.count - countCompletedSubtask(task.subtasks)
             
@@ -223,18 +222,6 @@ class TaskViewModel: ObservableObject {
         }
         
         return finalResult
-    }
-    
-    func getNearestHour(_ time: Date) -> Date {
-        var components = Calendar.current.dateComponents([.minute], from: time)
-        let minute = components.minute ?? 0
-        components.minute = minute >= 30 ? 60 - minute : -minute
-        
-        return Calendar.current.date(byAdding: components, to: time) ?? Date()
-    }
-    
-    func getOneMinToMidnight(_ forDay: Date) -> Date {
-        return Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: forDay) ?? Date()
     }
     
     func isCurrentDay(date: Date) -> Bool {
