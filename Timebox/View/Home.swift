@@ -45,7 +45,7 @@ struct Home: View {
     // MARK: Data prepared from CD fetch
     var allTasks: [Task] {
         get {
-            self.fetchedTasks.map { $0 as Task }
+            self.taskModel.getAllTasks(query: self.fetchedTasks)
         }
     }
     var ongoingTasks: [Task] {

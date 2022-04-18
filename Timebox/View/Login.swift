@@ -77,8 +77,5 @@ struct Login: View {
 struct LoginScreen_Previews: PreviewProvider {
     static var previews: some View {
         Login()
-            .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro Max"))
-        Login()
-            .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
     }
 }

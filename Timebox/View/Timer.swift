@@ -40,6 +40,18 @@ private enum TimerPopOver: String, Identifiable, CaseIterable {
     }
 }
 
+private struct BackgroundBlurView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        DispatchQueue.main.async {
+            view.superview?.superview?.backgroundColor = .uiBlack.withAlphaComponent(0.6)
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
 struct Timer: View {
     // MARK: GLOBAL VARIABLES
     @EnvironmentObject var GLOBAL: GlobalVariables
@@ -47,7 +59,6 @@ struct Timer: View {
     @FetchRequest var fetchedTasks: FetchedResults<Task>
     // MARK: ViewModels
     @ObservedObject private var taskModel = TaskViewModel()
-    @ObservedObject private var notificationModel = NotificationViewModel()
     @StateObject private var sessionModel = TaskSessionViewModel()
     // MARK: Timer States
     @State private var start = false
@@ -81,18 +92,16 @@ struct Timer: View {
     
     /// Function dedicated to reset all view states to default value
     private func reInit() {
-        DispatchQueue.main.async {
-            self.start = false
-            self.mute = false
-            self.pause = true
-            self.timerProgress = 0
-            self.isPulsing = false
-            self.selectedMode = .normal
-            self.timerCountdown = "00:00"
-            self.completedTasksCount = 0
-            self.currentPomoSession = 1
-            self.countedFocusedTime = 0
-        }
+        self.start = false
+        self.mute = false
+        self.pause = true
+        self.timerProgress = 0
+        self.isPulsing = false
+        self.selectedMode = .normal
+        self.timerCountdown = "00:00"
+        self.completedTasksCount = 0
+        self.currentPomoSession = 1
+        self.countedFocusedTime = 0
     }
     
     // MARK: Convenient derived properties
@@ -396,6 +405,7 @@ struct Timer: View {
                 }
                 
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                UIApplication.shared.isIdleTimerDisabled = pause
             } label: {
                 ControllerButtonLabel(icon: self.pause ? Image("play-f") : Image("pause-f"),
                                       padding: 24, cornerRadius: 32, customColor: .accent)
@@ -419,6 +429,7 @@ struct Timer: View {
                 }
                 
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                UIApplication.shared.isIdleTimerDisabled = false
             } label: {
                 ControllerButtonLabel(icon: Image("stop-f"), padding: 16,
                                       cornerRadius: 24, customColor: nil)
@@ -592,17 +603,3 @@ struct Timer: View {
         }
     }
 }
-
-// Helper
-private struct BackgroundBlurView: UIViewRepresentable {
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView()
-        DispatchQueue.main.async {
-            view.superview?.superview?.backgroundColor = .uiBlack.withAlphaComponent(0.6)
-        }
-        return view
-    }
-
-    func updateUIView(_ uiView: UIView, context: Context) {}
-}
-

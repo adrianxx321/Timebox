@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var globalModel = GlobalVariables()
+    @ObservedObject var globalModel = GlobalVariables()
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     
     init() {

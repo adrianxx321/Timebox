@@ -98,8 +98,5 @@ struct Onboarding: View {
 struct OnboardingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Onboarding()
-            .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro Max"))
-        Onboarding()
-            .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
     }
 }
